@@ -10,9 +10,8 @@ No previous installations is required to play the game, just download and execut
 
 ## Usage
 ### General Controls
--
--
--
+- ESC: Quit the game
+
 
 ### Player 1 Controls
 - Keyboard:
