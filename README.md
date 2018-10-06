@@ -38,7 +38,7 @@ feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request and we might look into it. :D
 
-## The Team: [Scotland Fury] (https://github.com/Scotland-Fury)
+## The Team: [Scotland Fury](https://github.com/Scotland-Fury)
 * Carles Homs 
   * Role: Code
   * Github: [ch0m5](https://github.com/ch0m5)
@@ -52,6 +52,6 @@ feature'`
  ---
 ## License & Copyright 
 
-© Crispy Crunch
+Â© Crispy Crunch
 
 Licensed under the [MIT License](LICENSE)
