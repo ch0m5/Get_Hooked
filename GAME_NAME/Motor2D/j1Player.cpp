@@ -170,15 +170,19 @@ void j1Player::playerInput()
 		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
 		||
 		App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT
-		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+	{
 		if (playerSpeed.x > 0.0f) {
 			playerSpeed.x -= 0.01f;
+
+			if (playerSpeed.x < 0.0f)
+				playerSpeed.x = 0.0f;
 		}
-		if (playerSpeed.x < 0.0f) {
+		else if (playerSpeed.x < 0.0f) {
 			playerSpeed.x += 0.01f;
-		}
-		if (playerSpeed.x < 0.1f && playerSpeed.x > -0.1f) {
-			playerSpeed.x = 0;
+
+			if (playerSpeed.x > 0.0f)
+				playerSpeed.x = 0.0f;
 		}
 	}
 
