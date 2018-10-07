@@ -10,6 +10,17 @@
 
 j1Player::j1Player()
 {
+	name.create("player");
+}
+
+j1Player::~j1Player()
+{}
+
+// Called before render is available
+bool j1Player::Awake(pugi::xml_node&)
+{
+	bool ret = true;
+
 	// Character Sprite Sheet
 	graphics = nullptr;
 
@@ -77,18 +88,6 @@ j1Player::j1Player()
 
 	hurt;
 	die;
-}
-
-j1Player::~j1Player()
-{
-
-}
-
-// Called before render is available
-bool j1Player::Awake(pugi::xml_node&)
-{
-
-	bool ret = true;
 
 	return ret;
 }
@@ -96,7 +95,6 @@ bool j1Player::Awake(pugi::xml_node&)
 // Called before the first frame
 bool j1Player::Start()
 {
-
 	bool ret = true;
 
 	return ret;
@@ -105,14 +103,12 @@ bool j1Player::Start()
 // Called each loop iteration
 bool j1Player::PreUpdate()
 {
-
 	bool ret = true;
 
 	return ret;
 }
 bool j1Player::Update(float dt)
 {
-
 	bool ret = true;
 
 	//App->render->Blit(graphics, position.x - 2, position.y - 3, &shipRect, 1.0f, false);
@@ -128,7 +124,6 @@ bool j1Player::Update(float dt)
 }
 bool j1Player::PostUpdate()
 {
-
 	bool ret = true;
 
 	return ret;
@@ -137,7 +132,6 @@ bool j1Player::PostUpdate()
 // Called before quitting
 bool j1Player::CleanUp()
 {
-
 	bool ret = true;
 	
 	LOG("Unloading player");
@@ -148,19 +142,25 @@ bool j1Player::CleanUp()
 	return ret;
 }
 
-// Save and Load
-//bool j1Player::Load(pugi::xml_node&) {
-//
-//	bool ret = true;
-//
-//	return ret;
-//}
-//bool j1Player::Save(pugi::xml_node&) const {
-//
-//	bool ret = true;
-//
-//	return ret;
-//}
+// Load Game State
+bool j1Player::Load(pugi::xml_node& data)
+{
+	playerPos.x = data.child("position").attribute("x").as_int();
+	playerPos.y = data.child("position").attribute("y").as_int();
+
+	return true;
+}
+
+// Save Game State
+bool j1Player::Save(pugi::xml_node& data) const
+{
+	pugi::xml_node pos = data.append_child("position");
+
+	pos.append_attribute("x") = playerPos.x;
+	pos.append_attribute("y") = playerPos.y;
+
+	return true;
+}
 
 //------------------------------------------------
 
