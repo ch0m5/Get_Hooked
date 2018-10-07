@@ -33,6 +33,9 @@ public:
 	//bool Load(pugi::xml_node&);
 	//bool Save(pugi::xml_node&) const;
 
+public:	// @Carles
+	void playerInput();
+
 private:
 
 	// Character Sprite Sheet
@@ -78,25 +81,26 @@ private:
 	Animation die;
 
 	// Animation pointers
-	Animation* character_animation = nullptr;
+	Animation* playerAnim = nullptr;
 
 	// Character stats
 	uint life;
-	p2Point<float> position;
-	p2Point<float> speed;
+	fPoint playerPos;
+	fPoint playerSpeed;
+	fPoint maxSpeed;
 
-	uint sprite_width;
-	uint sprite_height;
-	uint sprite_move_horizontal;
-	uint sprite_move_vertical;
+	uint spriteWidth;
+	uint spriteHeight;
+	uint spriteMoveHorizontal;
+	uint spriteMoveVertical;
 
 	// Character status flags
 	bool dead;
 	bool godmode;
 
 	// Player rectangles
-	SDL_Rect animation_rect;
-	SDL_Rect collider_rectt;
+	SDL_Rect rectAnim;
+	SDL_Rect rectCollider;
 	
 	//Collider
 	//Collider* playerHitbox = nullptr;

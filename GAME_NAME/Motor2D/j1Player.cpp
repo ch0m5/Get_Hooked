@@ -14,26 +14,27 @@ j1Player::j1Player()
 	graphics = nullptr;
 
 	// Animation pointers
-	character_animation = nullptr;
+	playerAnim = nullptr;
 
 	// Character stats
 	life = 3;
-	position = { 100, 550 };
-	speed = { 0, 0 };
+	playerPos = { 100, 550 };
+	playerSpeed = { 0, 0 };
+	maxSpeed = { 1, 1 };
 
 	// Character status flags
 	dead = false;
 	godmode = false;
 
-	sprite_width = 50;
-	sprite_height = 36;
-	sprite_move_horizontal = 50;
-	sprite_move_vertical = 37;
+	spriteWidth = 50;
+	spriteHeight = 36;
+	spriteMoveHorizontal = 50;
+	spriteMoveVertical = 37;
 
-	animation_rect.x = 50;
-	animation_rect.y = 50;
-	animation_rect.w = 50;
-	animation_rect.h = 50;
+	rectAnim.x = 50;
+	rectAnim.y = 50;
+	rectAnim.w = 50;
+	rectAnim.h = 50;
 
 	//Collider
 	//Collider* playerHitbox = nullptr;
@@ -116,7 +117,12 @@ bool j1Player::Update(float dt)
 
 	//App->render->Blit(graphics, position.x - 2, position.y - 3, &shipRect, 1.0f, false);
 
-	App->render->DrawQuad(animation_rect, 255, 0, 0, 100);
+	playerInput();
+
+	rectAnim.x = (int)playerPos.x;
+	rectAnim.y = (int)playerPos.y;
+
+	App->render->DrawQuad(rectAnim, 255, 0, 0, 100);
 
 	return ret;
 }
@@ -155,3 +161,40 @@ bool j1Player::CleanUp()
 //
 //	return ret;
 //}
+
+//------------------------------------------------
+
+void j1Player::playerInput()
+{
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE
+		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
+		||
+		App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT
+		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		if (playerSpeed.x > 0.0f) {
+			playerSpeed.x -= 0.01f;
+		}
+		if (playerSpeed.x < 0.0f) {
+			playerSpeed.x += 0.01f;
+		}
+		if (playerSpeed.x < 0.1f && playerSpeed.x > -0.1f) {
+			playerSpeed.x = 0;
+		}
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		playerSpeed.x += 0.01f;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		playerSpeed.x -= 0.01f;
+	}
+	
+	if (playerSpeed.x > maxSpeed.x)
+		playerSpeed.x = maxSpeed.x;
+
+	else if (playerSpeed.x < -maxSpeed.x)
+		playerSpeed.x = -maxSpeed.x;
+
+	playerPos.x += playerSpeed.x;	// x movement
+}
