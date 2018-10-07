@@ -100,8 +100,8 @@ private:
 	p2SString			load_game;
 	mutable p2SString	save_game;
 
-	p2List<p2SString>	save_list;	// Carles, list of save file names
-	char				save_number;	// Carles, save file list order counter
+	p2List<p2SString>	save_list;	// @Carles, list of save file names
+	char				save_number;	// @Carles, save file list order counter
 };
 
 extern j1App* App;

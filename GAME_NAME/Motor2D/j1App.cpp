@@ -26,8 +26,8 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	scene = new j1Scene();
 	map = new j1Map();
 
-	save_game += "save_game";	// Carles
-	load_game += "load_game";	// Carles
+	save_game += "save_game";	// @Carles
+	load_game += "load_game";	// @Carles
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
@@ -304,8 +304,8 @@ bool j1App::LoadGameNow()
 	pugi::xml_document data;
 	pugi::xml_node root;
 
-	load_game = save_game.GetString();	// Carles, CHANGE/FIX: Must work with a string extracted from the save_files string list
-	load_game += ".xml";				// Carles
+	load_game = save_game.GetString();	// @Carles, CHANGE/FIX: Must work with a string extracted from the save_files string list
+	load_game += ".xml";				// @Carles
 	
 	pugi::xml_parse_result result = data.load_file(load_game.GetString());
 
@@ -341,8 +341,8 @@ bool j1App::SavegameNow() const
 {
 	bool ret = true;
 
-	p2SString save_game_file = save_game.GetString();	// Carles, CHANGE/FIX: Must work with a list of saved files and use a single iteration using +
-	save_game_file += ".xml";							// Carles
+	p2SString save_game_file = save_game.GetString();	// @Carles, CHANGE/FIX: Must work with a list of saved files and use a single iteration using +
+	save_game_file += ".xml";							// @Carles
 
 	LOG("Saving Game State to %s...", save_game_file.GetString());
 

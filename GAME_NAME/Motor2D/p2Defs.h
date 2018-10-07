@@ -1,7 +1,7 @@
 #ifndef __P2DEFS_H__
 #define __P2DEFS_H__
 
-#include <stdio.h>
+#include <cstdio>
 
 //  NULL just in case ----------------------
 
@@ -37,6 +37,7 @@
 #define TO_BOOL( a )  ( (a != 0) ? true : false )
 
 typedef unsigned int uint;
+typedef unsigned short ushort;	// @Carles
 typedef unsigned char uchar;
 
 template <class VALUE_TYPE> void SWAP(VALUE_TYPE& a, VALUE_TYPE& b)
