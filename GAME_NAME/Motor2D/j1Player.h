@@ -16,22 +16,22 @@ public:
 	virtual ~j1Player();
 
 	// Called before render is available
-	 bool Awake(pugi::xml_node&);
+	bool Awake(pugi::xml_node&);
 
 	// Called before the first frame
-	 bool Start();
+	bool Start();
 
 	// Called each loop iteration
-	 bool PreUpdate();
-	 bool Update(float dt);
-	 bool PostUpdate();
+	bool PreUpdate();
+	bool Update(float dt);
+	bool PostUpdate();
 
 	// Called before quitting
-	 bool CleanUp();
+	bool CleanUp();
 
 	// Save and Load
-	 bool Load(pugi::xml_node&);
-	 bool Save(pugi::xml_node&) const;
+	//bool Load(pugi::xml_node&);
+	//bool Save(pugi::xml_node&) const;
 
 private:
 
@@ -85,6 +85,11 @@ private:
 	p2Point<float> position;
 	p2Point<float> speed;
 
+	uint sprite_width;
+	uint sprite_height;
+	uint sprite_move_horizontal;
+	uint sprite_move_vertical;
+
 	// Character status flags
 	bool dead;
 	bool godmode;
@@ -94,8 +99,7 @@ private:
 	SDL_Rect collider_rectt;
 	
 	//Collider
-	//Collider* playerHitbox;
-
+	//Collider* playerHitbox = nullptr;
 };
 
 #endif //__j1PLAYER_H__
