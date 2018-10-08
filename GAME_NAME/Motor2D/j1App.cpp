@@ -10,7 +10,8 @@
 #include "j1Audio.h"
 #include "j1Scene.h"
 #include "j1Map.h"
-#include "j1Player.h"	// @Carles
+#include "j1Player.h"		// @Carles
+#include "j1Collision.h"	// @Carles
 #include "j1App.h"
 
 // Constructor
@@ -26,7 +27,8 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new j1Audio();
 	scene = new j1Scene();
 	map = new j1Map();
-	player = new j1Player();	// @Carles
+	player = new j1Player();		// @Carles
+	collision = new j1Collision();	// @Carles
 
 	save_game += "save_game";	// @Carles
 	load_game += "load_game";	// @Carles
@@ -40,6 +42,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(map);
 	AddModule(scene);
 	AddModule(player);	// @Carles
+	AddModule(collision);	// @Carles
 
 	// render last to swap buffer
 	AddModule(render);
