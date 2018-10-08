@@ -76,6 +76,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="j1Collision.cpp" />
+    <ClCompile Include="j1FadeScene.cpp" />
     <ClCompile Include="j1Main.cpp" />
     <ClCompile Include="j1App.cpp" />
     <ClCompile Include="j1Audio.cpp" />
@@ -90,6 +92,8 @@
     <ClCompile Include="PugiXml\src\pugixml.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="j1Collision.h" />
+    <ClInclude Include="j1FadeScene.h" />
     <ClInclude Include="p2Animation.h" />
     <ClInclude Include="j1Map.h" />
     <ClInclude Include="j1Player.h" />
@@ -114,6 +118,7 @@
     <None Include="..\Game\maps\hello2.tmx" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\Game\config.xml" />
     <Xml Include="..\Game\save_game.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

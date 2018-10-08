@@ -3,6 +3,7 @@
 
 #include "p2Defs.h"
 #include "SDL\include\SDL_rect.h"
+
 #define MAX_FRAMES 50
 
 class Animation

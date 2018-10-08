@@ -1,6 +1,6 @@
 #include "p2Defs.h"
 #include "p2Log.h"
-#include "j1App.h"
+#include "j1App.h"			// CHANGE/FIX?
 #include "j1Input.h"		// Do we need it?
 #include "j1Textures.h"		// Do we need it?
 #include "j1Render.h"
@@ -97,11 +97,13 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
+	//CHANGE/FIX?: Add condition to load save file on startup?
+
 	return ret;
 }
 
 // Called each loop iteration
-bool j1Player::PreUpdate()
+bool j1Player::PreUpdate()	// CHANGE/FIX: Player input here?
 {
 	bool ret = true;
 
@@ -122,12 +124,6 @@ bool j1Player::Update(float dt)
 
 	return ret;
 }
-bool j1Player::PostUpdate()
-{
-	bool ret = true;
-
-	return ret;
-}
 
 // Called before quitting
 bool j1Player::CleanUp()
@@ -140,6 +136,12 @@ bool j1Player::CleanUp()
 	//graphics = nullptr;
 
 	return ret;
+}
+
+// Called when colliding
+void j1Player::OnCollision(Collider* c1, Collider* c2)
+{
+
 }
 
 // Load Game State

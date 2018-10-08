@@ -7,7 +7,7 @@
 
 struct SDL_Texture;
 
-class j1Player : public j1Module
+class j1Player : public j1Module	// CHANGE/FIX: Check useless methods (empty)
 {
 public:
 
@@ -24,10 +24,12 @@ public:
 	// Called each loop iteration
 	bool PreUpdate();
 	bool Update(float dt);
-	bool PostUpdate();
 
 	// Called before quitting
 	bool CleanUp();
+
+	// Called when colliding
+	void OnCollision(Collider* c1, Collider* c2);	// @Carles
 
 	// Save and Load
 	bool Load(pugi::xml_node&);
