@@ -87,18 +87,18 @@ private:
 
 	// Character stats
 	uint life;
-	fPoint playerPos;
-	fPoint playerSpeed;
-	fPoint maxSpeed;
+	fPoint playerPos;			//CHANGE/FIX: Simple type values must be stored on the save_game xml file
+	fPoint playerSpeed;			// "" ""
+	fPoint maxSpeed;			// "" ""
 
-	uint spriteWidth;
-	uint spriteHeight;
-	uint spriteMoveHorizontal;
-	uint spriteMoveVertical;
+	uint spriteWidth;			// "" ""
+	uint spriteHeight;			// "" ""
+	uint spriteMoveHorizontal;	// "" ""
+	uint spriteMoveVertical;	// "" ""
 
 	// Character status flags
-	bool dead;
-	bool godmode;
+	bool dead;					// "" ""
+	bool godmode;				// "" ""
 
 	// Player rectangles
 	SDL_Rect rectAnim;
