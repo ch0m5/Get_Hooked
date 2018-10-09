@@ -87,7 +87,7 @@ private:
 
 	// Character stats
 	uint life;
-	fPoint playerPos;			//CHANGE/FIX: Simple type values must be stored on the save_game xml file
+	fPoint playerPos;			//CHANGE/FIX: Simple type values must be stored on the save_game and the config xml file
 	fPoint playerSpeed;			// "" ""
 	fPoint maxSpeed;			// "" ""
 
