@@ -6,7 +6,7 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
-enum COLLIDER_TYPE
+enum COLLIDER_TYPE	//CHANGE/FIX: The data that marks the types of areas and their enviroment conditions should be in Tiled (xml) and interpreted by the code
 {
 	COLLIDER_NONE = -1,
 	COLLIDER_WALL,
