@@ -25,8 +25,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 	folder.create(config.child("folder").child_value());
 
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
-	//p2SString characterSheet("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());	//CHANGE/FIX: character sheet should be declared on header
-	graphics = graphics = App->tex->Load(characterSheet.GetString());
+	
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
 	defaultAnimSpeed = config.child("sprites").child("animation").attribute("defaultSpeed").as_float();
 
@@ -69,6 +68,8 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
+	graphics = App->tex->Load(characterSheet.GetString());
+
 	//CHANGE/FIX?: Add condition to load save file on startup?
 
 	return ret;
@@ -104,8 +105,8 @@ bool j1Player::CleanUp()
 	
 	LOG("Unloading player");
 
-	//App->tex->UnLoad(graphics);
-	//graphics = nullptr;
+	App->tex->UnLoad(graphics);
+	graphics = nullptr;
 
 	return ret;
 }
