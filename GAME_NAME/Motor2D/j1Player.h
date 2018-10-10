@@ -48,20 +48,21 @@ private:
 	// Character stats
 	uint life;
 	fPoint position;			//CHANGE/FIX: Simple type values must be stored on the save_game and the config xml file
-	fPoint speed;			// "" ""
-	fPoint maxSpeed;			// "" ""
+	fPoint speed;
+	fPoint maxSpeed;
 	float acceleration;
 	float jumpVelocity;
 	float gravity;
 
 	// Character status flags
-	bool dead;					// "" ""
-	bool godmode;				// "" ""
+	bool dead;
+	bool godmode;
+	bool jumping = false;			// CHANGE/FIX: ADD TO XML
 
 	// Character Sprite Sheet
-	SDL_Texture* graphics = nullptr;	// Pointer to character sheet texture
+	SDL_Texture* graphics = nullptr;
 	p2SString characterSheet;
-	iPoint spriteSize;			// Size of each sprite
+	iPoint spriteSize;
 
 	// Character animations
 	Animation idle;
@@ -77,14 +78,14 @@ private:
 	float defaultAnimSpeed;
 
 	// Animation pointers
-	Animation* anim = nullptr;
+	Animation* animPtr = nullptr;
 
 	// Player rectangles
-	SDL_Rect rectAnim;
-	SDL_Rect rectCollider;
+	SDL_Rect animRect;
+	SDL_Rect colliderRect;
 	
 	//Collider
-	//Collider* playerHitbox = nullptr;
+	Collider* hitbox = nullptr;
 };
 
 #endif //__j1PLAYER_H__

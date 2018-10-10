@@ -6,6 +6,7 @@
 #include "j1Render.h"
 #include "j1Audio.h"		// Do we need it?
 #include "j1Player.h"
+#include "j1Collision.h"
 #include "p2Animation.h"	// @Carles
 
 j1Player::j1Player()
@@ -27,7 +28,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
-	defaultAnimSpeed = config.child("sprites").child("animation").attribute("defaultSpeed").as_float();
+	defaultAnimSpeed = config.child("sprites").child("animation").attribute("default_speed").as_float();
 
 	// CHANGE/FIX: Load SFX sounds
 
@@ -44,12 +45,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Character status flags
 	dead = config.child("dead").attribute("value").as_bool();	//CHANGE/FIX?: life == 0 serves the same purpose unless we want something in the middle to happen
 	godmode = config.child("godmode").attribute("value").as_bool();
-	
-	// CHANGE/FIX: HARDCODED RED CUBE
-	rectAnim.x = 50;	
-	rectAnim.y = 50;
-	rectAnim.w = 50;
-	rectAnim.h = 50;
 
 	//Collider
 	//Collider* playerHitbox = nullptr;
@@ -69,6 +64,7 @@ bool j1Player::Start()
 	bool ret = true;
 
 	graphics = App->tex->Load(characterSheet.GetString());
+	//hitbox = App->collision->AddCollider({ (int)position.x, (int)position.y, shipWidth, shipHeight }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Collider must change with animation
 
 	//CHANGE/FIX?: Add condition to load save file on startup?
 
@@ -86,14 +82,17 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	//App->render->Blit(graphics, position.x - 2, position.y - 3, &shipRect, 1.0f, false);
+	//propellerAnimation = &idleBooster;
 
 	PlayerInput();
 
-	rectAnim.x = (int)position.x;
-	rectAnim.y = (int)position.y;
+	animRect.x = (int)position.x;
+	animRect.y = (int)position.y;
 
-	App->render->DrawQuad(rectAnim, 255, 0, 0, 100);
+	animPtr = &idle;
+
+	SDL_Rect playerRect = animPtr->GetCurrentFrame();
+	App->render->Blit(graphics, position.x, position.y, &playerRect, 0.5f);
 
 	return ret;
 }
@@ -149,13 +148,13 @@ void j1Player::PlayerInput()
 		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if (speed.x > 0.0f) {
-			speed.x -= 0.01f;
+			speed.x -= acceleration;
 
 			if (speed.x < 0.0f)
 				speed.x = 0.0f;
 		}
 		else if (speed.x < 0.0f) {
-			speed.x += 0.01f;
+			speed.x += acceleration;
 
 			if (speed.x > 0.0f)
 				speed.x = 0.0f;
@@ -163,11 +162,11 @@ void j1Player::PlayerInput()
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		speed.x += 0.01f;
+		speed.x += acceleration;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		speed.x -= 0.01f;
+		speed.x -= acceleration;
 	}
 	
 	if (speed.x > maxSpeed.x)
@@ -179,8 +178,23 @@ void j1Player::PlayerInput()
 	position.x += speed.x;
 
 	// Y Movement
+	if (position.y >= 550) {
+		speed.y = 0;
+		jumping = false;
+	}
 
+	if (jumping == true) {
+		speed.y += gravity;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && jumping == false) {
+		speed.y -= jumpVelocity;
+		jumping = true;
+	}
+
+	position.y += speed.y;
 }
+
 // @Carles: Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location
 void j1Player::AllocAllAnimations() {
 
