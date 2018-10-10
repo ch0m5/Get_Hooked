@@ -37,7 +37,7 @@ public:
 private:
 
 	_Mix_Music*			music;
-	p2List<Mix_Chunk*>	fx;
+	p2List<Mix_Chunk*>	fx;		// CHANGE/FIX: Implement xml reading
 };
 
 #endif // __j1AUDIO_H__

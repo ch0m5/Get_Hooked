@@ -56,6 +56,18 @@ public:
 	{
 		loops = 0;
 	}
+	// @Carles: With the data given, allocates an animation from a ROW of frames
+	void AllocAnimation(iPoint spritePos, iPoint spriteSize, float speed, uint frames, bool loop) {
+
+		int xCounter = 0;
+
+		for (uint i = frames; i > 0; i--) {
+			PushBack({ spritePos.x + spriteSize.x * xCounter++, spritePos.y, spriteSize.x, spriteSize.y });
+		}
+		
+		this->speed = speed;
+		this->loop = loop;
+	}
 };
 
 #endif	__P2ANIMATION_H__

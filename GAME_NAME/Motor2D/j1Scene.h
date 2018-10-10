@@ -32,7 +32,7 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-private:
+private:	// CHANGE/FIX: Implement xml reading
 };
 
 #endif // __j1SCENE_H__
