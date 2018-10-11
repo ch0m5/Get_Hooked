@@ -39,8 +39,8 @@
     <folder>textures/</folder>
     <sprites>
       <spriteSheet>character_sprite_sheet.png</spriteSheet>
-      <spriteSize x="50" y="36"/>
-      <animation default_speed="0.1"/>
+      <spriteSize x="50" y="37"/>
+      <animation default_speed="0.12"/>
     </sprites>
     <sfx>
       <!-- <jumpFX source="Jump.wav"/>
@@ -52,9 +52,8 @@
     <speed x="0" y="0"/>
     <maxSpeed x="3" y="5"/>
     <acceleration x="0.2"/>
-    <jump forceY="3"/>
+    <jump forceY="4"/>
     <gravity accelerationY="0.2"/>
-    <dead value="false"/>
     <godmode value="false"/>
   </player>
 

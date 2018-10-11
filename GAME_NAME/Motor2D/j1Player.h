@@ -7,6 +7,17 @@
 
 struct SDL_Texture;
 
+enum class player_state {
+	IDLE,
+	CROUCHING,
+	RUNNING,
+	ON_AIR,
+	SLIDING,
+	HOOK,
+	HURT,
+	DEAD
+};
+
 class j1Player : public j1Module	// CHANGE/FIX: Check useless methods (empty)
 {
 public:
@@ -55,9 +66,10 @@ private:
 	float gravity;
 
 	// Character status flags
+	bool somersaultUsed = false;	// CHANGE/FIX: Hardcoded, needs to go to config and save xmls
 	bool dead;
 	bool godmode;
-	bool jumping = false;			// CHANGE/FIX: ADD TO XML
+	player_state state;
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;
@@ -68,13 +80,17 @@ private:
 	Animation idle;
 
 	Animation run;
+	Animation slide;
+	Animation crouch;
 
 	Animation jump;
+	Animation somersault;
 	Animation fall;
 
 	Animation hurt;
 	Animation die;
-
+	
+	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml
 	float defaultAnimSpeed;
 
 	// Animation pointers

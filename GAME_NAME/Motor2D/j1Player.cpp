@@ -63,6 +63,8 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
+	state = player_state::IDLE;
+
 	graphics = App->tex->Load(characterSheet.GetString());
 	//hitbox = App->collision->AddCollider({ (int)position.x, (int)position.y, shipWidth, shipHeight }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Collider must change with animation
 
@@ -82,17 +84,18 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	//propellerAnimation = &idleBooster;
-
 	PlayerInput();
 
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
 
-	animPtr = &idle;
-
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
-	App->render->Blit(graphics, position.x, position.y, &playerRect, 0.5f);
+	if (lookingRight == true) {
+		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_NONE);
+	}
+	else {
+		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_HORIZONTAL);
+	}
 
 	return ret;
 }
@@ -126,7 +129,7 @@ bool j1Player::Load(pugi::xml_node& data)
 }
 
 // Save Game State
-bool j1Player::Save(pugi::xml_node& data) const
+bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that needs to be saved (speed, status, etc)
 {
 	pugi::xml_node pos = data.append_child("position");
 
@@ -140,12 +143,168 @@ bool j1Player::Save(pugi::xml_node& data) const
 
 void j1Player::PlayerInput()
 {
-	// X Movement
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE
-		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
+	// System: Each player state has a limited set of actions available, so we check the possible actions on each state
+	switch (state) {
+	case player_state::IDLE:
+		animPtr = &idle;
+
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+			state = player_state::RUNNING;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+			state = player_state::ON_AIR;
+			speed.y -= jumpVelocity;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			state = player_state::CROUCHING;
+		}
+		break;
+	case player_state::CROUCHING:
+		animPtr = &crouch;
+
+		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP) {
+			state = player_state::IDLE;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+			state = player_state::ON_AIR;
+			speed.y -= jumpVelocity;
+		}
+		break;
+	case player_state::RUNNING:
+		animPtr = &run;
+
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+			state = player_state::ON_AIR;
+			speed.y -= jumpVelocity;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+			state = player_state::SLIDING;
+		}
+		else {
+			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
+				speed.x -= acceleration;
+			}
+			else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+				speed.x += acceleration;
+			}
+			else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE || App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
+				||
+				App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+				if (speed.x == 0.0f) {
+					state = player_state::IDLE;	// CHANGE/FIX: Bugs out
+				}
+			}
+		}
+		break;
+	case player_state::ON_AIR:
+
+		speed.y += gravity;
+
+		if (speed.y > 0.0f) {
+			animPtr = &fall;
+		}
+		else if (somersaultUsed == false) {
+			animPtr = &jump;
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
+			speed.y = -jumpVelocity;
+			animPtr = &somersault;
+			somersaultUsed = true;
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
+			speed.x -= acceleration;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+			speed.x += acceleration;
+		}
+
+		if (position.y > 550) {		//CHANGE/FIX: Hardcoded values, this is where collision condition goes
+			position.y = 550;
+			
+			speed.y = 0.0f;
+			jump.Reset();
+			somersault.Reset();
+			somersaultUsed = false;
+
+			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
+				||
+				App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+				if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+					state = player_state::SLIDING;
+				}
+				else {
+					state = player_state::RUNNING;
+				}
+			}
+			else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+				state = player_state::CROUCHING;
+			}
+			else {
+				state = player_state::IDLE;
+			}
+		}
+		break;
+	case player_state::SLIDING:
+		animPtr = &slide;
+		
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+			state = player_state::ON_AIR;
+			animPtr = &jump;
+			speed.y -= jumpVelocity;
+			slide.Reset();
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP) {
+
+			slide.Reset();
+
+			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
+				||
+				App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+				state = player_state::RUNNING;
+				animPtr = &run;
+			}
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {		
+			if (speed.x < 0.0f) {
+				speed.x += acceleration / 2.5;
+			}
+			else {
+				speed.x = 0.0f;
+				slide.Reset();
+				state = player_state::CROUCHING;
+				animPtr = &crouch;
+			}
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+			if (speed.x > 0.0f) {
+				speed.x -= acceleration / 2.5;
+			}
+			else {
+				speed.x = 0.0f;
+				slide.Reset();
+				state = player_state::CROUCHING;
+				animPtr = &crouch;
+			}
+		}
+			
+		break;
+	case player_state::HOOK:
+		//animPtr = &run;
+		break;
+	case player_state::HURT:
+		//animPtr = &run;
+		break;
+	case player_state::DEAD:
+		//animPtr = &run;
+		break;
+	}
+
+	// Natural deacceleration
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE && App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
 		||
-		App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT
-		&& App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+		App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if (speed.x > 0.0f) {
 			speed.x -= acceleration;
@@ -161,37 +320,30 @@ void j1Player::PlayerInput()
 		}
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		speed.x += acceleration;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		speed.x -= acceleration;
-	}
-	
+	// Max Speeds
 	if (speed.x > maxSpeed.x)
 		speed.x = maxSpeed.x;
-
 	else if (speed.x < -maxSpeed.x)
 		speed.x = -maxSpeed.x;
 
+	if (speed.y > maxSpeed.y)
+		speed.y = maxSpeed.y;
+	else if (speed.y < -maxSpeed.y)
+		speed.y = -maxSpeed.y;
+
+	// Player direction
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT && state != player_state::SLIDING)
+		lookingRight = false;
+	else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT && state != player_state::SLIDING)
+		lookingRight = true;
+
+	// If player goes down he's falling and is not on the hook, he's falling
+	if (speed.y > 0.0f && state != player_state::HOOK) {
+		state = player_state::ON_AIR;
+	}
+
+	// New position
 	position.x += speed.x;
-
-	// Y Movement
-	if (position.y >= 550) {
-		speed.y = 0;
-		jumping = false;
-	}
-
-	if (jumping == true) {
-		speed.y += gravity;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && jumping == false) {
-		speed.y -= jumpVelocity;
-		jumping = true;
-	}
-
 	position.y += speed.y;
 }
 
@@ -200,8 +352,11 @@ void j1Player::AllocAllAnimations() {
 
 	idle.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);
 	run.AllocAnimation({ 0, spriteSize.y * 4 }, spriteSize, defaultAnimSpeed, 6, true);
-	jump.AllocAnimation({ 0, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed, 4, false);
-	fall.AllocAnimation({ spriteSize.x * 4, spriteSize.y * 8 }, spriteSize, defaultAnimSpeed, 4, true);
+	slide.AllocAnimation({ 0, spriteSize.y * 5 }, spriteSize, defaultAnimSpeed, 5, false);
+	crouch.AllocAnimation({ 0, spriteSize.y * 6 }, spriteSize, defaultAnimSpeed, 4, true);
+	jump.AllocAnimation({ 0, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed * 2, 4, false);
+	somersault.AllocAnimation({ 0, spriteSize.y * 8 }, spriteSize, defaultAnimSpeed, 4, true);
+	fall.AllocAnimation({ spriteSize.x * 4, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed, 2, true);
 	hurt.AllocAnimation({ 0, spriteSize.y * 22 }, spriteSize, defaultAnimSpeed, 3, false);
 	die.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 7, false);
 }
