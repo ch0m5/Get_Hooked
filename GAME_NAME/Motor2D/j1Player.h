@@ -46,16 +46,26 @@ public:
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
 
-public:	// @Carles
-	void PlayerInput();
+private:	// @Carles
+	void PlayerMovement();
 	void AllocAllAnimations();
+	
+	void PlayerInput();	//Check player input
+	void MovePlayer(player_state currentState);
+
+
+	//IDLE,
+	//	CROUCHING,
+	//	RUNNING,
+	//	ON_AIR,
+	//	SLIDING,
+	//	HOOK,
+	//	HURT,
+	//	DEAD
 
 private:
 	p2SString folder;
-	//p2SString characterSheet;
 
-
-private:
 	// Character stats
 	uint life;
 	fPoint position;			//CHANGE/FIX: Simple type values must be stored on the save_game and the config xml file

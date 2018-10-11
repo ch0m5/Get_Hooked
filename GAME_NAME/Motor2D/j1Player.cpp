@@ -84,7 +84,7 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	PlayerInput();
+	PlayerMovement();
 
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
@@ -141,14 +141,16 @@ bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that
 
 //------------------------------------------------
 
-void j1Player::PlayerInput()
+void j1Player::PlayerMovement()
 {
 	// System: Each player state has a limited set of actions available, so we check the possible actions on each state
 	switch (state) {
 	case player_state::IDLE:
 		animPtr = &idle;
 
-		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
+			||
+			App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
 			state = player_state::RUNNING;
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
@@ -261,34 +263,48 @@ void j1Player::PlayerInput()
 
 			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
 				||
-				App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+				App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT
+				||
+				speed.x < 0.0f
+				||
+				speed.x > 0.0f) {
 				state = player_state::RUNNING;
 				animPtr = &run;
 			}
-		}
-		else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {		
-			if (speed.x < 0.0f) {
-				speed.x += acceleration / 2.5;
-			}
 			else {
-				speed.x = 0.0f;
+				state = player_state::IDLE;
+				animPtr = &idle;
+			}
+		}
+		else {
+			if (speed.x == 0.0f) {
 				slide.Reset();
 				state = player_state::CROUCHING;
 				animPtr = &crouch;
 			}
-		}
-		else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
-			if (speed.x > 0.0f) {
-				speed.x -= acceleration / 2.5;
+			else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
+				if (speed.x < 0.0f) {
+					speed.x += acceleration / 2.5;
+				}
+				else {
+					speed.x = 0.0f;
+					slide.Reset();
+					state = player_state::CROUCHING;
+					animPtr = &crouch;
+				}
 			}
-			else {
-				speed.x = 0.0f;
-				slide.Reset();
-				state = player_state::CROUCHING;
-				animPtr = &crouch;
+			else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
+				if (speed.x > 0.0f) {
+					speed.x -= acceleration / 2.5;
+				}
+				else {
+					speed.x = 0.0f;
+					slide.Reset();
+					state = player_state::CROUCHING;
+					animPtr = &crouch;
+				}
 			}
 		}
-			
 		break;
 	case player_state::HOOK:
 		//animPtr = &run;
@@ -350,7 +366,7 @@ void j1Player::PlayerInput()
 // @Carles: Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location
 void j1Player::AllocAllAnimations() {
 
-	idle.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);
+	idle.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);	// CHANGE/FIX: Harcoded, move to xml
 	run.AllocAnimation({ 0, spriteSize.y * 4 }, spriteSize, defaultAnimSpeed, 6, true);
 	slide.AllocAnimation({ 0, spriteSize.y * 5 }, spriteSize, defaultAnimSpeed, 5, false);
 	crouch.AllocAnimation({ 0, spriteSize.y * 6 }, spriteSize, defaultAnimSpeed, 4, true);
