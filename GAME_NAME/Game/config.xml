@@ -1,0 +1,72 @@
+<!-- Config file for the game -->
+
+<config>
+  <app>
+    <title>Game Development Testbed</title>
+    <organization>UPC</organization>
+  </app>
+	
+  <renderer>
+    <vsync value="true"/>
+  </renderer>
+
+  <window>
+    <resolution width="1024" height="768" scale="1"/>
+    <fullscreen value="false"/>
+    <borderless value="false"/>
+    <resizable value="false"/>
+    <fullscreen_window value="false"/>
+  </window>
+
+  <file_system>
+    <path>data.zip</path>
+  </file_system>
+
+  <audio>
+    <music>
+      <folder>audio/music/</folder>
+    </music>
+    <sfx>
+      <folder>audio/fx/</folder>
+    </sfx>
+  </audio>
+  
+  <map>
+    <folder>maps/</folder>
+  </map>
+
+  <player>
+    <folder>textures/</folder>
+    <sprites>
+      <spriteSheet>character_sprite_sheet.png</spriteSheet>
+      <spriteSize x="50" y="37"/>
+      <animation default_speed="0.12"/>
+    </sprites>
+    <sfx>
+      <!-- <jumpFX source="Jump.wav"/>
+      <deathFX source="Death.wav"/>
+      <landFX source="Land.wav"/>
+      <dashFX source="Dash.wav"/> -->
+    </sfx>
+    <life value="3"/>
+    <speed x="0" y="0"/>
+    <maxSpeed x="3" y="5"/>
+    <acceleration x="0.2"/>
+    <jump forceY="4"/>
+    <gravity accelerationY="0.2"/>
+    <godmode value="false"/>
+  </player>
+
+  <scene>   <!-- map_name is a placeholder -->
+    <map_one name="map_one.tmx">
+      <playerStartPos x="0" y="0"/>
+      <playerStartSpeed x="0" y="0"/>
+    </map_one>
+    <map_two name="map_two.tmx">
+      <playerStartPos x="0" y="0"/>
+      <playerStartSpeed x="0" y="0"/>
+    </map_two>
+    <fadeTime value="1"/>
+  </scene>
+
+</config>
