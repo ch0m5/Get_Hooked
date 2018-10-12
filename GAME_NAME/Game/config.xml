@@ -51,9 +51,9 @@
     <life value="3"/>
     <speed x="0" y="0"/>
     <maxSpeed x="3" y="5"/>
-    <acceleration x="0.2"/>
+    <accelerations x="0.25" gravity="0.2" slide="0.07"/>
     <jump forceY="4"/>
-    <gravity accelerationY="0.2"/>
+    <lookingRight vale="true"/>
     <godmode value="false"/>
   </player>
 

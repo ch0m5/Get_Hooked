@@ -11,7 +11,7 @@ enum class player_state {
 	IDLE,
 	CROUCHING,
 	RUNNING,
-	ON_AIR,
+	AIRBORNE,
 	SLIDING,
 	HOOK,
 	HURT,
@@ -47,21 +47,29 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 private:	// @Carles
-	void PlayerMovement();
+	void MovePlayerOrig();
 	void AllocAllAnimations();
 	
-	void PlayerInput();	//Check player input
-	void MovePlayer(player_state currentState);
+	// Player functions
+	void Jump();		// Add Y speed when jump requested
+	void Fall();		// Add acceleration to Y speed
+	void Land();		// Stop Y speed
+	//void Hook();
 
+	// Player update
+	void PlayerInput();		// Check player input
+	void PlayerMovement();	// Check player current movement
+	void PlayerState();		// Check player state
+	void PlayerAnimation();	// Pick animation based on state
+	void MovePlayer();		// Apply changes to player
 
-	//IDLE,
-	//	CROUCHING,
-	//	RUNNING,
-	//	ON_AIR,
-	//	SLIDING,
-	//	HOOK,
-	//	HURT,
-	//	DEAD
+	// Check possible new states in each state
+	void idleMoveCheck();
+	void crouchingMoveCheck();
+	void runningMoveCheck();
+	void airMoveCheck();
+	void slidingMoveCheck();
+	//void hookMoveCheck();
 
 private:
 	p2SString folder;
@@ -71,13 +79,26 @@ private:
 	fPoint position;			//CHANGE/FIX: Simple type values must be stored on the save_game and the config xml file
 	fPoint speed;
 	fPoint maxSpeed;
-	float acceleration;
+	float currentAcceleration;
+	float normalAcceleration;
+	float slideAcceleration;
 	float jumpVelocity;
 	float gravity;
 
 	// Character status flags
+	bool wantMoveUp = false;	// CHANGE/FIX: Hardcoded
+	bool wantMoveRight = false;
+	bool wantMoveLeft = false;
+	bool wantMoveDown = false;
+	
+	bool movingUp = false;	// CHANGE/FIX: Hardcoded
+	bool movingRight = false;
+	bool movingLeft = false;
+	bool movingDown = false;
+
+	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml or eliminated
 	bool somersaultUsed = false;	// CHANGE/FIX: Hardcoded, needs to go to config and save xmls
-	bool dead;
+	bool hurt = false;	// CHANGE/FIX: HARDCODED
 	bool godmode;
 	player_state state;
 
@@ -87,20 +108,19 @@ private:
 	iPoint spriteSize;
 
 	// Character animations
-	Animation idle;
+	Animation idleAnim;
 
-	Animation run;
-	Animation slide;
-	Animation crouch;
+	Animation runAnim;
+	Animation slideAnim;
+	Animation crouchAnim;
 
-	Animation jump;
-	Animation somersault;
-	Animation fall;
+	Animation jumpAnim;
+	Animation somersaultAnim;
+	Animation fallAnim;
 
-	Animation hurt;
-	Animation die;
+	Animation hurtAnim;
+	Animation dieAnim;
 	
-	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml
 	float defaultAnimSpeed;
 
 	// Animation pointers

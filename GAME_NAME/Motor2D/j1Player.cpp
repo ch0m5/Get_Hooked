@@ -38,13 +38,15 @@ bool j1Player::Awake(pugi::xml_node& config)
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 
-	acceleration = config.child("acceleration").attribute("x").as_float();
+	normalAcceleration = config.child("accelerations").attribute("x").as_float();
+	slideAcceleration = config.child("accelerations").attribute("slide").as_float();
 	jumpVelocity = config.child("jump").attribute("forceY").as_float();
-	gravity = config.child("gravity").attribute("accelerationY").as_float();
+	gravity = config.child("accelerations").attribute("gravity").as_float();
 
 	// Character status flags
-	dead = config.child("dead").attribute("value").as_bool();	//CHANGE/FIX?: life == 0 serves the same purpose unless we want something in the middle to happen
+	lookingRight = config.child("lookingRight").attribute("value").as_bool();
 	godmode = config.child("godmode").attribute("value").as_bool();
+	//dead
 
 	//Collider
 	//Collider* playerHitbox = nullptr;
@@ -62,7 +64,8 @@ bool j1Player::Awake(pugi::xml_node& config)
 bool j1Player::Start()
 {
 	bool ret = true;
-
+	
+	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
 
 	graphics = App->tex->Load(characterSheet.GetString());
@@ -84,12 +87,19 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	PlayerMovement();
+	//MovePlayerOrig();
+
+	PlayerInput();		// Check player input
+	PlayerMovement();	// Check player current movement
+	PlayerState();		// Check player state
+	PlayerAnimation();	// Pick animation based on state
+	MovePlayer();		// Apply changes to player
 
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
 
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
+
 	if (lookingRight == true) {
 		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_NONE);
 	}
@@ -141,12 +151,346 @@ bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that
 
 //------------------------------------------------
 
-void j1Player::PlayerMovement()
+// Player actions' speed effects
+void j1Player::Jump()
+{
+	speed.y = -jumpVelocity;
+}
+
+void j1Player::Fall()
+{
+	speed.y += gravity;
+}
+
+void j1Player::Land()
+{
+	speed.y = 0.0f;
+}
+
+//Check player input
+void j1Player::PlayerInput()
+{
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE) {
+		wantMoveLeft = false;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		wantMoveLeft = true;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE) {
+		wantMoveRight = false;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		wantMoveRight = true;
+	}
+	
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE) {
+		wantMoveUp = false;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+		wantMoveUp = true;
+	}
+	
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_IDLE) {
+		wantMoveDown = false;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+		wantMoveDown = true;
+	}
+}
+
+void j1Player::PlayerMovement() {
+	if (speed.x > 0.0f) {
+		movingRight = true;
+		movingLeft = false;
+	}
+	else if (speed.x < 0.0f) {
+		movingLeft = true;
+		movingRight = false;
+	}
+	else if (speed.x == 0.0f) {
+		movingLeft = false;
+		movingRight = false;
+	}
+
+	if (speed.y < 0.0f) {
+		movingUp = true;
+		movingDown = false;
+	}
+	else if (speed.y > 0.0f) {
+		movingDown = true;
+		movingUp = false;
+	}
+	else if (speed.y == 0.0f) {
+		movingUp = false;
+		movingDown = false;
+	}
+}
+
+//Decide new player state
+void j1Player::PlayerState() {
+	switch (state) {
+	case player_state::IDLE:
+		idleMoveCheck();
+		break;
+	case player_state::CROUCHING:
+		crouchingMoveCheck();
+		break;
+	case player_state::RUNNING:
+		runningMoveCheck();
+		break;
+	case player_state::AIRBORNE:
+		airMoveCheck();
+		break;
+	case player_state::SLIDING:
+		slidingMoveCheck();
+		break;
+	case player_state::HOOK:
+		//hookMoveCheck();
+		break;
+	case player_state::HURT:
+		//hurtMoveCheck();
+		break;
+	case player_state::DEAD:
+		//deadMoveCheck();
+		break;
+	}
+}
+
+void j1Player::idleMoveCheck()
+{
+	if (wantMoveRight == true && wantMoveLeft == false || wantMoveLeft == true && wantMoveRight == false) {
+		state = player_state::RUNNING;
+	}
+	else if (wantMoveUp == true) {
+		Jump();
+		state = player_state::AIRBORNE;
+	}
+	else if (wantMoveDown == true) {
+		state = player_state::CROUCHING;
+	}
+}
+
+void j1Player::crouchingMoveCheck()
+{
+	if (wantMoveDown == false) {
+		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true)
+			state = player_state::RUNNING;
+		else {
+			state = player_state::IDLE;
+		}
+	}
+	else if (wantMoveUp == true) {
+		Jump();
+		state = player_state::AIRBORNE;
+	}
+}
+
+void j1Player::runningMoveCheck()
+{
+	if (wantMoveUp == true) {
+		Jump();
+		state = player_state::AIRBORNE;
+	}
+	else if (wantMoveDown == true) {
+		state = player_state::SLIDING;
+	}
+	else if (movingLeft == false && movingRight == false) {
+		if (wantMoveRight == false && wantMoveLeft == false || wantMoveRight == true && wantMoveLeft == true) {
+			state = player_state::IDLE;
+		}
+	}
+}
+
+void j1Player::airMoveCheck()
+{
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
+		somersaultAnim.Reset();
+		Jump();
+		somersaultUsed = true;
+	}
+
+	if (position.y > 550) {		//CHANGE/FIX: Hardcoded values, this condition should be "if feet collision"
+		position.y = 550;
+
+		Land();
+		jumpAnim.Reset();
+		somersaultUsed = false;
+
+		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+			if (wantMoveDown == true) {
+				state = player_state::SLIDING;
+			}
+			else {
+				state = player_state::RUNNING;
+			}
+		}
+		else if (wantMoveDown == true) {
+			state = player_state::CROUCHING;
+		}
+		else {
+			state = player_state::IDLE;
+		}
+	}
+}
+
+void j1Player::slidingMoveCheck()
+{
+	if (wantMoveUp == true) {
+		Jump();
+		currentAcceleration = normalAcceleration;
+		slideAnim.Reset();
+		state = player_state::AIRBORNE;
+	}
+	else if (wantMoveDown == false) {
+
+		currentAcceleration = normalAcceleration;
+		slideAnim.Reset();
+
+		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+			state = player_state::RUNNING;
+		}
+		else {
+			state = player_state::IDLE;
+		}
+	}
+	else if (movingLeft == false && movingRight == false) {
+
+		currentAcceleration = normalAcceleration;
+		slideAnim.Reset();
+
+		if (wantMoveDown == true) {
+			state = player_state::CROUCHING;
+		}
+		else {
+			state = player_state::IDLE;
+		}
+	}
+}
+
+//void j1Player::hookMoveCheck()
+//{
+//
+//}
+
+// Pick animation based on state
+void j1Player::PlayerAnimation()
+{
+	if (state != player_state::SLIDING) {
+		if (wantMoveRight == true && wantMoveLeft == false) {
+			lookingRight = true;
+		}
+		else if (wantMoveLeft == true && wantMoveRight == false) {
+			lookingRight = false;
+		}
+	}
+
+	switch (state) {
+	case player_state::IDLE:
+		animPtr = &idleAnim;
+		break;
+	case player_state::CROUCHING:
+		wantMoveRight = false;
+		wantMoveLeft = false;
+		animPtr = &crouchAnim;
+		break;
+	case player_state::RUNNING:
+		animPtr = &runAnim;
+		break;
+	case player_state::AIRBORNE:
+		if (movingDown == true) {
+			animPtr = &fallAnim;
+		}
+		else if (somersaultUsed == true) {
+			animPtr = &somersaultAnim;
+		}
+		else {
+			animPtr = &jumpAnim;
+		}
+		break;
+	case player_state::SLIDING:
+		currentAcceleration = slideAcceleration;
+		animPtr = &slideAnim;
+		break;
+	case player_state::HOOK:
+		//animPtr = &hookAnim;
+		break;
+	case player_state::HURT:
+		//animPtr = &hurtAnim;
+		break;
+	case player_state::DEAD:
+		//animPtr = &dieAnim;
+		break;
+	}
+}
+
+// Move player
+void j1Player::MovePlayer()
+{
+	if (state != player_state::SLIDING && wantMoveRight == true && wantMoveLeft == false) {
+		speed.x += currentAcceleration;
+	}
+	else if (state != player_state::SLIDING && wantMoveLeft == true && wantMoveRight == false) {
+		speed.x -= currentAcceleration;
+	}
+	else {	// Natural deacceleration
+		if (movingRight == true) {
+			speed.x -= currentAcceleration;
+
+			if (speed.x < 0.0f)
+				speed.x = 0.0f;
+		}
+		else if (movingLeft == true) {
+			speed.x += currentAcceleration;
+
+			if (speed.x > 0.0f)
+				speed.x = 0.0f;
+		}
+	}
+
+	if (state == player_state::AIRBORNE) {
+		Fall();
+	}
+
+	// Max Speeds
+	if (speed.x > maxSpeed.x)
+		speed.x = maxSpeed.x;
+	else if (speed.x < -maxSpeed.x)
+		speed.x = -maxSpeed.x;
+
+	if (speed.y > maxSpeed.y)
+		speed.y = maxSpeed.y;
+	else if (speed.y < -maxSpeed.y)
+		speed.y = -maxSpeed.y;
+
+	// New position
+	position.x += speed.x;
+	position.y += speed.y;
+}
+
+// @Carles: Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location
+void j1Player::AllocAllAnimations()
+{
+
+	idleAnim.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);	// CHANGE/FIX: Harcoded, move to xml
+	runAnim.AllocAnimation({ 0, spriteSize.y * 4 }, spriteSize, defaultAnimSpeed, 6, true);
+	slideAnim.AllocAnimation({ 0, spriteSize.y * 5 }, spriteSize, defaultAnimSpeed, 5, false);
+	crouchAnim.AllocAnimation({ 0, spriteSize.y * 6 }, spriteSize, defaultAnimSpeed, 4, true);
+	jumpAnim.AllocAnimation({ 0, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed * 2, 4, false);
+	somersaultAnim.AllocAnimation({ 0, spriteSize.y * 8 }, spriteSize, defaultAnimSpeed, 4, true);
+	fallAnim.AllocAnimation({ spriteSize.x * 4, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed, 2, true);
+	hurtAnim.AllocAnimation({ 0, spriteSize.y * 22 }, spriteSize, defaultAnimSpeed, 3, false);
+	dieAnim.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 7, false);
+}
+
+//OLD PLAYER MOVEMENT
+/*
+void j1Player::MovePlayerOrig()
 {
 	// System: Each player state has a limited set of actions available, so we check the possible actions on each state
 	switch (state) {
 	case player_state::IDLE:
-		animPtr = &idle;
+		animPtr = &idleAnim;
 
 		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
 			||
@@ -154,7 +498,7 @@ void j1Player::PlayerMovement()
 			state = player_state::RUNNING;
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-			state = player_state::ON_AIR;
+			state = player_state::AIRBORNE;
 			speed.y -= jumpVelocity;
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
@@ -162,21 +506,21 @@ void j1Player::PlayerMovement()
 		}
 		break;
 	case player_state::CROUCHING:
-		animPtr = &crouch;
+		animPtr = &crouchAnim;
 
 		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP) {
 			state = player_state::IDLE;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-			state = player_state::ON_AIR;
+			state = player_state::AIRBORNE;
 			speed.y -= jumpVelocity;
 		}
 		break;
 	case player_state::RUNNING:
-		animPtr = &run;
+		animPtr = &runAnim;
 
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-			state = player_state::ON_AIR;
+			state = player_state::AIRBORNE;
 			speed.y -= jumpVelocity;
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
@@ -184,10 +528,10 @@ void j1Player::PlayerMovement()
 		}
 		else {
 			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
-				speed.x -= acceleration;
+				speed.x -= currentAcceleration;
 			}
 			else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
-				speed.x += acceleration;
+				speed.x += currentAcceleration;
 			}
 			else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE || App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE
 				||
@@ -198,36 +542,36 @@ void j1Player::PlayerMovement()
 			}
 		}
 		break;
-	case player_state::ON_AIR:
+	case player_state::AIRBORNE:
 
 		speed.y += gravity;
 
 		if (speed.y > 0.0f) {
-			animPtr = &fall;
+			animPtr = &fallAnim;
 		}
 		else if (somersaultUsed == false) {
-			animPtr = &jump;
+			animPtr = &jumpAnim;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
 			speed.y = -jumpVelocity;
-			animPtr = &somersault;
+			animPtr = &somersaultAnim;
 			somersaultUsed = true;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
-			speed.x -= acceleration;
+			speed.x -= currentAcceleration;
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
-			speed.x += acceleration;
+			speed.x += currentAcceleration;
 		}
 
 		if (position.y > 550) {		//CHANGE/FIX: Hardcoded values, this is where collision condition goes
 			position.y = 550;
-			
+
 			speed.y = 0.0f;
-			jump.Reset();
-			somersault.Reset();
+			jumpAnim.Reset();
+			somersaultAnim.Reset();
 			somersaultUsed = false;
 
 			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
@@ -249,17 +593,17 @@ void j1Player::PlayerMovement()
 		}
 		break;
 	case player_state::SLIDING:
-		animPtr = &slide;
-		
+		animPtr = &slideAnim;
+
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
-			state = player_state::ON_AIR;
-			animPtr = &jump;
+			state = player_state::AIRBORNE;
+			animPtr = &jumpAnim;
 			speed.y -= jumpVelocity;
-			slide.Reset();
+			slideAnim.Reset();
 		}
 		else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_UP) {
 
-			slide.Reset();
+			slideAnim.Reset();
 
 			if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT
 				||
@@ -269,39 +613,39 @@ void j1Player::PlayerMovement()
 				||
 				speed.x > 0.0f) {
 				state = player_state::RUNNING;
-				animPtr = &run;
+				animPtr = &runAnim;
 			}
 			else {
 				state = player_state::IDLE;
-				animPtr = &idle;
+				animPtr = &idleAnim;
 			}
 		}
 		else {
 			if (speed.x == 0.0f) {
-				slide.Reset();
+				slideAnim.Reset();
 				state = player_state::CROUCHING;
-				animPtr = &crouch;
+				animPtr = &crouchAnim;
 			}
 			else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT) {
 				if (speed.x < 0.0f) {
-					speed.x += acceleration / 2.5;
+					speed.x += currentAcceleration / 2.5;
 				}
 				else {
 					speed.x = 0.0f;
-					slide.Reset();
+					slideAnim.Reset();
 					state = player_state::CROUCHING;
-					animPtr = &crouch;
+					animPtr = &crouchAnim;
 				}
 			}
 			else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT) {
 				if (speed.x > 0.0f) {
-					speed.x -= acceleration / 2.5;
+					speed.x -= currentAcceleration / 2.5;
 				}
 				else {
 					speed.x = 0.0f;
-					slide.Reset();
+					slideAnim.Reset();
 					state = player_state::CROUCHING;
-					animPtr = &crouch;
+					animPtr = &crouchAnim;
 				}
 			}
 		}
@@ -323,13 +667,13 @@ void j1Player::PlayerMovement()
 		App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if (speed.x > 0.0f) {
-			speed.x -= acceleration;
+			speed.x -= currentAcceleration;
 
 			if (speed.x < 0.0f)
 				speed.x = 0.0f;
 		}
 		else if (speed.x < 0.0f) {
-			speed.x += acceleration;
+			speed.x += currentAcceleration;
 
 			if (speed.x > 0.0f)
 				speed.x = 0.0f;
@@ -347,32 +691,19 @@ void j1Player::PlayerMovement()
 	else if (speed.y < -maxSpeed.y)
 		speed.y = -maxSpeed.y;
 
-	// Player direction
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT && state != player_state::SLIDING)
-		lookingRight = false;
-	else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT && state != player_state::SLIDING)
-		lookingRight = true;
+		// Player direction
+if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_D) != KEY_REPEAT && state != player_state::SLIDING)
+lookingRight = false;
+else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT && App->input->GetKey(SDL_SCANCODE_A) != KEY_REPEAT && state != player_state::SLIDING)
+lookingRight = true;
 
-	// If player goes down he's falling and is not on the hook, he's falling
-	if (speed.y > 0.0f && state != player_state::HOOK) {
-		state = player_state::ON_AIR;
-	}
-
-	// New position
-	position.x += speed.x;
-	position.y += speed.y;
+// If player goes down he's falling and is not on the hook, he's falling
+if (speed.y > 0.0f && state != player_state::HOOK) {
+	state = player_state::AIRBORNE;
 }
 
-// @Carles: Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location
-void j1Player::AllocAllAnimations() {
-
-	idle.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);	// CHANGE/FIX: Harcoded, move to xml
-	run.AllocAnimation({ 0, spriteSize.y * 4 }, spriteSize, defaultAnimSpeed, 6, true);
-	slide.AllocAnimation({ 0, spriteSize.y * 5 }, spriteSize, defaultAnimSpeed, 5, false);
-	crouch.AllocAnimation({ 0, spriteSize.y * 6 }, spriteSize, defaultAnimSpeed, 4, true);
-	jump.AllocAnimation({ 0, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed * 2, 4, false);
-	somersault.AllocAnimation({ 0, spriteSize.y * 8 }, spriteSize, defaultAnimSpeed, 4, true);
-	fall.AllocAnimation({ spriteSize.x * 4, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed, 2, true);
-	hurt.AllocAnimation({ 0, spriteSize.y * 22 }, spriteSize, defaultAnimSpeed, 3, false);
-	die.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 7, false);
+// New position
+position.x += speed.x;
+position.y += speed.y;
 }
+*/
