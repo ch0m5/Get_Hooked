@@ -1,5 +1,5 @@
 # Get Hooked by Scotland Fury
-This is a university project made by CITM (Centre de la Imatge i la Tecnologia Multimedia) students of the TTC (Talent Tech Center) in Barcelona, in which we make our own platformer in C & C++.
+This is a university project made by [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) students of the TTC (Talent Tech Center) in Barcelona, in which we make our own platformer in C & C++. We also used the [Tiled Map Editor](https://www.mapeditor.org/) software and the [SDL libriaries](https://www.libsdl.org/).
 
 Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
 
