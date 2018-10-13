@@ -65,7 +65,26 @@ bool j1Player::Awake(pugi::xml_node& config)
 bool j1Player::Start()
 {
 	bool ret = true;
-	
+
+	//1
+	pugi::xml_document data;
+	pugi::xml_node root;
+
+	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");
+
+	if (result != NULL)
+	{
+		root = data.first_child();
+
+		position.x = root.child("objectgroup").child("object").attribute("x").as_float();
+		position.y = root.child("objectgroup").child("object").attribute("y").as_float();
+
+		data.reset();
+	}
+	else
+		LOG("Map info not loaded. pugi error: %s", result.description());
+	//2
+
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
 
