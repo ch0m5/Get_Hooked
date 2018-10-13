@@ -131,6 +131,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\maps\hello2.tmx" />
+    <None Include="..\Game\maps\map1.tmx" />
+    <None Include="..\Game\maps\map2.tmx" />
+    <None Include="..\Game\maps\parallax1.tmx" />
+    <None Include="..\Game\maps\parallax2.tmx" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Game\save_game.xml" />
