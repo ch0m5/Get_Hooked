@@ -35,6 +35,12 @@ No previous installations is required to play the game, just download and execut
 - F9: Debug view (colliders/logic)
 - F10: Godmode
 
+## Innovation
+- Player accelerates when moving and deaccelerates when trying to stop
+- Player can crouch to evade things that could hit his head area
+- Player slides with a different deacceleration when trying to crouch while moving
+- Player can jump in the air once making a somersault
+
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-newfeature`
@@ -52,22 +58,23 @@ feature'`
   * Role: Code
   * Github: https://github.com/samuelkurtdavidson
 
-## Disclosure (CHANGE)
+## Disclosure
 We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
 
--Sprites: 
-	Character *Pixel Adventurer* made by *rvros*: https://rvros.itch.io/
-	Downloaded from https://rvros.itch.io/animated-pixel-hero
+- Sprites: 
+	- Character *Pixel Adventurer* made by *rvros*: https://rvros.itch.io/
+		Downloaded from https://rvros.itch.io/animated-pixel-hero
 
--Tilesets: *Caves of Gallet* tileset by *Adam Saltsman*: https://adamatomic.itch.io/
-	Downloaded from https://adamatomic.itch.io/caves-of-gallet
+- Tilesets:
+	- *Caves of Gallet* tileset by *Adam Saltsman*: https://adamatomic.itch.io/
+		Downloaded from https://adamatomic.itch.io/caves-of-gallet
 
--Music: 
-	-Track 1 - Mystic Force: https://www.youtube.com/watch?v=pfryxqYSHqA&feature=youtu.be
-	-Track 2 - Spellbound: https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be
+- Music: 
+	- Track 1 - Mystic Force: https://www.youtube.com/watch?v=pfryxqYSHqA&feature=youtu.be
+	- Track 2 - Spellbound: https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be
 		Composed by Kevin MacLeod: https://www.youtube.com/channel/UCSZXFhRIx6b0dFX3xS8L1yQ
 
--SFX: Orignal mix made from: https://www.bfxr.net/
+- SFX: Orignal mix made from: https://www.bfxr.net/
 	
 ## License & Copyright 
 MIT License
