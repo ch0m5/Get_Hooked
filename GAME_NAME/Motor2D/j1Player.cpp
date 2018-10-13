@@ -39,7 +39,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// CHANGE/FIX: Load SFX sounds
 
 	// Character stats
-	life = config.child("life").attribute("value").as_uint();
+	maxLife = config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
@@ -84,6 +84,7 @@ bool j1Player::Start()
 	else
 		LOG("Map info not loaded. pugi error: %s", result.description());
 
+	life = maxLife;
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
 
@@ -106,7 +107,7 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN && hurt == false && godmode == false) {	// CHANGE/FIX: Hardcoded hurt for debugging
+	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN && hurt == false && godmode == false) {	// CHANGE/FIX: Hardcoded hurt for debugging purposes (H to get hit)
 		
 		Hurt();
 		hurt = true;

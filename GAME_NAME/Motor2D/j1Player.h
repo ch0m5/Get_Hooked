@@ -93,6 +93,7 @@ private:
 
 	// Character stats
 	uint life;
+	uint maxLife;
 	fPoint position;
 	fPoint speed;
 	fPoint maxSpeed;
