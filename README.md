@@ -18,7 +18,7 @@ Release Link: [Get Hooked v0.1](https://github.com/Scotland-Fury/Hook_Platformer
   <img src="https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png" width="645"/>
 </p>
 *Samuel and Carles*
- ---
+
 ## License & Copyright 
 
 © Scotland Fury
