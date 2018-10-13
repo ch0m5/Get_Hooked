@@ -4,6 +4,8 @@
   <app>
     <title>Game Development Testbed</title>
     <organization>UPC</organization>
+    <save>save_game.xml</save>
+    <load>save_game.xml</load>
   </app>
 	
   <renderer>
@@ -32,6 +34,12 @@
     </music>
     <sfx>
       <folder>audio/fx/</folder>
+      <player>
+        <run>run.wav</run>
+        <jump>jump.wav</jump>
+        <slide>slide.wav</slide>
+        <hurt>hurt.wav</hurt>
+      </player>
     </sfx>
   </audio>
   
@@ -73,6 +81,7 @@
   </player>
 
   <scene>   <!-- map_name is a placeholder -->
+    <cameraSpeed x="5" y="5"/>
     <map_one name="map_one.tmx">
       <playerStartPos x="0" y="0"/>
       <playerStartSpeed x="0" y="0"/>

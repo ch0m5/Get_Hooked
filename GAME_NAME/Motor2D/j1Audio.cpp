@@ -50,11 +50,9 @@ bool j1Audio::Awake(pugi::xml_node& config)
 		ret = true;
 	}
 
-	musicFolder.create(config.child("music").child("folder").child_value());
-	sfxFolder.create(config.child("sfx").child("folder").child_value());
-
-	musicMap1.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track1").child_value());
-	musicMap2.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track2").child_value());
+	// @Carles: Load all audio files
+	LoadAllMusic(config);
+	LoadAllSfx(config);
 
 	return ret;
 }
@@ -176,4 +174,36 @@ bool j1Audio::PlayFx(unsigned int id, int repeat)
 	}
 
 	return ret;
+}
+
+//--------------------------------
+
+void j1Audio::LoadAllMusic(pugi::xml_node& config) {	// @Carles
+	musicFolder.create(config.child("music").child("folder").child_value());
+
+	musicMap1.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track1").child_value());
+	musicMap2.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track2").child_value());
+}
+
+void j1Audio::LoadAllSfx(pugi::xml_node& config) {	// @Carles
+	sfxFolder.create(config.child("sfx").child("folder").child_value());
+
+	runSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("run").child_value());
+	jumpSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("jump").child_value());
+	slideSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("slide").child_value());
+	hurtSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("hurt").child_value());
+
+	uint idList = 1;
+
+	LoadFx(runSfx.name.GetString());
+	runSfx.id = idList++;
+
+	LoadFx(jumpSfx.name.GetString());
+	jumpSfx.id = idList++;
+
+	LoadFx(slideSfx.name.GetString());
+	slideSfx.id = idList++;
+
+	LoadFx(hurtSfx.name.GetString());
+	hurtSfx.id = idList++;
 }

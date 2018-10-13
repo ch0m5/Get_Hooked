@@ -10,6 +10,11 @@
 struct _Mix_Music;
 struct Mix_Chunk;
 
+struct sfx_file {	// @Carles
+	p2SString name;
+	uint id;
+};
+
 class j1Audio : public j1Module
 {
 public:
@@ -34,14 +39,23 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
-public:
-	p2SString musicMap1;	// @Carles
+public:	// @Carles
+	p2SString musicMap1;
 	p2SString musicMap2;
+
+	sfx_file runSfx;
+	sfx_file jumpSfx;
+	sfx_file slideSfx;
+	sfx_file hurtSfx;
 
 private:
 
+	void LoadAllMusic(pugi::xml_node&);		// @Carles
+	void LoadAllSfx(pugi::xml_node&);		// @Carles
+
 	_Mix_Music*			music;
 	p2List<Mix_Chunk*>	fx;		// CHANGE/FIX: Implement xml reading
+
 	p2SString musicFolder;	// @Carles
 	p2SString sfxFolder;	// @Carles
 };

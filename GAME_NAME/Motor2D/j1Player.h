@@ -7,14 +7,14 @@
 
 struct SDL_Texture;
 
-struct player_sprite {
+struct player_sprite {	// @Carles
 	iPoint position;
 	float animSpeed;
 	uint frames;
 	bool loop;
 };
 
-enum class player_state {
+enum class player_state {	// @Carles
 	IDLE,
 	CROUCHING,
 	RUNNING,
@@ -69,8 +69,8 @@ private:	// @Carles
 	void PlayerInput();		// Check player input
 	void PlayerMovement();	// Check player current movement
 	void PlayerState();		// Check player state
-	void PlayerAnimation();	// Pick animation based on state
-	void MovePlayer();		// Apply changes to player
+	void PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
+	void MovePlayer();		// Move player position and calculate other movement related factors
 
 	// Check possible new states in each state
 	void idleMoveCheck();
@@ -85,7 +85,7 @@ private:
 
 	// Character stats
 	uint life;
-	fPoint position;			//CHANGE/FIX: Simple type values must be stored on the save_game and the config xml file
+	fPoint position;
 	fPoint speed;
 	fPoint maxSpeed;
 	float currentAcceleration;
@@ -148,6 +148,10 @@ private:
 
 	// Animation pointers
 	Animation* animPtr = nullptr;
+
+	// Audio
+	int runSfxTimer = 0;
+	bool playedSlideSfx = false;	//CHANGE/FIX: Hardcoded
 
 	// Player rectangles
 	SDL_Rect animRect;

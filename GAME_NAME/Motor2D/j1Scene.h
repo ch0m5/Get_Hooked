@@ -15,7 +15,7 @@ public:
 	virtual ~j1Scene();
 
 	// Called before render is available
-	bool Awake();
+	bool Awake(pugi::xml_node&);
 
 	// Called before the first frame
 	bool Start();
@@ -33,6 +33,7 @@ public:
 	bool CleanUp();
 
 private:	// CHANGE/FIX: Implement xml reading
+	fPoint cameraSpeed;	// @Carles
 };
 
 #endif // __j1SCENE_H__

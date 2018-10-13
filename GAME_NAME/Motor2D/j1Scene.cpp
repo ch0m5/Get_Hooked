@@ -19,10 +19,13 @@ j1Scene::~j1Scene()
 {}
 
 // Called before render is available
-bool j1Scene::Awake()
+bool j1Scene::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Scene");
 	bool ret = true;
+
+	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
+	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
 	return ret;
 }
@@ -30,8 +33,8 @@ bool j1Scene::Awake()
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load("map1.tmx");
-	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// CHANGE/FIX: Add map condition
+	App->map->Load("map1.tmx");	// CHANGE/FIX: Hardcoded map loading, should use a p2SString that copies an xml string
+	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// CHANGE/FIX: Add map condition for playing music
 	return true;
 }
 
@@ -51,23 +54,21 @@ bool j1Scene::Update(float dt)
 		App->SaveGame();
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		App->render->camera.y -= 1;
+		App->render->camera.y -= cameraSpeed.y;
 
 	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		App->render->camera.y += 1;
+		App->render->camera.y += cameraSpeed.y;
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		App->render->camera.x -= 1;
+		App->render->camera.x -= cameraSpeed.x;
 
 	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		App->render->camera.x += 1;
+		App->render->camera.x += cameraSpeed.x;
 
 	//App->render->Blit(img, 0, 0);
 	App->map->Draw();
 
-	// TODO 7: Set the window title like
-	// "Map:%dx%d Tiles:%dx%d Tilesets:%d"
-	p2SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
+	p2SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",		// CHANGE/FIX: Title should be game title
 					App->map->data.width, App->map->data.height,
 					App->map->data.tile_width, App->map->data.tile_height,
 					App->map->data.tilesets.count());

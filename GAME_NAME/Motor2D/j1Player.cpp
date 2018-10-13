@@ -66,11 +66,10 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
-	//1
 	pugi::xml_document data;
 	pugi::xml_node root;
 
-	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");
+	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");	// CHANGE/FIX: Hardcoded string should get value from xml file
 
 	if (result != NULL)
 	{
@@ -83,7 +82,6 @@ bool j1Player::Start()
 	}
 	else
 		LOG("Map info not loaded. pugi error: %s", result.description());
-	//2
 
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
@@ -119,8 +117,8 @@ bool j1Player::Update(float dt)
 	PlayerInput();		// Check player input
 	PlayerMovement();	// Check player current movement
 	PlayerState();		// Check player state
-	PlayerAnimation();	// Pick animation based on state
-	MovePlayer();		// Apply changes to player
+	PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
+	MovePlayer();		// Move player position and calculate other movement related factors
 
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
@@ -250,6 +248,7 @@ void j1Player::AllocAllAnimations()
 void j1Player::Jump()
 {
 	speed.y = -jumpVelocity;
+	App->audio->PlayFx(App->audio->jumpSfx.id, 0);
 }
 
 void j1Player::Fall()
@@ -260,6 +259,7 @@ void j1Player::Fall()
 void j1Player::Land()
 {
 	speed.y = 0.0f;
+	App->audio->PlayFx(App->audio->runSfx.id, 0);	// CHANGE/FIX: Change audio sound?
 }
 
 //Check player input
@@ -431,12 +431,14 @@ void j1Player::slidingMoveCheck()
 	if (wantMoveUp == true) {
 		Jump();
 		currentAcceleration = normalAcceleration;
+		playedSlideSfx = false;
 		slideAnim.Reset();
 		state = player_state::AIRBORNE;
 	}
 	else if (wantMoveDown == false) {
 
 		currentAcceleration = normalAcceleration;
+		playedSlideSfx = false;
 		slideAnim.Reset();
 
 		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
@@ -449,6 +451,7 @@ void j1Player::slidingMoveCheck()
 	else if (movingLeft == false && movingRight == false) {
 
 		currentAcceleration = normalAcceleration;
+		playedSlideSfx = false;
 		slideAnim.Reset();
 
 		if (wantMoveDown == true) {
@@ -460,8 +463,8 @@ void j1Player::slidingMoveCheck()
 	}
 }
 
-// Pick animation based on state
-void j1Player::PlayerAnimation()
+// Add state effects like movement restrictions, animation and sounds
+void j1Player::PlayerEffects()
 {
 	if (state != player_state::SLIDING) {
 		if (wantMoveRight == true && wantMoveLeft == false) {
@@ -482,6 +485,10 @@ void j1Player::PlayerAnimation()
 		animPtr = &crouchAnim;
 		break;
 	case player_state::RUNNING:
+		if (runSfxTimer < SDL_GetTicks() - 350) {	// CHANGE/FIX: Hardcoded 350, also sounds bugs a little, extend the audio to have silence instead of getTicks?
+			App->audio->PlayFx(App->audio->runSfx.id, 0);
+			runSfxTimer = SDL_GetTicks();
+		}
 		animPtr = &runAnim;
 		break;
 	case player_state::AIRBORNE:
@@ -497,12 +504,16 @@ void j1Player::PlayerAnimation()
 		break;
 	case player_state::SLIDING:
 		currentAcceleration = slideAcceleration;
+		if (playedSlideSfx == false) {
+			App->audio->PlayFx(App->audio->slideSfx.id, 0);
+			playedSlideSfx = true;
+		}
 		animPtr = &slideAnim;
 		break;
 	}
 }
 
-// Move player
+// Move player position and calculate other movement related factors
 void j1Player::MovePlayer()
 {
 	if (state != player_state::SLIDING && wantMoveRight == true && wantMoveLeft == false) {

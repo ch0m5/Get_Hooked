@@ -30,9 +30,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	player = new j1Player();		// @Carles
 	collision = new j1Collision();	// @Carles
 
-	save_game.create("start_game.xml");	// @Carles
-	load_game.create("load_game.xml");	// @Carles
-
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
 	AddModule(input);
@@ -87,6 +84,8 @@ bool j1App::Awake()
 		app_config = config.child("app");
 		title.create(app_config.child("title").child_value());
 		organization.create(app_config.child("organization").child_value());
+		save_game.create(app_config.child("save").child_value());	// @Carles
+		load_game.create(app_config.child("load").child_value());	// @Carles
 	}
 
 	if(ret == true)
