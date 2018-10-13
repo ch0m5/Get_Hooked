@@ -1,34 +1,34 @@
-# GAME_NAME by Scotland Fury
+# Get Hooked by Scotland Fury
 This is a university project made by CITM (Centre de la Imatge i la Tecnologia Multimedia) students of the TTC (Talent Tech Center) in Barcelona, in which we make our own platformer in C & C++.
 
-->GAME_DESCRIPTION<-
+Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
 
 You can see gameplay footage on our [Webpage]().
 
 ## Installation
-No previous installations is required to play the game, just download and execute the .exe file *GAME_NAME* from releases.
+No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
 
 ## Usage
 ### General Controls
 - ESC: Quit the game
-
+- F5: Save current state
+- F6: Load previously saved state
 
 ### Player 1 Controls
 - Keyboard:
-	- Move: 
+	- Run: A/D
+	- Jump: W
+	- Crouch: S
 	
-- XBOX Controller:
-	- 
+- XBOX Controller: (Planned!)
 
-### Player 2 Controls
-- Keyboard:
-	- Move: 
-	
-- XBOX Controller:
-
+### Player 2 (Considering implementation.)
 
 ### Debug Mode
-- F1: 
+- F1: Start from the first level
+- F2: Start from beginning of current level
+- F9: Debug view (colliders/logic)
+- F10: Godmode
 
 ## Contributing
 1. Fork it!
@@ -45,13 +45,13 @@ feature'`
 
 * Samuel Kurt
   * Role: Code
-  * Github: [samuelkurtdavidson](https://github.com/orgs/Scotland-Fury/people/samuelkurtdavidson)
+  * Github: [samuelkurtdavidson](https://github.com/samuelkurtdavidson)
 
 ![Team Photo](add link)
-*PERSON_LEFT and PERSON_RIGHT*
+*Samuel and Carles*
  ---
 ## License & Copyright 
 
-© Crispy Crunch
+© Scotland Fury
 
 Licensed under the [MIT License](LICENSE)
