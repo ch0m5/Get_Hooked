@@ -44,8 +44,8 @@ bool j1Player::Awake(pugi::xml_node& config)
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
 	slideAcceleration = config.child("accelerations").attribute("slide").as_float();
-	jumpVelocity = config.child("jump").attribute("forceY").as_float();
 	gravity = config.child("accelerations").attribute("gravity").as_float();
+	jumpVelocity = config.child("jump").attribute("forceY").as_float();
 
 	// Character status flags
 	lookingRight = config.child("lookingRight").attribute("value").as_bool();
