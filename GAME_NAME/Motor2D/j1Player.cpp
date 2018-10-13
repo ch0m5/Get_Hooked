@@ -49,8 +49,9 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	// Character status flags
 	lookingRight = config.child("lookingRight").attribute("value").as_bool();
+	hurt = config.child("hurt").attribute("value").as_bool();
+	dead = config.child("dead").attribute("value").as_bool();
 	godmode = config.child("godmode").attribute("value").as_bool();
-	//dead
 
 	//Collider
 	//Collider* playerHitbox = nullptr;
@@ -105,14 +106,16 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	/*if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {	//CHANGE/FIX: Give a use to this
-		if (--life > 0) {
-			state = player_state::HURT;
+	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN && hurt == false && godmode == false) {	// CHANGE/FIX: Hardcoded hurt for debugging
+		
+		Hurt();
+		hurt = true;
+
+		if (--life <= 0) {
+			dead = true;
+			deadTimer = SDL_GetTicks();
 		}
-		else {
-			state = player_state::DEAD;
-		}
-	}*/
+	}
 
 	PlayerInput();		// Check player input
 	PlayerMovement();	// Check player current movement
@@ -166,6 +169,8 @@ bool j1Player::Load(pugi::xml_node& data)
 	state = (player_state)data.child("state").attribute("current").as_uint();
 	lookingRight = data.child("lookingRight").attribute("value").as_bool();
 	somersaultUsed = data.child("somersaultUsed").attribute("value").as_bool();
+	hurt = data.child("hurt").attribute("value").as_bool();
+	dead = data.child("dead").attribute("value").as_bool();
 	godmode = data.child("godmode").attribute("value").as_bool();
 
 	return true;
@@ -196,6 +201,12 @@ bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that
 
 	pugi::xml_node somersaultUsedNode = data.append_child("somersaultUsed");
 	somersaultUsedNode.append_attribute("value") = somersaultUsed;
+
+	pugi::xml_node hurtNode = data.append_child("hurt");
+	hurtNode.append_attribute("value") = hurt;
+
+	pugi::xml_node deadNode = data.append_child("dead");
+	deadNode.append_attribute("value") = dead;
 
 	pugi::xml_node godmodeNode = data.append_child("godmode");
 	godmodeNode.append_attribute("value") = godmode;
@@ -259,7 +270,20 @@ void j1Player::Fall()
 void j1Player::Land()
 {
 	speed.y = 0.0f;
-	App->audio->PlayFx(App->audio->runSfx.id, 0);	// CHANGE/FIX: Change audio sound?
+}
+
+void j1Player::Hurt()
+{
+	if (lookingRight == true) {
+		speed.x = -2.0f;	// CHANGE/FIX: Hardcoded
+	}
+	else {
+		speed.x = 2.0f;	// CHANGE/FIX: Hardcoded
+	}
+
+	speed.y = -2.0f;	// CHANGE/FIX: Hardcoded
+
+	state = player_state::AIRBORNE;
 }
 
 //Check player input
@@ -324,46 +348,47 @@ void j1Player::PlayerMovement() {
 
 //Decide new player state
 void j1Player::PlayerState() {
+	if (hurt == true) {
+		if (dead == false) {
+			HurtMoveCheck();
+		}
+	}
 	switch (state) {
 	case player_state::IDLE:
-		idleMoveCheck();
+		IdleMoveCheck();
 		break;
 	case player_state::CROUCHING:
-		crouchingMoveCheck();
+		CrouchingMoveCheck();
 		break;
 	case player_state::RUNNING:
-		runningMoveCheck();
+		RunningMoveCheck();
 		break;
 	case player_state::AIRBORNE:
-		airMoveCheck();
+		AirMoveCheck();
 		break;
 	case player_state::SLIDING:
-		slidingMoveCheck();
-		break;
-	case player_state::HURT:
-		
-		break;
-	case player_state::DEAD:
-		
+		SlidingMoveCheck();
 		break;
 	}
 }
 
-void j1Player::idleMoveCheck()
+void j1Player::IdleMoveCheck()
 {
-	if (wantMoveRight == true && wantMoveLeft == false || wantMoveLeft == true && wantMoveRight == false) {
-		state = player_state::RUNNING;
-	}
-	else if (wantMoveUp == true) {
-		Jump();
-		state = player_state::AIRBORNE;
-	}
-	else if (wantMoveDown == true) {
-		state = player_state::CROUCHING;
+	if (dead == false) {
+		if (wantMoveRight == true && wantMoveLeft == false || wantMoveLeft == true && wantMoveRight == false) {
+			state = player_state::RUNNING;
+		}
+		else if (wantMoveUp == true) {
+			Jump();
+			state = player_state::AIRBORNE;
+		}
+		else if (wantMoveDown == true) {
+			state = player_state::CROUCHING;
+		}
 	}
 }
 
-void j1Player::crouchingMoveCheck()
+void j1Player::CrouchingMoveCheck()
 {
 	if (wantMoveDown == false) {
 		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true)
@@ -378,7 +403,7 @@ void j1Player::crouchingMoveCheck()
 	}
 }
 
-void j1Player::runningMoveCheck()
+void j1Player::RunningMoveCheck()
 {
 	if (wantMoveUp == true) {
 		Jump();
@@ -394,39 +419,49 @@ void j1Player::runningMoveCheck()
 	}
 }
 
-void j1Player::airMoveCheck()
+void j1Player::AirMoveCheck()
 {
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false && hurt == false) {
 		somersaultAnim.Reset();
 		Jump();
 		somersaultUsed = true;
 	}
 
-	if (position.y > 550) {		//CHANGE/FIX: Hardcoded values, this condition should be "if feet collision"
-		position.y = 550;
+	if (position.y > 100) {		//CHANGE/FIX: Hardcoded values, this condition should be "if feet collision", this is core Sam
+		position.y = 100;
 
 		Land();
 		jumpAnim.Reset();
 		somersaultUsed = false;
 
-		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
-			if (wantMoveDown == true) {
-				state = player_state::SLIDING;
-			}
-			else {
-				state = player_state::RUNNING;
-			}
-		}
-		else if (wantMoveDown == true) {
-			state = player_state::CROUCHING;
+		if (dead == true) {
+			state = player_state::IDLE;
 		}
 		else {
-			state = player_state::IDLE;
+			if (hurt == true) {
+				hurt = false;
+				playedHurtSfx = false;
+				playerReset = false;
+			}
+			if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+				if (wantMoveDown == true) {
+					state = player_state::SLIDING;
+				}
+				else {
+					state = player_state::RUNNING;
+				}
+			}
+			else if (wantMoveDown == true) {
+				state = player_state::CROUCHING;
+			}
+			else {
+				state = player_state::IDLE;
+			}
 		}
 	}
 }
 
-void j1Player::slidingMoveCheck()
+void j1Player::SlidingMoveCheck()
 {
 	if (wantMoveUp == true) {
 		Jump();
@@ -463,10 +498,24 @@ void j1Player::slidingMoveCheck()
 	}
 }
 
+void j1Player::HurtMoveCheck()
+{
+	if (playerReset == false) {
+		jumpAnim.Reset();
+		somersaultUsed = false;
+
+		currentAcceleration = normalAcceleration;
+		playedSlideSfx = false;
+		slideAnim.Reset();
+		
+		playerReset == true;
+	}
+}
+
 // Add state effects like movement restrictions, animation and sounds
 void j1Player::PlayerEffects()
 {
-	if (state != player_state::SLIDING) {
+	if (state != player_state::SLIDING && hurt == false && dead == false) {
 		if (wantMoveRight == true && wantMoveLeft == false) {
 			lookingRight = true;
 		}
@@ -475,41 +524,110 @@ void j1Player::PlayerEffects()
 		}
 	}
 
-	switch (state) {
-	case player_state::IDLE:
-		animPtr = &idleAnim;
-		break;
-	case player_state::CROUCHING:
-		wantMoveRight = false;
-		wantMoveLeft = false;
-		animPtr = &crouchAnim;
-		break;
-	case player_state::RUNNING:
-		if (runSfxTimer < SDL_GetTicks() - 350) {	// CHANGE/FIX: Hardcoded 350, also sounds bugs a little, extend the audio to have silence instead of getTicks?
-			App->audio->PlayFx(App->audio->runSfx.id, 0);
-			runSfxTimer = SDL_GetTicks();
-		}
-		animPtr = &runAnim;
-		break;
-	case player_state::AIRBORNE:
-		if (movingDown == true) {
-			animPtr = &fallAnim;
-		}
-		else if (somersaultUsed == true) {
-			animPtr = &somersaultAnim;
+	if (hurt == true) {
+		if (dead == true) {
+			DeadEffects();
 		}
 		else {
-			animPtr = &jumpAnim;
+			HurtEffects();
 		}
-		break;
-	case player_state::SLIDING:
-		currentAcceleration = slideAcceleration;
-		if (playedSlideSfx == false) {
-			App->audio->PlayFx(App->audio->slideSfx.id, 0);
-			playedSlideSfx = true;
+	}
+	else {
+		switch (state) {
+		case player_state::IDLE:
+			IdleEffects();
+			break;
+		case player_state::CROUCHING:
+			CrouchingEffects();
+			break;
+		case player_state::RUNNING:
+			RunningEffects();
+			break;
+		case player_state::AIRBORNE:
+			AirEffects();
+			break;
+		case player_state::SLIDING:
+			SlidingEffects();
+			break;
 		}
-		animPtr = &slideAnim;
-		break;
+	}
+}
+
+void j1Player::IdleEffects()
+{
+	animPtr = &idleAnim;
+}
+
+void j1Player::CrouchingEffects()
+{
+	wantMoveRight = false;
+	wantMoveLeft = false;
+	animPtr = &crouchAnim;
+}
+
+void j1Player::RunningEffects()
+{
+	if (runSfxTimer < SDL_GetTicks() - 350) {	// CHANGE/FIX: Hardcoded 350, also sounds bugs a little, extend the audio to have silence instead of getTicks?
+		App->audio->PlayFx(App->audio->runSfx.id, 0);
+		runSfxTimer = SDL_GetTicks();
+	}
+	animPtr = &runAnim;
+}
+
+void j1Player::AirEffects()
+{
+	if (movingDown == true) {
+		animPtr = &fallAnim;
+	}
+	else if (somersaultUsed == true) {
+		animPtr = &somersaultAnim;
+	}
+	else {
+		animPtr = &jumpAnim;
+	}
+}
+
+void j1Player::SlidingEffects()
+{
+	currentAcceleration = slideAcceleration;
+	if (playedSlideSfx == false) {
+		App->audio->PlayFx(App->audio->slideSfx.id, 0);
+		playedSlideSfx = true;
+	}
+	animPtr = &slideAnim;
+}
+
+void j1Player::HurtEffects()
+{
+	wantMoveUp = false;
+	wantMoveDown = false;
+	wantMoveRight = false;
+	wantMoveLeft = false;
+	if (playedHurtSfx == false) {
+		App->audio->PlayFx(App->audio->hurtSfx.id, 0);
+		playedHurtSfx = true;
+	}
+	animPtr = &hurtAnim;
+}
+
+void j1Player::DeadEffects() {
+	if (deadTimer < SDL_GetTicks() - 1000) {	//CHANGE/FIX: Hardcoded
+		deadAnim.Reset();
+		playedHurtSfx = false;
+		hurt = false;
+		dead = false;
+		App->LoadGame();
+	}
+	else {
+		wantMoveUp = false;
+		wantMoveDown = false;
+		wantMoveRight = false;
+		wantMoveLeft = false;
+		if (playedHurtSfx == false) {
+			App->audio->PlayFx(App->audio->hurtSfx.id, 0);
+			playedHurtSfx = true;
+		}
+		animPtr = &deadAnim;
 	}
 }
 
@@ -522,7 +640,7 @@ void j1Player::MovePlayer()
 	else if (state != player_state::SLIDING && wantMoveLeft == true && wantMoveRight == false) {
 		speed.x -= currentAcceleration;
 	}
-	else {	// Natural deacceleration
+	else if (state != player_state::AIRBORNE) {	// Natural deacceleration
 		if (movingRight == true) {
 			speed.x -= currentAcceleration;
 

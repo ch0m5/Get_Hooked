@@ -20,9 +20,7 @@ enum class player_state {	// @Carles
 	RUNNING,
 	AIRBORNE,
 	SLIDING,
-	//HOOK,
-	HURT,
-	DEAD
+	//HOOK
 };
 
 class j1Player : public j1Module	// CHANGE/FIX: Check useless methods (empty)
@@ -63,6 +61,7 @@ private:	// @Carles
 	void Jump();		// Add Y speed when jump requested
 	void Fall();		// Add acceleration to Y speed
 	void Land();		// Stop Y speed
+	void Hurt();		// Stop and move slightly up and opposite of current direction
 	//void Hook();
 
 	// Player update
@@ -73,12 +72,21 @@ private:	// @Carles
 	void MovePlayer();		// Move player position and calculate other movement related factors
 
 	// Check possible new states in each state
-	void idleMoveCheck();
-	void crouchingMoveCheck();
-	void runningMoveCheck();
-	void airMoveCheck();
-	void slidingMoveCheck();
-	//void hookMoveCheck();
+	void IdleMoveCheck();
+	void CrouchingMoveCheck();
+	void RunningMoveCheck();
+	void AirMoveCheck();
+	void SlidingMoveCheck();
+	void HurtMoveCheck();
+	
+	// Apply effects of each state
+	void IdleEffects();
+	void CrouchingEffects();
+	void RunningEffects();
+	void AirEffects();
+	void SlidingEffects();
+	void HurtEffects();
+	void DeadEffects();
 
 private:
 	p2SString folder;
@@ -107,8 +115,10 @@ private:
 
 	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml or eliminated
 	bool somersaultUsed = false;	// CHANGE/FIX: Hardcoded, needs to go to config and save xmls
-	//bool hurt = false;	// CHANGE/FIX: HARDCODED
-	//bool dead = false;
+	bool hurt = false;
+	bool dead = false;
+	int deadTimer = 0;
+	bool playerReset = false;
 	bool godmode;
 	player_state state;
 
@@ -150,8 +160,9 @@ private:
 	Animation* animPtr = nullptr;
 
 	// Audio
-	int runSfxTimer = 0;
+	int runSfxTimer = 0;			//CHANGE/FIX: Hardcoded
 	bool playedSlideSfx = false;	//CHANGE/FIX: Hardcoded
+	bool playedHurtSfx = false;		//CHANGE/FIX: Hardcoded
 
 	// Player rectangles
 	SDL_Rect animRect;

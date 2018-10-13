@@ -7,13 +7,15 @@
 	<map />
 	<scene />
 	<player>
-		<position x="84.75" y="92.8181992" />
+		<position x="74.4599838" y="100" />
 		<speed x="0" y="0" />
 		<life value="3" />
 		<acceleration type="0.25" />
 		<state current="0" />
 		<lookingRight value="true" />
 		<somersaultUsed value="false" />
+		<hurt value="false" />
+		<dead value="false" />
 		<godmode value="false" />
 	</player>
 	<collision />
