@@ -30,6 +30,12 @@ No previous installations is required to play the game, just download and execut
 - F9: Debug view (colliders/logic)
 - F10: Godmode
 
+## Innovation
+* Player accelerates when moving and deaccelerates when trying to stop
+* Player can crouch to evade things that could hit his head area
+* Player slides with a different deacceleration when trying to crouch while moving
+* Player can jump in the air once making a somersault
+
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-newfeature`
