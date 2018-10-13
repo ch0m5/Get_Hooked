@@ -3,7 +3,7 @@ This is a university project made by CITM (Centre de la Imatge i la Tecnologia M
 
 Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
 
-You can see gameplay footage on our [Webpage](https://scotland-fury.github.io/Hook_Platformer/).
+Feel free to visit our [Webpage](https://scotland-fury.github.io/Hook_Platformer/).
 
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
@@ -22,7 +22,7 @@ No previous installations is required to play the game, just download and execut
 	
 - XBOX Controller: (Planned!)
 
-### Player 2 (Considering implementation.)
+### Player 2 (Considering implementation!)
 
 ### Debug Mode
 - F1: Start from the first level
