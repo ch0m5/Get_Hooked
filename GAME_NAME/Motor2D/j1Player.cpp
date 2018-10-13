@@ -28,7 +28,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Sprites
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
-	defaultAnimSpeed = config.child("sprites").child("animation").attribute("default_speed").as_float();
 
 	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
 	ImportAllSprites(first_sprite);	// Imports all core sprite data for later animation allocation
@@ -40,6 +39,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	// Character stats
 	life = config.child("life").attribute("value").as_uint();
+	position = { config.child("position").attribute("x").as_float(), config.child("position").attribute("y").as_float() };
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
@@ -55,8 +55,8 @@ bool j1Player::Awake(pugi::xml_node& config)
 	//Collider
 	//Collider* playerHitbox = nullptr;
 
-	// CHANGE/FIX: Hardcoded start
-	position = { 100, 550 };
+	// CHANGE/FIX: Hardcoded start, now hardcoded on xml
+	//position = { 100, 550 };
 
 	return ret;
 }
@@ -142,6 +142,14 @@ bool j1Player::Load(pugi::xml_node& data)
 {
 	position.x = data.child("position").attribute("x").as_float();
 	position.y = data.child("position").attribute("y").as_float();
+	speed.x = data.child("speed").attribute("x").as_float();
+	speed.y = data.child("speed").attribute("y").as_float();
+	life = data.child("life").attribute("value").as_uint();
+	currentAcceleration = data.child("acceleration").attribute("type").as_float();
+	state = (player_state)data.child("state").attribute("current").as_uint();
+	lookingRight = data.child("lookingRight").attribute("value").as_bool();
+	somersaultUsed = data.child("somersaultUsed").attribute("value").as_bool();
+	godmode = data.child("godmode").attribute("value").as_bool();
 
 	return true;
 }
@@ -149,10 +157,31 @@ bool j1Player::Load(pugi::xml_node& data)
 // Save Game State
 bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that needs to be saved (speed, status, etc)
 {
-	pugi::xml_node pos = data.append_child("position");
+	pugi::xml_node posNode = data.append_child("position");
+	posNode.append_attribute("x") = position.x;
+	posNode.append_attribute("y") = position.y;
 
-	pos.append_attribute("x") = position.x;
-	pos.append_attribute("y") = position.y;
+	pugi::xml_node speedNode = data.append_child("speed");
+	speedNode.append_attribute("x") = speed.x;
+	speedNode.append_attribute("y") = speed.y;
+
+	pugi::xml_node lifeNode = data.append_child("life");
+	lifeNode.append_attribute("value") = life;
+
+	pugi::xml_node accelerationNode = data.append_child("acceleration");
+	accelerationNode.append_attribute("type") = currentAcceleration;
+
+	pugi::xml_node stateNode = data.append_child("state");
+	stateNode.append_attribute("current") = (uint)state;
+
+	pugi::xml_node lookingRightNode = data.append_child("lookingRight");
+	lookingRightNode.append_attribute("value") = lookingRight;
+
+	pugi::xml_node somersaultUsedNode = data.append_child("somersaultUsed");
+	somersaultUsedNode.append_attribute("value") = somersaultUsed;
+
+	pugi::xml_node godmodeNode = data.append_child("godmode");
+	godmodeNode.append_attribute("value") = godmode;
 
 	return true;
 }

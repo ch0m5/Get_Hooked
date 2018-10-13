@@ -7,7 +7,14 @@
 	<map />
 	<scene />
 	<player>
-		<position x="126.399994" y="550" />
+		<position x="485.5" y="539.200012" />
+		<speed x="-3" y="-3.39999986" />
+		<life value="3" />
+		<acceleration type="0.25" />
+		<state current="3" />
+		<lookingRight value="false" />
+		<somersaultUsed value="false" />
+		<godmode value="false" />
 	</player>
 	<collision />
 	<renderer>

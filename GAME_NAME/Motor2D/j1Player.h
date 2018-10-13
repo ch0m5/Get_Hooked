@@ -144,8 +144,6 @@ private:
 
 	Animation hurtAnim;
 	Animation deadAnim;
-	
-	float defaultAnimSpeed;
 
 	// Animation pointers
 	Animation* animPtr = nullptr;
