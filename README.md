@@ -47,7 +47,7 @@ feature'`
   * Role: Code
   * Github: [samuelkurtdavidson](https://github.com/samuelkurtdavidson)
 
-![Team Photo](Hook_Platformer/Wiki Material/Team_Photo.png)
+![Team Photo](https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png)
 *Samuel and Carles*
  ---
 ## License & Copyright 
