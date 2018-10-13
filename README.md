@@ -48,8 +48,8 @@ feature'`
   * Github: [samuelkurtdavidson](https://github.com/samuelkurtdavidson)
 
 ![Team Photo](https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png)
-*Samuel and Carles*
- ---
+*Samuel & Carles from Scotland Fury*
+
 ## License & Copyright 
 
 © Scotland Fury
