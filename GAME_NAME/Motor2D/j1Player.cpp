@@ -28,6 +28,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Sprites
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
+	scale = config.child("sprites").child("scale").attribute("value").as_uint();
 
 	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
 	ImportAllSprites(first_sprite);	// Imports all core sprite data for later animation allocation
@@ -39,7 +40,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	// Character stats
 	life = config.child("life").attribute("value").as_uint();
-	position = { config.child("position").attribute("x").as_float(), config.child("position").attribute("y").as_float() };
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
@@ -56,7 +56,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 	//Collider* playerHitbox = nullptr;
 
 	// CHANGE/FIX: Hardcoded start, now hardcoded on xml
-	//position = { 100, 550 };
+	position = { 100, 550 };
 
 	return ret;
 }
@@ -128,10 +128,10 @@ bool j1Player::Update(float dt)
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 
 	if (lookingRight == true) {
-		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_NONE);
+		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_NONE, scale);
 	}
 	else {
-		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_HORIZONTAL);
+		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_HORIZONTAL, scale);
 	}
 
 	return ret;

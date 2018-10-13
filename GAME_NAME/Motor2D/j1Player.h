@@ -116,6 +116,7 @@ private:
 	SDL_Texture* graphics = nullptr;
 	p2SString characterSheet;
 	iPoint spriteSize;
+	uint scale;
 
 	//Character sprites
 	player_sprite idleSprite;
