@@ -25,6 +25,10 @@
   <audio>
     <music>
       <folder>audio/music/</folder>
+      <maps>
+        <track1>Mystic_Force.wav</track1>
+        <track2>Spellbound.wav</track2>
+      </maps>
     </music>
     <sfx>
       <folder>audio/fx/</folder>

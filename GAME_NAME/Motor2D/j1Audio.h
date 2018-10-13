@@ -34,10 +34,16 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
+public:
+	p2SString musicMap1;	// @Carles
+	p2SString musicMap2;
+
 private:
 
 	_Mix_Music*			music;
 	p2List<Mix_Chunk*>	fx;		// CHANGE/FIX: Implement xml reading
+	p2SString musicFolder;	// @Carles
+	p2SString sfxFolder;	// @Carles
 };
 
 #endif // __j1AUDIO_H__

@@ -31,6 +31,7 @@ bool j1Scene::Awake()
 bool j1Scene::Start()
 {
 	App->map->Load("map1.tmx");
+	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// CHANGE/FIX: Add map condition
 	return true;
 }
 

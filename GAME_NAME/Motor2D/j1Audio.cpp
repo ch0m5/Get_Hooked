@@ -50,6 +50,12 @@ bool j1Audio::Awake(pugi::xml_node& config)
 		ret = true;
 	}
 
+	musicFolder.create(config.child("music").child("folder").child_value());
+	sfxFolder.create(config.child("sfx").child("folder").child_value());
+
+	musicMap1.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track1").child_value());
+	musicMap2.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track2").child_value());
+
 	return ret;
 }
 
