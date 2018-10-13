@@ -25,19 +25,23 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	folder.create(config.child("folder").child_value());
 
+	// Sprites
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
-	
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
 	defaultAnimSpeed = config.child("sprites").child("animation").attribute("default_speed").as_float();
+
+	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
+	ImportAllSprites(first_sprite);	// Imports all core sprite data for later animation allocation
+
+	// Animations
+	AllocAllAnimations();	// Makes pushbacks of all player animations
 
 	// CHANGE/FIX: Load SFX sounds
 
 	// Character stats
 	life = config.child("life").attribute("value").as_uint();
-
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
 	slideAcceleration = config.child("accelerations").attribute("slide").as_float();
 	jumpVelocity = config.child("jump").attribute("forceY").as_float();
@@ -50,9 +54,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	//Collider
 	//Collider* playerHitbox = nullptr;
-
-	// Animations
-	AllocAllAnimations();	// Makes pushbacks of all player animations
 
 	// CHANGE/FIX: Hardcoded start
 	position = { 100, 550 };
@@ -87,7 +88,14 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	//MovePlayerOrig();
+	/*if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {	//CHANGE/FIX: Give a use to this
+		if (--life > 0) {
+			state = player_state::HURT;
+		}
+		else {
+			state = player_state::DEAD;
+		}
+	}*/
 
 	PlayerInput();		// Check player input
 	PlayerMovement();	// Check player current movement
@@ -147,6 +155,45 @@ bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that
 	pos.append_attribute("y") = position.y;
 
 	return true;
+}
+
+//------------------------------------------------
+
+// Imports from the xml file all data of the first sprite of each animation and other important data like animation speed, frames and if it loops
+void j1Player::ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node& first_sprite)
+{
+	sprite->position.x = first_sprite.child(spriteName).attribute("column").as_int();
+	sprite->position.y = first_sprite.child(spriteName).attribute("row").as_int();
+	sprite->frames = first_sprite.child(spriteName).attribute("frames").as_uint();
+	sprite->animSpeed = first_sprite.child(spriteName).attribute("animSpeed").as_float();
+	sprite->loop = first_sprite.child(spriteName).attribute("loop").as_bool();
+}
+
+void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
+{
+	ImportSpriteData(first_sprite.child("idle").child_value(), &idleSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("run").child_value(), &runSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("slide").child_value(), &slideSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("crouch").child_value(), &crouchSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("jump").child_value(), &jumpSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("somersault").child_value(), &somersaultSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("fall").child_value(), &fallSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("hurt").child_value(), &hurtSprite, first_sprite);
+	ImportSpriteData(first_sprite.child("dead").child_value(), &deadSprite, first_sprite);
+}
+
+// Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
+void j1Player::AllocAllAnimations()
+{
+	idleAnim.AllocAnimation({ idleSprite.position.x * spriteSize.x, idleSprite.position.y * spriteSize.y }, spriteSize, idleSprite.animSpeed, idleSprite.frames, idleSprite.loop);
+	runAnim.AllocAnimation({ runSprite.position.x * spriteSize.x, runSprite.position.y * spriteSize.y }, spriteSize, runSprite.animSpeed, runSprite.frames, runSprite.loop);
+	slideAnim.AllocAnimation({ slideSprite.position.x * spriteSize.x, slideSprite.position.y * spriteSize.y }, spriteSize, slideSprite.animSpeed, slideSprite.frames, slideSprite.loop);
+	crouchAnim.AllocAnimation({ crouchSprite.position.x * spriteSize.x, crouchSprite.position.y * spriteSize.y }, spriteSize, crouchSprite.animSpeed, crouchSprite.frames, crouchSprite.loop);
+	jumpAnim.AllocAnimation({ jumpSprite.position.x * spriteSize.x, jumpSprite.position.y * spriteSize.y }, spriteSize, jumpSprite.animSpeed, jumpSprite.frames, jumpSprite.loop);
+	somersaultAnim.AllocAnimation({ somersaultSprite.position.x * spriteSize.x, somersaultSprite.position.y * spriteSize.y }, spriteSize, somersaultSprite.animSpeed, somersaultSprite.frames, idleSprite.loop);
+	fallAnim.AllocAnimation({ fallSprite.position.x * spriteSize.x, fallSprite.position.y * spriteSize.y }, spriteSize, fallSprite.animSpeed, fallSprite.frames, fallSprite.loop);
+	hurtAnim.AllocAnimation({ hurtSprite.position.x * spriteSize.x, hurtSprite.position.y * spriteSize.y }, spriteSize, hurtSprite.animSpeed, hurtSprite.frames, hurtSprite.loop);
+	deadAnim.AllocAnimation({ deadSprite.position.x * spriteSize.x, deadSprite.position.y * spriteSize.y }, spriteSize, deadSprite.animSpeed, deadSprite.frames, deadSprite.loop);
 }
 
 //------------------------------------------------
@@ -245,14 +292,11 @@ void j1Player::PlayerState() {
 	case player_state::SLIDING:
 		slidingMoveCheck();
 		break;
-	case player_state::HOOK:
-		//hookMoveCheck();
-		break;
 	case player_state::HURT:
-		//hurtMoveCheck();
+		
 		break;
 	case player_state::DEAD:
-		//deadMoveCheck();
+		
 		break;
 	}
 }
@@ -368,11 +412,6 @@ void j1Player::slidingMoveCheck()
 	}
 }
 
-//void j1Player::hookMoveCheck()
-//{
-//
-//}
-
 // Pick animation based on state
 void j1Player::PlayerAnimation()
 {
@@ -411,15 +450,6 @@ void j1Player::PlayerAnimation()
 	case player_state::SLIDING:
 		currentAcceleration = slideAcceleration;
 		animPtr = &slideAnim;
-		break;
-	case player_state::HOOK:
-		//animPtr = &hookAnim;
-		break;
-	case player_state::HURT:
-		//animPtr = &hurtAnim;
-		break;
-	case player_state::DEAD:
-		//animPtr = &dieAnim;
 		break;
 	}
 }
@@ -466,21 +496,6 @@ void j1Player::MovePlayer()
 	// New position
 	position.x += speed.x;
 	position.y += speed.y;
-}
-
-// @Carles: Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location
-void j1Player::AllocAllAnimations()
-{
-
-	idleAnim.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 4, true);	// CHANGE/FIX: Harcoded, move to xml
-	runAnim.AllocAnimation({ 0, spriteSize.y * 4 }, spriteSize, defaultAnimSpeed, 6, true);
-	slideAnim.AllocAnimation({ 0, spriteSize.y * 5 }, spriteSize, defaultAnimSpeed, 5, false);
-	crouchAnim.AllocAnimation({ 0, spriteSize.y * 6 }, spriteSize, defaultAnimSpeed, 4, true);
-	jumpAnim.AllocAnimation({ 0, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed * 2, 4, false);
-	somersaultAnim.AllocAnimation({ 0, spriteSize.y * 8 }, spriteSize, defaultAnimSpeed, 4, true);
-	fallAnim.AllocAnimation({ spriteSize.x * 4, spriteSize.y * 7 }, spriteSize, defaultAnimSpeed, 2, true);
-	hurtAnim.AllocAnimation({ 0, spriteSize.y * 22 }, spriteSize, defaultAnimSpeed, 3, false);
-	dieAnim.AllocAnimation({ 0, spriteSize.y * 0 }, spriteSize, defaultAnimSpeed, 7, false);
 }
 
 //OLD PLAYER MOVEMENT

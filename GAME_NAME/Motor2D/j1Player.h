@@ -7,13 +7,20 @@
 
 struct SDL_Texture;
 
+struct player_sprite {
+	iPoint position;
+	float animSpeed;
+	uint frames;
+	bool loop;
+};
+
 enum class player_state {
 	IDLE,
 	CROUCHING,
 	RUNNING,
 	AIRBORNE,
 	SLIDING,
-	HOOK,
+	//HOOK,
 	HURT,
 	DEAD
 };
@@ -47,7 +54,9 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 private:	// @Carles
-	void MovePlayerOrig();
+	//void MovePlayerOrig();
+	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);
+	void ImportAllSprites(pugi::xml_node&);
 	void AllocAllAnimations();
 	
 	// Player functions
@@ -98,7 +107,8 @@ private:
 
 	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml or eliminated
 	bool somersaultUsed = false;	// CHANGE/FIX: Hardcoded, needs to go to config and save xmls
-	bool hurt = false;	// CHANGE/FIX: HARDCODED
+	//bool hurt = false;	// CHANGE/FIX: HARDCODED
+	//bool dead = false;
 	bool godmode;
 	player_state state;
 
@@ -106,6 +116,20 @@ private:
 	SDL_Texture* graphics = nullptr;
 	p2SString characterSheet;
 	iPoint spriteSize;
+
+	//Character sprites
+	player_sprite idleSprite;
+
+	player_sprite runSprite;
+	player_sprite slideSprite;
+	player_sprite crouchSprite;
+
+	player_sprite jumpSprite;
+	player_sprite somersaultSprite;
+	player_sprite fallSprite;
+
+	player_sprite hurtSprite;
+	player_sprite deadSprite;
 
 	// Character animations
 	Animation idleAnim;
@@ -119,7 +143,7 @@ private:
 	Animation fallAnim;
 
 	Animation hurtAnim;
-	Animation dieAnim;
+	Animation deadAnim;
 	
 	float defaultAnimSpeed;
 

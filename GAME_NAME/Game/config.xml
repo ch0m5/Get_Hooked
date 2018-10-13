@@ -41,6 +41,17 @@
       <spriteSheet>character_sprite_sheet.png</spriteSheet>
       <spriteSize x="50" y="37"/>
       <animation default_speed="0.12"/>
+      <first_sprite>
+        <idle column="0" row="0" frames="4" animSpeed ="0.12" loop="true">idle</idle>
+        <run column="0" row="4" frames="6" animSpeed ="0.12" loop="true">run</run>
+        <slide column="0" row="5" frames="5" animSpeed ="0.12" loop="false">slide</slide>
+        <crouch column="0" row="6" frames="4" animSpeed ="0.12" loop="true">crouch</crouch>
+        <jump column="0" row="7" frames="4" animSpeed ="0.24" loop="false">jump</jump>
+        <somersault column="0" row="8" frames="4" animSpeed ="0.12" loop="true">somersault</somersault>
+        <fall column="4" row="7" frames="2" animSpeed ="0.12" loop="true">fall</fall>
+        <hurt column="0" row="22" frames="3" animSpeed ="0.12" loop="false">hurt</hurt>
+        <dead column="0" row="23" frames="7" animSpeed ="0.12" loop="false">dead</dead>
+      </first_sprite>
     </sprites>
     <sfx>
       <!-- <jumpFX source="Jump.wav"/>

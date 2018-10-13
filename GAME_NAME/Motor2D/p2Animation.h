@@ -56,7 +56,7 @@ public:
 	{
 		loops = 0;
 	}
-	// @Carles: With the data given, allocates an animation from a ROW of frames
+	// @Carles: Allocates an animation from a row of frames by knowing the position of the first frame and other important data
 	void AllocAnimation(iPoint spritePos, iPoint spriteSize, float speed, uint frames, bool loop) {
 
 		int xCounter = 0;
