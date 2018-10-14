@@ -133,7 +133,32 @@ bool j1Collision::CleanUp()
 }
 
 // Save and Load
-//bool Load(pugi::xml_node&);
+bool j1Collision::Load(pugi::xml_document& map_file)
+{
+	LOG("Loading Colliders");
+	bool ret = true;
+	//Load all collider info
+
+	pugi::xml_node collider;
+
+	for (collider = map_file.child("map").child("objects"); collider && ret; collider.next_sibling("objects"))
+	{
+		for (pugi::xml_node object = collider.child("object"); object && ret; object = collider.next_sibling("object"))
+		{
+			Collider* col = new Collider();
+
+			col->rect.x = object.attribute("x").as_uint();
+			col->rect.y = object.attribute("y").as_uint();
+			col->rect.w = object.attribute("y").as_uint();
+			col->rect.h = object.attribute("y").as_uint();
+			col->type = (COLLIDER_TYPE)object.attribute("name").as_uint();
+
+			App->collision->AddCollider(col->rect, col->type, col->callback);
+		}
+	}
+	return ret;
+	
+}
 //bool Save(pugi::xml_node&) const;
 
 void j1Collision::DebugDraw()

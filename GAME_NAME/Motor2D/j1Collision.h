@@ -24,6 +24,12 @@ struct Collider
 	bool to_delete = false;
 	COLLIDER_TYPE type;		//SamAlert: As mentioned before, if we use tiled delete this I guess?
 	j1Module* callback = nullptr;
+	Collider() :
+		rect({ 0,0 }),
+		type(COLLIDER_TYPE::COLLIDER_NONE),
+		callback(nullptr)
+	{}
+
 
 	Collider(SDL_Rect rectangle, COLLIDER_TYPE type, j1Module* callback = nullptr) :
 		rect(rectangle),
@@ -58,7 +64,7 @@ public:
 	bool CleanUp();
 
 	// Save and Load
-	//bool Load(pugi::xml_node&);
+	bool Load(pugi::xml_document& map_file);
 	//bool Save(pugi::xml_node&) const;
 
 	Collider* AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback = nullptr);
