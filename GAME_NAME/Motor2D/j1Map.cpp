@@ -156,6 +156,19 @@ bool j1Map::Load(const char* file_name)
 		data.layers.add(set);
 	}
 
+	//Load Colliders and start position data
+	pugi::xml_node objectgroup;
+	uint object_type;
+
+	for (objectgroup = map_file.child("map").child("objectgroup"); objectgroup && ret; objectgroup = objectgroup.next_sibling("objectgroup"))
+	{
+		object_type = objectgroup.attribute("name").as_uint();
+		if (object_type == COLLIDER_TYPE::COLLIDER_WALL || object_type == COLLIDER_TYPE::COLLIDER_WALL2 || object_type == COLLIDER_TYPE::COLLIDER_WALL3)
+		{
+			LoadColliders(objectgroup, &data.colliders);	
+		}
+	}
+
 	if(ret == true)
 	{
 		LOG("Successfully parsed map XML file: %s", file_name);
@@ -333,4 +346,40 @@ bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	}
 
 	return ret;
+}
+
+bool j1Map::LoadColliders(pugi::xml_node& node, ColliderData* collider)
+{
+	bool ret = true;
+	pugi::xml_node colliders = node.child("object");
+
+	if (node.child("object") == NULL)
+	{
+		LOG("Error: child <object> not found");
+		ret = false;
+		RELEASE(collider);
+	}
+	else
+	{
+		for (colliders; colliders; colliders = colliders.next_sibling("object"))
+		{
+			SDL_Rect aux;
+			aux.x = colliders.attribute("x").as_uint();
+			aux.y = colliders.attribute("y").as_uint();
+			aux.h = colliders.attribute("height").as_uint();
+			aux.w = colliders.attribute("width").as_uint();
+			data.colliders.collider_rects.add(aux);
+		}
+	}
+
+	return ret;
+}
+
+void j1Map::DrawColliders()
+{
+	uint i = 0;
+	while (i < data.colliders.collider_rects.count())
+	{
+		data.colliders.colliders.add(App->collision->AddCollider(data.colliders.collider_rects[i++], COLLIDER_TYPE::COLLIDER_WALL, nullptr));
+	}
 }

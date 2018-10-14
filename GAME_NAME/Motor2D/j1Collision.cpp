@@ -149,8 +149,8 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 
 			col->rect.x = object.attribute("x").as_uint();
 			col->rect.y = object.attribute("y").as_uint();
-			col->rect.w = object.attribute("y").as_uint();
-			col->rect.h = object.attribute("y").as_uint();
+			col->rect.w = object.attribute("width").as_uint();
+			col->rect.h = object.attribute("height").as_uint();
 			col->type = (COLLIDER_TYPE)object.attribute("name").as_uint();
 
 			App->collision->AddCollider(col->rect, col->type, col->callback);
@@ -166,6 +166,16 @@ void j1Collision::DebugDraw()
 	/*if (App->input->colliderView == false || App->input->debugMode == false) {	// SamAlert: This code relates to the debug function of collider viewing
 		return;
 	}*/
+
+	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+	{
+		debug = !debug;
+	}
+
+	if (debug == false)
+	{
+		return;
+	}
 
 	Uint8 alpha = 80;
 	Uint8 alphaHard = 130;

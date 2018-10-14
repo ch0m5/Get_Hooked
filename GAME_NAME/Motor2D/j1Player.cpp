@@ -91,6 +91,7 @@ bool j1Player::Start()
 	else
 		LOG("conifg info not loaded. pugi error: %s", result.description());
 
+	hitbox = App->collision->AddCollider(hitbox->rect, hitbox->type, hitbox->callback);
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
@@ -134,8 +135,8 @@ bool j1Player::Update(float dt)
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
 
-	hitbox->rect.x = position.x;
-	hitbox->rect.y = position.y;
+	hitbox->rect.x = position.x + offset.x;
+	hitbox->rect.y = position.y + offset.y;
 
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 

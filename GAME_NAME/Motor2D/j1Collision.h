@@ -10,6 +10,8 @@ enum COLLIDER_TYPE	//SamAlert: If you're going to use Tiled to identify collider
 {
 	COLLIDER_NONE = -1,
 	COLLIDER_WALL,
+	COLLIDER_WALL2,
+	COLLIDER_WALL3,
 	COLLIDER_PLAYER,
 	COLLIDER_PLAYER_ATTACK,
 	COLLIDER_ENEMY,
@@ -75,6 +77,7 @@ private:
 	Collider* colliders[MAX_COLLIDERS];
 	bool matrix[COLLIDER_MAX][COLLIDER_MAX];	//SamAlert: As mentioned before, if we use tiled delete this I guess?
 	SDL_Rect screen;
+	bool debug;
 };
 
 #endif	//__j1COLLISION_H__
