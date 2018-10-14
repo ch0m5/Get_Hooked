@@ -37,7 +37,7 @@ No previous installations is required to play the game, just download and execut
 - F10: Godmode (No damage recieved)
 
 ## Innovation
-- Player accelerates when moving and deaccelerates when trying to stop
+- Player accelerates and deaccelerates when moving on ground, but not while being airborne
 - Player can crouch to evade things that could hit his head area
 - Player slides with a different deacceleration when trying to crouch while moving
 - Player can jump in the air once making a somersault
