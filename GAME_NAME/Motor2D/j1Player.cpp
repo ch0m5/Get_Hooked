@@ -718,7 +718,7 @@ void j1Player::MovePlayer()
 	position.y += speed.y;
 }
 
-//OLD PLAYER MOVEMENT
+//OLD PLAYER MOVEMENT, take as reference
 /*
 void j1Player::MovePlayerOrig()
 {

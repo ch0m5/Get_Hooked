@@ -51,13 +51,12 @@ public:
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
 
-public:
-	bool IsDead() {
+public:	// @Carles
+	bool IsDead() const {
 		return dead;
 	}
 
 private:	// @Carles
-	//void MovePlayerOrig();
 	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);
 	void ImportAllSprites(pugi::xml_node&);
 	void ImportAllStates(pugi::xml_node&);
