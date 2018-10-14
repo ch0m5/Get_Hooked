@@ -116,10 +116,10 @@ bool j1Player::Update(float dt)
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 
 	if (lookingRight == true) {
-		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_NONE, scale);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_NONE, scale);
 	}
 	else {
-		App->render->Blit(graphics, position.x, position.y, &playerRect, SDL_FLIP_HORIZONTAL, scale);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_HORIZONTAL, scale);
 	}
 
 	return ret;
@@ -158,11 +158,11 @@ bool j1Player::Load(pugi::xml_node& data)
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
 	hurt = data.child("hurt").attribute("value").as_bool();
 	dead = data.child("dead").attribute("value").as_bool();
-	deadTimer = data.child("deadTimer").attribute("miliseconds").as_int();
+	deadTimer = data.child("deadTimer").attribute("miliseconds").as_uint();
 	playerReset = data.child("reset").attribute("value").as_bool();
 	godmode = data.child("godmode").attribute("value").as_bool();
 
-	runSfxTimer = data.child("runSfxTimer").attribute("miliseconds").as_int();
+	runSfxTimer = data.child("runSfxTimer").attribute("miliseconds").as_uint();
 	playedSlideSfx = data.child("slideSfx").attribute("played").as_bool();
 	playedHurtSfx = data.child("hurtSfx").attribute("played").as_bool();
 
@@ -548,7 +548,7 @@ void j1Player::HurtMoveCheck()
 		playedSlideSfx = false;
 		slideAnim.Reset();
 		
-		playerReset == true;
+		playerReset = true;
 	}
 }
 
