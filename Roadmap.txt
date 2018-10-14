@@ -1,6 +1,9 @@
 ﻿--------Roadmap----------
 *v0.1:
-
+- First Map
+- Second Map
+- Player basic movements and animations
+- Minimal debug functionalities
 	
 *v0.2:
 

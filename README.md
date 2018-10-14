@@ -27,8 +27,9 @@ No previous installations is required to play the game, just download and execut
 ### Debug Mode
 - F1: Start from the first level
 - F2: Start from beginning of current level
-- F9: Debug view (colliders/logic)
-- F10: Godmode
+- F3: Recieve instant damage (Unless on godmode)
+- F9: Debug view (Colliders/Logic)
+- F10: Godmode (No damage recieved)
 
 ## Innovation
 * Player accelerates when moving and deaccelerates when trying to stop
