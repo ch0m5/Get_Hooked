@@ -130,7 +130,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Game\maps\hello2.tmx" />
     <None Include="..\Game\maps\map1.tmx" />
     <None Include="..\Game\maps\map2.tmx" />
     <None Include="..\Game\maps\parallax1.tmx" />
