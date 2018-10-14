@@ -55,22 +55,41 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
-	pugi::xml_document data;
+	hitbox = new Collider();
+	hitbox->type = COLLIDER_TYPE::COLLIDER_PLAYER;
+
+	pugi::xml_document map_data;
+	pugi::xml_document config_data;
 	pugi::xml_node root;
 
-	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");	// SamAlert: Hardcoded string should get value from a xml file
+	pugi::xml_parse_result result = map_data.load_file("maps/map1.tmx");	// SamAlert: Hardcoded string should get value from a xml file
+	pugi::xml_parse_result result2 = config_data.load_file("config.xml");
 
-	if (result != NULL)
+	if (result != NULL && result2 != NULL)
 	{
-		root = data.first_child();
+		root = map_data.first_child();
 
 		position.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
 		position.y = root.child("objectgroup").child("object").attribute("y").as_float();
 
-		data.reset();
+		root = config_data.child("player");
+
+		offset.x = root.child("collision_offset").attribute("x").as_uint();
+		offset.y = root.child("collision_ofset").attribute("y").as_uint();
+
+		hitbox->rect.x = position.x + offset.x;
+		hitbox->rect.y = position.y + offset.y;
+		hitbox->rect.w = root.child("hitbox").attribute("x").as_uint();
+		hitbox->rect.h = root.child("hitbox").attribute("y").as_uint();
+
+
+		config_data.reset();
+		map_data.reset();
 	}
-	else
+	else if (result == NULL)
 		LOG("Map info not loaded. pugi error: %s", result.description());
+	else
+		LOG("conifg info not loaded. pugi error: %s", result.description());
 
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
@@ -89,6 +108,8 @@ bool j1Player::PreUpdate()	// IMPROVE: Player input here?
 
 	return ret;
 }
+
+//input and logic
 bool j1Player::Update(float dt)
 {
 	bool ret = true;
@@ -112,6 +133,9 @@ bool j1Player::Update(float dt)
 
 	animRect.x = (int)position.x;
 	animRect.y = (int)position.y;
+
+	hitbox->rect.x = position.x;
+	hitbox->rect.y = position.y;
 
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 
@@ -141,7 +165,12 @@ bool j1Player::CleanUp()
 // Called when colliding
 void j1Player::OnCollision(Collider* c1, Collider* c2)
 {
-
+	if ((c1->type == COLLIDER_TYPE::COLLIDER_PLAYER && c2->type == COLLIDER_TYPE::COLLIDER_WALL)
+		|| (c1->type == COLLIDER_TYPE::COLLIDER_WALL && c2->type == COLLIDER_TYPE::COLLIDER_PLAYER))
+	{
+		speed.x = 0.0f;
+		speed.y = 0.0f;
+	}
 }
 
 // Load Game State

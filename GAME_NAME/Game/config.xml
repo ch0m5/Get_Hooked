@@ -74,6 +74,8 @@
     <speed x="0" y="0"/>
     <maxSpeed x="3" y="5"/>
     <hurtSpeed x="2" y="2"/>
+    <collision_offset x="5" y="5"/>
+    <hitbox x="40" y="32"/>
     <accelerations x="0.25" gravity="0.2" slide="0.07"/>
     <jump forceY="4"/>
     <looking right="true"/>

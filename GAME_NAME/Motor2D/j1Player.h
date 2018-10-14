@@ -100,9 +100,11 @@ private:
 	uint life;
 	uint maxLife;
 	fPoint position;
+	fPoint respawn;
 	fPoint speed;
 	fPoint maxSpeed;
-	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt
+	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/ killed
+	iPoint offset;		// Collider offset to player rect
 	float currentAcceleration;
 	float normalAcceleration;
 	float slideAcceleration;
@@ -128,7 +130,8 @@ private:
 	int deathDelay;		// Time delay between death and start FadeToBlack
 	bool fading;		// Flag used to mark fade starting
 	int fadeDelay;		// FadeToBlack duration
-	bool playerReset;	// Flag used to restart animations on player hurt/death
+	bool playerReset;	// Flag used to restart animations on player hurt
+	bool playerRespawn; // Flag used to restart position and animations of player after death
 	bool godmode;		// Flag used to mark player invencibility
 	player_state state;	// Flag to mark player current state
 
@@ -177,7 +180,7 @@ private:
 
 	// Player rectangles
 	SDL_Rect animRect;		//SamAlert: For animation blit
-	SDL_Rect colliderRect;	//SamAlert: For collider position, should(?) be based on animRect's position
+	
 	
 	//Collider
 	Collider* hitbox = nullptr;
