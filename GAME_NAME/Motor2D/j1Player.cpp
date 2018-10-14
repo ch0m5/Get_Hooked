@@ -172,52 +172,54 @@ bool j1Player::Load(pugi::xml_node& data)
 // Save Game State
 bool j1Player::Save(pugi::xml_node& data) const
 {
-	pugi::xml_node posNode = data.append_child("position");
-	posNode.append_attribute("x") = position.x;
-	posNode.append_attribute("y") = position.y;
+	pugi::xml_node tmpNode;
 
-	pugi::xml_node speedNode = data.append_child("speed");
-	speedNode.append_attribute("x") = speed.x;
-	speedNode.append_attribute("y") = speed.y;
+	tmpNode = data.append_child("position");
+	tmpNode.append_attribute("x") = position.x;
+	tmpNode.append_attribute("y") = position.y;
 
-	pugi::xml_node lifeNode = data.append_child("life");
-	lifeNode.append_attribute("value") = life;
+	tmpNode = data.append_child("speed");
+	tmpNode.append_attribute("x") = speed.x;
+	tmpNode.append_attribute("y") = speed.y;
 
-	pugi::xml_node accelerationNode = data.append_child("acceleration");
-	accelerationNode.append_attribute("type") = currentAcceleration;
+	tmpNode = data.append_child("life");
+	tmpNode.append_attribute("value") = life;
 
-	pugi::xml_node stateNode = data.append_child("state");
-	stateNode.append_attribute("current") = (uint)state;
+	tmpNode = data.append_child("acceleration");
+	tmpNode.append_attribute("type") = currentAcceleration;
 
-	pugi::xml_node lookingRightNode = data.append_child("looking");
-	lookingRightNode.append_attribute("right") = lookingRight;
+	tmpNode = data.append_child("state");
+	tmpNode.append_attribute("current") = (uint)state;
 
-	pugi::xml_node somersaultUsedNode = data.append_child("somersault");
-	somersaultUsedNode.append_attribute("used") = somersaultUsed;
+	tmpNode = data.append_child("looking");
+	tmpNode.append_attribute("right") = lookingRight;
 
-	pugi::xml_node hurtNode = data.append_child("hurt");
-	hurtNode.append_attribute("value") = hurt;
+	tmpNode = data.append_child("somersault");
+	tmpNode.append_attribute("used") = somersaultUsed;
 
-	pugi::xml_node deadNode = data.append_child("dead");
-	deadNode.append_attribute("value") = dead;
+	tmpNode = data.append_child("hurt");
+	tmpNode.append_attribute("value") = hurt;
 
-	pugi::xml_node deadTimerNode = data.append_child("deadTimer");
-	deadTimerNode.append_attribute("miliseconds") = deadTimer;
+	tmpNode = data.append_child("dead");
+	tmpNode.append_attribute("value") = dead;
 
-	pugi::xml_node playerResetNode = data.append_child("reset");
-	playerResetNode.append_attribute("value") = playerReset;
+	tmpNode = data.append_child("deadTimer");
+	tmpNode.append_attribute("miliseconds") = deadTimer;
 
-	pugi::xml_node godmodeNode = data.append_child("godmode");
-	godmodeNode.append_attribute("value") = godmode;
+	tmpNode = data.append_child("reset");
+	tmpNode.append_attribute("value") = playerReset;
 
-	pugi::xml_node runSfxTimerNode = data.append_child("runSfxTimer");
-	runSfxTimerNode.append_attribute("miliseconds") = runSfxTimer;
+	tmpNode = data.append_child("godmode");
+	tmpNode.append_attribute("value") = godmode;
 
-	pugi::xml_node playedSlideSfxNode = data.append_child("slideSfx");
-	playedSlideSfxNode.append_attribute("played") = playedSlideSfx;
+	tmpNode = data.append_child("runSfxTimer");
+	tmpNode.append_attribute("miliseconds") = runSfxTimer;
 
-	pugi::xml_node playedHurtSfxNode = data.append_child("hurtSfx");
-	playedHurtSfxNode.append_attribute("played") = playedHurtSfx;
+	tmpNode = data.append_child("slideSfx");
+	tmpNode.append_attribute("played") = playedSlideSfx;
+
+	tmpNode = data.append_child("hurtSfx");
+	tmpNode.append_attribute("played") = playedHurtSfx;
 
 	return true;
 }
