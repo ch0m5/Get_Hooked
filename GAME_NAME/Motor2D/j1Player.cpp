@@ -537,6 +537,19 @@ void j1Player::AirMoveCheck()
 			}
 		}
 	}
+	if (position.y > 300) {	//SamAlert: Hardcoded, if fallen into a pit and godmode == false, die and loadGame, else if godmode == true respawn on height 50
+		if (godmode == false) {
+			Hurt();
+			Land();
+			hurt = true;
+			dead = true;
+			deadTimer = SDL_GetTicks();
+			state = player_state::IDLE;
+		}
+		else {
+			position.y = 50;
+		}
+	}
 }
 
 void j1Player::SlidingMoveCheck()
@@ -760,6 +773,16 @@ void j1Player::MovePlayer()
 	// New position
 	position.x += speed.x;
 	position.y += speed.y;
+
+	// Move camera with player within set limits
+	if (App->render->camera.x > -(position.x - 170) * scale) {
+		App->render->camera.x = -(position.x - 170) * scale;
+	}
+	else if (App->render->camera.x < -(position.x - 130) * scale) {
+		App->render->camera.x = -(position.x - 130) * scale;
+	}
+
+	//App->render->camera.y = -(position.y - 88) * scale;
 }
 
 //OLD PLAYER MOVEMENT, take as reference
