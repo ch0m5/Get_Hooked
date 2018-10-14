@@ -33,7 +33,7 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 	* Track 2 - [Spellbound](https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be)
 	* Composed by [Kevin MacLeod](https://www.youtube.com/channel/UCSZXFhRIx6b0dFX3xS8L1yQ)
 
-* SFX: Orignal mix made from: https://www.bfxr.net/
+* SFX: Orignal mix made from: [https://www.bfxr.net/](https://www.bfxr.net/)
 
 ## License & Copyright 
 
