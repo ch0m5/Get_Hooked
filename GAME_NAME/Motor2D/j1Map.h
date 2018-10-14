@@ -5,20 +5,7 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "j1Module.h"
-#include "j1Collision.h"
 
-struct ColliderData {
-	p2List<Collider*>	colliders;
-	p2List<SDL_Rect>	collider_rects;
-
-	~ColliderData() {
-		for (int i = 0; i < colliders.count(); ++i)
-		{
-			if (colliders[i] != nullptr)
-				colliders[i]->to_delete = true;
-		}
-	}
-};
 
 // ----------------------------------------------------
 
@@ -68,7 +55,6 @@ struct MapData
 	SDL_Color			background_color;
 	MapTypes			type;
 	p2List<TileSet*>	tilesets;
-	ColliderData		colliders;
 	p2List<MapLayer*>	layers;
 };
 
@@ -93,12 +79,6 @@ public:
 
 	// Load new map
 	bool Load(const char* path);
-
-	//Load map colliders
-	bool LoadColliders(pugi::xml_node& node, ColliderData* collider);
-
-	//Draw map colliders
-	void j1Map::DrawColliders();
 
 	iPoint MapToWorld(int x, int y) const;
 

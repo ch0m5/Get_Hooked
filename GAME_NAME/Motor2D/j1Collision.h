@@ -71,10 +71,11 @@ public:
 
 	Collider* AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback = nullptr);
 	void DebugDraw();
-
+	p2List<Collider*> colliders;
 private:
 
-	Collider* colliders[MAX_COLLIDERS];
+	/*Collider[MAX_COLLIDERS] colliders;*/
+	
 	bool matrix[COLLIDER_MAX][COLLIDER_MAX];	//SamAlert: As mentioned before, if we use tiled delete this I guess?
 	SDL_Rect screen;
 	bool debug;

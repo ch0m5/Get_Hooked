@@ -9,6 +9,7 @@
 #include "j1Collision.h"
 #include "j1FadeScene.h"
 #include "p2Animation.h"
+#include "j1Collision.h"
 
 j1Player::j1Player()
 {
@@ -91,7 +92,7 @@ bool j1Player::Start()
 	else
 		LOG("conifg info not loaded. pugi error: %s", result.description());
 
-	hitbox = App->collision->AddCollider(hitbox->rect, hitbox->type, hitbox->callback);
+	App->collision->colliders.add(hitbox);
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;

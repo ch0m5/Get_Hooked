@@ -9,8 +9,8 @@ j1Collision::j1Collision()
 {
 	name.create("collision");
 
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
-		colliders[i] = nullptr;
+	/*for (uint i = 0; i < MAX_COLLIDERS; ++i)
+		colliders[i] = nullptr;*/
 
 	matrix[COLLIDER_WALL][COLLIDER_WALL] = false;
 	matrix[COLLIDER_WALL][COLLIDER_PLAYER] = true;
@@ -63,29 +63,40 @@ bool j1Collision::PreUpdate()
 	bool ret = true;
 
 	// Remove all colliders scheduled for deletion
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
+	/*for (uint i = 0; i < MAX_COLLIDERS; ++i)
 	{
 		if (colliders[i] != nullptr && colliders[i]->to_delete == true)
 		{
 			delete colliders[i];
 			colliders[i] = nullptr;
 		}
+	}*/
+
+	for (uint i = 0; i < colliders.count(); ++i)
+	{
+		if (colliders[i] != nullptr)
+		{
+			delete colliders[i];
+			colliders[i] = nullptr;
+		}
 	}
+
+	
 
 	// Calculate collisions
 	Collider* c1;
 	Collider* c2;
 
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
+	for (uint i = 0; i < colliders.count(); ++i)
 	{
 		// skip empty colliders
 		if (colliders[i] == nullptr)
-			continue;
+			continue;	
 
 		c1 = colliders[i];
 
 		// avoid checking collisions already checked
-		for (uint k = i + 1; k < MAX_COLLIDERS; ++k)
+		for (uint k = 0; k < colliders.count(); ++k)
 		{
 			// skip empty colliders
 			if (colliders[k] == nullptr)
@@ -120,7 +131,7 @@ bool j1Collision::CleanUp()
 {
 	LOG("Freeing all colliders");
 
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
+	for (uint i = 0; i < colliders.count(); ++i)
 	{
 		if (colliders[i] != nullptr)
 		{
@@ -139,23 +150,25 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 	bool ret = true;
 	//Load all collider info
 
+	
+
 	pugi::xml_node collider;
 
-	for (collider = map_file.child("map").child("objects"); collider && ret; collider.next_sibling("objects"))
+	for (collider = map_file.child("map").child("objectgroup"); collider && ret; collider = collider.next_sibling("objectgroup"))
 	{
-		for (pugi::xml_node object = collider.child("object"); object && ret; object = collider.next_sibling("object"))
+		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{
 			Collider* col = new Collider();
-
 			col->rect.x = object.attribute("x").as_uint();
 			col->rect.y = object.attribute("y").as_uint();
 			col->rect.w = object.attribute("width").as_uint();
 			col->rect.h = object.attribute("height").as_uint();
 			col->type = (COLLIDER_TYPE)object.attribute("name").as_uint();
 
-			App->collision->AddCollider(col->rect, col->type, col->callback);
+			colliders.add(col);
 		}
 	}
+
 	return ret;
 	
 }
@@ -179,7 +192,7 @@ void j1Collision::DebugDraw()
 
 	Uint8 alpha = 80;
 	Uint8 alphaHard = 130;
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
+	for (uint i = 0; i < colliders.count(); ++i)
 	{
 		if (colliders[i] == nullptr)
 			continue;
