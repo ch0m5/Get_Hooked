@@ -23,7 +23,7 @@ enum class player_state {	// @Carles
 	//HOOK
 };
 
-class j1Player : public j1Module	// CHANGE/FIX: Check useless methods (empty)
+class j1Player : public j1Module
 {
 public:
 
@@ -55,6 +55,7 @@ private:	// @Carles
 	//void MovePlayerOrig();
 	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);
 	void ImportAllSprites(pugi::xml_node&);
+	void ImportAllStates(pugi::xml_node&);
 	void AllocAllAnimations();
 	
 	// Player functions
@@ -97,6 +98,7 @@ private:
 	fPoint position;
 	fPoint speed;
 	fPoint maxSpeed;
+	fPoint hurtSpeed;
 	float currentAcceleration;
 	float normalAcceleration;
 	float slideAcceleration;
@@ -104,22 +106,23 @@ private:
 	float gravity;
 
 	// Character status flags
-	bool wantMoveUp = false;	// CHANGE/FIX: Hardcoded
-	bool wantMoveRight = false;
-	bool wantMoveLeft = false;
-	bool wantMoveDown = false;
+	bool wantMoveUp;
+	bool wantMoveRight;
+	bool wantMoveLeft;
+	bool wantMoveDown;
 	
-	bool movingUp = false;	// CHANGE/FIX: Hardcoded
-	bool movingRight = false;
-	bool movingLeft = false;
-	bool movingDown = false;
+	bool movingUp;
+	bool movingRight;
+	bool movingLeft;
+	bool movingDown;
 
-	bool lookingRight = true;	// CHANGE/FIX: Hardcoded should be in xml or eliminated
-	bool somersaultUsed = false;	// CHANGE/FIX: Hardcoded, needs to go to config and save xmls
-	bool hurt = false;
-	bool dead = false;
+	bool lookingRight;
+	bool somersaultUsed;
+	bool hurt;
+	bool dead;
 	int deadTimer = 0;
-	bool playerReset = false;
+	int deathDelay;
+	bool playerReset;
 	bool godmode;
 	player_state state;
 
@@ -161,13 +164,14 @@ private:
 	Animation* animPtr = nullptr;
 
 	// Audio
-	int runSfxTimer = 0;			//CHANGE/FIX: Hardcoded
-	bool playedSlideSfx = false;	//CHANGE/FIX: Hardcoded
-	bool playedHurtSfx = false;		//CHANGE/FIX: Hardcoded
+	int runSfxTimer = 0;
+	int runSfxDelay;
+	bool playedSlideSfx;
+	bool playedHurtSfx;
 
 	// Player rectangles
-	SDL_Rect animRect;
-	SDL_Rect colliderRect;
+	SDL_Rect animRect;		//SamAlert: For animation blit
+	SDL_Rect colliderRect;	//SamAlert: For collider position, should(?) be based on animRect's position
 	
 	//Collider
 	Collider* hitbox = nullptr;

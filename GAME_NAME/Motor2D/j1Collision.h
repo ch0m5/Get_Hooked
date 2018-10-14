@@ -1,12 +1,12 @@
 #ifndef __j1COLLISION_H__
 #define __j1COLLISION_H__	// @Carles
 
-#define MAX_COLLIDERS 500	// CHANGE/FIX: Make dymanic array for final game?
+#define MAX_COLLIDERS 500	// IMPROVE: Make dymanic array for final game? //SamAlert: Make sure that the amount of colliders is enough
 
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
-enum COLLIDER_TYPE	//CHANGE/FIX: The data that marks the types of areas and their enviroment conditions should be in Tiled (xml) and interpreted by the code
+enum COLLIDER_TYPE	//SamAlert: If you're going to use Tiled to identify colliders and you don't need this enum, please delete it. Also, change this module how you see fit, collider king ;3
 {
 	COLLIDER_NONE = -1,
 	COLLIDER_WALL,
@@ -22,7 +22,7 @@ struct Collider
 {
 	SDL_Rect rect;
 	bool to_delete = false;
-	COLLIDER_TYPE type;
+	COLLIDER_TYPE type;		//SamAlert: As mentioned before, if we use tiled delete this I guess?
 	j1Module* callback = nullptr;
 
 	Collider(SDL_Rect rectangle, COLLIDER_TYPE type, j1Module* callback = nullptr) :
@@ -40,7 +40,7 @@ struct Collider
 	bool CheckCollision(const SDL_Rect& r) const;
 };
 
-class j1Collision : public j1Module	// CHANGE/FIX: Check useless methods (empty)
+class j1Collision : public j1Module
 {
 public:
 	j1Collision();
@@ -67,7 +67,7 @@ public:
 private:
 
 	Collider* colliders[MAX_COLLIDERS];
-	bool matrix[COLLIDER_MAX][COLLIDER_MAX];
+	bool matrix[COLLIDER_MAX][COLLIDER_MAX];	//SamAlert: As mentioned before, if we use tiled delete this I guess?
 	SDL_Rect screen;
 };
 

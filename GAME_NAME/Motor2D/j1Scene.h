@@ -32,7 +32,7 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-private:	// CHANGE/FIX: Implement xml reading
+private:
 	fPoint cameraSpeed;	// @Carles
 };
 

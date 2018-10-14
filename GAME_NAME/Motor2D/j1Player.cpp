@@ -1,13 +1,13 @@
 #include "p2Defs.h"
 #include "p2Log.h"
-#include "j1App.h"			// CHANGE/FIX?
-#include "j1Input.h"		// Do we need it?
-#include "j1Textures.h"		// Do we need it?
+#include "j1App.h"
+#include "j1Input.h"
+#include "j1Textures.h"
 #include "j1Render.h"
-#include "j1Audio.h"		// Do we need it?
+#include "j1Audio.h"
 #include "j1Player.h"
 #include "j1Collision.h"
-#include "p2Animation.h"	// @Carles
+#include "p2Animation.h"
 
 j1Player::j1Player()
 {
@@ -36,28 +36,15 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Animations
 	AllocAllAnimations();	// Makes pushbacks of all player animations
 
-	// CHANGE/FIX: Load SFX sounds
+	// Character stats and flags
+	ImportAllStates(config);
 
-	// Character stats
-	maxLife = config.child("life").attribute("value").as_uint();
-	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
-	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-	normalAcceleration = config.child("accelerations").attribute("x").as_float();
-	slideAcceleration = config.child("accelerations").attribute("slide").as_float();
-	gravity = config.child("accelerations").attribute("gravity").as_float();
-	jumpVelocity = config.child("jump").attribute("forceY").as_float();
-
-	// Character status flags
-	lookingRight = config.child("lookingRight").attribute("value").as_bool();
-	hurt = config.child("hurt").attribute("value").as_bool();
-	dead = config.child("dead").attribute("value").as_bool();
-	godmode = config.child("godmode").attribute("value").as_bool();
+	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("time").as_int();
+	playedSlideSfx = config.child("audio").child("slideSfx").attribute("value").as_bool();
+	playedHurtSfx = config.child("audio").child("hurtSfx").attribute("value").as_bool();
 
 	//Collider
-	//Collider* playerHitbox = nullptr;
-
-	// CHANGE/FIX: Hardcoded start, now hardcoded on xml
-	position = { 100, 550 };
+	//Collider* playerHitbox = nullptr;	//SamAlert
 
 	return ret;
 }
@@ -70,7 +57,7 @@ bool j1Player::Start()
 	pugi::xml_document data;
 	pugi::xml_node root;
 
-	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");	// CHANGE/FIX: Hardcoded string should get value from xml file
+	pugi::xml_parse_result result = data.load_file("maps/map1.tmx");	// SamAlert: Hardcoded string should get value from a xml file
 
 	if (result != NULL)
 	{
@@ -89,15 +76,13 @@ bool j1Player::Start()
 	state = player_state::IDLE;
 
 	graphics = App->tex->Load(characterSheet.GetString());
-	//hitbox = App->collision->AddCollider({ (int)position.x, (int)position.y, shipWidth, shipHeight }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Collider must change with animation
-
-	//CHANGE/FIX?: Add condition to load save file on startup?
+	//hitbox = App->collision->AddCollider({ (int)position.x, (int)position.y, shipWidth, shipHeight }, COLLIDER_PLAYER, this);		//SamAlert: Collider should change with animation or at least be more accurate to character size
 
 	return ret;
 }
 
 // Called each loop iteration
-bool j1Player::PreUpdate()	// CHANGE/FIX: Player input here?
+bool j1Player::PreUpdate()	// IMPROVE: Player input here?
 {
 	bool ret = true;
 
@@ -107,7 +92,7 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN && hurt == false && godmode == false) {	// CHANGE/FIX: Hardcoded hurt for debugging purposes (H to get hit)
+	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && hurt == false && godmode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (H to get hit)
 		
 		Hurt();
 		hurt = true;
@@ -178,7 +163,7 @@ bool j1Player::Load(pugi::xml_node& data)
 }
 
 // Save Game State
-bool j1Player::Save(pugi::xml_node& data) const	// CHANGE/FIX: Add all data that needs to be saved (speed, status, etc)
+bool j1Player::Save(pugi::xml_node& data) const
 {
 	pugi::xml_node posNode = data.append_child("position");
 	posNode.append_attribute("x") = position.x;
@@ -240,6 +225,27 @@ void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
 	ImportSpriteData(first_sprite.child("dead").child_value(), &deadSprite, first_sprite);
 }
 
+void j1Player::ImportAllStates(pugi::xml_node& config)
+{
+	maxLife = config.child("life").attribute("value").as_uint();
+	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
+	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
+	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
+	normalAcceleration = config.child("accelerations").attribute("x").as_float();
+	slideAcceleration = config.child("accelerations").attribute("slide").as_float();
+	gravity = config.child("accelerations").attribute("gravity").as_float();
+	jumpVelocity = config.child("jump").attribute("forceY").as_float();
+
+	// Character status flags
+	lookingRight = config.child("lookingRight").attribute("value").as_bool();
+	somersaultUsed = config.child("somersault").attribute("used").as_bool();
+	hurt = config.child("hurt").attribute("value").as_bool();
+	dead = config.child("dead").attribute("value").as_bool();
+	deathDelay = config.child("deathDelay").attribute("time").as_int();
+	playerReset = config.child("reset").attribute("value").as_bool();
+	godmode = config.child("godmode").attribute("value").as_bool();
+}
+
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
 void j1Player::AllocAllAnimations()
 {
@@ -276,13 +282,13 @@ void j1Player::Land()
 void j1Player::Hurt()
 {
 	if (lookingRight == true) {
-		speed.x = -2.0f;	// CHANGE/FIX: Hardcoded
+		speed.x = -hurtSpeed.x;
 	}
 	else {
-		speed.x = 2.0f;	// CHANGE/FIX: Hardcoded
+		speed.x = hurtSpeed.x;
 	}
 
-	speed.y = -2.0f;	// CHANGE/FIX: Hardcoded
+	speed.y = -hurtSpeed.y;
 
 	state = player_state::AIRBORNE;
 }
@@ -316,6 +322,13 @@ void j1Player::PlayerInput()
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 		wantMoveDown = true;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godmode == false) {	// SamAlert: You can't get hurt nor lose life (push F3) in godmode, but what happens when falling in a pit is up to you
+		godmode = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godmode == true) {
+		godmode = false;
 	}
 }
 
@@ -428,7 +441,7 @@ void j1Player::AirMoveCheck()
 		somersaultUsed = true;
 	}
 
-	if (position.y > 100) {		//CHANGE/FIX: Hardcoded values, this condition should be "if feet collision", this is core Sam
+	if (position.y > 100) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
 		position.y = 100;
 
 		Land();
@@ -568,7 +581,7 @@ void j1Player::CrouchingEffects()
 
 void j1Player::RunningEffects()
 {
-	if (runSfxTimer < SDL_GetTicks() - 350) {	// CHANGE/FIX: Hardcoded 350, also sounds bugs a little, extend the audio to have silence instead of getTicks?
+	if (runSfxTimer < SDL_GetTicks() - runSfxDelay) {	// IMPROVE: Gets out of tempo after a few plays.
 		App->audio->PlayFx(App->audio->runSfx.id, 0);
 		runSfxTimer = SDL_GetTicks();
 	}
@@ -612,12 +625,12 @@ void j1Player::HurtEffects()
 }
 
 void j1Player::DeadEffects() {
-	if (deadTimer < SDL_GetTicks() - 1000) {	//CHANGE/FIX: Hardcoded
+	if (deadTimer < SDL_GetTicks() - deathDelay) {
 		deadAnim.Reset();
 		playedHurtSfx = false;
 		hurt = false;
 		dead = false;
-		App->LoadGame();
+		App->LoadGame();	// SamAlert: When dead and death animation time ended, load last save, player should restart at the beginning of the level
 	}
 	else {
 		wantMoveUp = false;
@@ -730,7 +743,7 @@ void j1Player::MovePlayerOrig()
 				||
 				App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 				if (speed.x == 0.0f) {
-					state = player_state::IDLE;	// CHANGE/FIX: Bugs out
+					state = player_state::IDLE;
 				}
 			}
 		}
@@ -759,7 +772,7 @@ void j1Player::MovePlayerOrig()
 			speed.x += currentAcceleration;
 		}
 
-		if (position.y > 550) {		//CHANGE/FIX: Hardcoded values, this is where collision condition goes
+		if (position.y > 550) {
 			position.y = 550;
 
 			speed.y = 0.0f;

@@ -345,7 +345,7 @@ bool j1App::SavegameNow() const
 {
 	bool ret = true;
 
-	p2SString save_game_file = save_game.GetString();	// @Carles, CHANGE/FIX: Must work with a list of saved files
+	p2SString save_game_file = save_game.GetString();	// @Carles, IMPROVE: Could work with a list of saved files instead of having just one
 
 	LOG("Saving Game State to %s...", save_game_file.GetString());
 

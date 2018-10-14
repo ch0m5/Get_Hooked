@@ -43,7 +43,7 @@ j1Collision::j1Collision()
 	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_ENEMY_ATTACK] = false;
 
 	//screen parameter to render bellow and avoid green background @Andres
-	//screen = { 0, 0, SCREEN_WIDTH * SCREEN_SIZE, SCREEN_HEIGHT * SCREEN_SIZE };	//CHANGE/FIX: What is this and why do we (not) need it, should it go to Awake?
+	//screen = { 0, 0, SCREEN_WIDTH * SCREEN_SIZE, SCREEN_HEIGHT * SCREEN_SIZE };	//SamAlert: This is code from Project1, I can't remember what it's for, decide if it's relevant to you
 }
 
 j1Collision::~j1Collision()
@@ -53,10 +53,6 @@ j1Collision::~j1Collision()
 bool j1Collision::Awake(pugi::xml_node&)
 {
 	bool ret = true;
-
-	//info to adapt @Andres code to xml file reading in case we need it
-	//<window>
-	//	<resolution width = "1024" height = "768" scale = "1" / >
 
 	return ret;
 }
@@ -142,7 +138,7 @@ bool j1Collision::CleanUp()
 
 void j1Collision::DebugDraw()
 {
-	/*if (App->input->colliderView == false || App->input->debugMode == false) {	// CHANGE/FIX: Debug bool variable not implemented yet
+	/*if (App->input->colliderView == false || App->input->debugMode == false) {	// SamAlert: This code relates to the debug function of collider viewing
 		return;
 	}*/
 

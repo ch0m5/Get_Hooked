@@ -54,7 +54,7 @@ private:
 	void LoadAllSfx(pugi::xml_node&);		// @Carles
 
 	_Mix_Music*			music;
-	p2List<Mix_Chunk*>	fx;		// CHANGE/FIX: Implement xml reading
+	p2List<Mix_Chunk*>	fx;
 
 	p2SString musicFolder;	// @Carles
 	p2SString sfxFolder;	// @Carles
