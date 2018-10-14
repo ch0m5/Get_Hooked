@@ -62,25 +62,6 @@ bool j1Collision::PreUpdate()
 {
 	bool ret = true;
 
-	// Remove all colliders scheduled for deletion
-	/*for (uint i = 0; i < MAX_COLLIDERS; ++i)
-	{
-		if (colliders[i] != nullptr && colliders[i]->to_delete == true)
-		{
-			delete colliders[i];
-			colliders[i] = nullptr;
-		}
-	}*/
-
-	for (uint i = 0; i < colliders.count(); ++i)
-	{
-		if (colliders[i] != nullptr)
-		{
-			delete colliders[i];
-			colliders[i] = nullptr;
-		}
-	}
-
 	
 
 	// Calculate collisions
