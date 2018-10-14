@@ -32,13 +32,13 @@ bool j1Player::Awake(pugi::xml_node& config)
 	scale = config.child("sprites").child("scale").attribute("value").as_uint();
 
 	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
-	ImportAllSprites(first_sprite);	// Imports all core sprite data for later animation allocation
+	ImportAllSprites(first_sprite);	// Import all sprite data
 
 	// Animations
-	AllocAllAnimations();	// Makes pushbacks of all player animations
+	AllocAllAnimations();	// Allocate all animations with previously recieved sprite data
 
 	// Character stats and flags
-	ImportAllStates(config);
+	ImportAllStates(config);	// Import all state data from config.xml
 
 	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
 	playedSlideSfx = config.child("audio").child("slideSfx").attribute("played").as_bool();
@@ -64,7 +64,7 @@ bool j1Player::Start()
 	{
 		root = data.first_child();
 
-		position.x = root.child("objectgroup").child("object").attribute("x").as_float();
+		position.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
 		position.y = root.child("objectgroup").child("object").attribute("y").as_float();
 
 		data.reset();
@@ -93,7 +93,7 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && hurt == false && godmode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (H to get hit)
+	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && hurt == false && godmode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (F3 to get hit)
 		
 		Hurt();
 		hurt = true;
@@ -236,6 +236,7 @@ void j1Player::ImportSpriteData(const char* spriteName, player_sprite* sprite, p
 	sprite->loop = first_sprite.child(spriteName).attribute("loop").as_bool();
 }
 
+// Import all sprite data using the above function for each animation
 void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
 {
 	ImportSpriteData(first_sprite.child("idle").child_value(), &idleSprite, first_sprite);
@@ -249,8 +250,10 @@ void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
 	ImportSpriteData(first_sprite.child("dead").child_value(), &deadSprite, first_sprite);
 }
 
+// Import all state data from config.xml
 void j1Player::ImportAllStates(pugi::xml_node& config)
 {
+	// Character stats
 	maxLife = config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
@@ -260,7 +263,7 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	jumpVelocity = config.child("jump").attribute("forceY").as_float();
 
-	// Character status flags
+	// Character status flags and directly related data
 	lookingRight = config.child("looking").attribute("right").as_bool();
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
 	hurt = config.child("hurt").attribute("value").as_bool();
@@ -288,23 +291,27 @@ void j1Player::AllocAllAnimations()
 
 //------------------------------------------------
 
-// Player actions' speed effects
-void j1Player::Jump()
+// Player actions
+// Add Y speed when jump requested
+void j1Player::Jump()	
 {
 	speed.y = -jumpVelocity;
 	App->audio->PlayFx(App->audio->jumpSfx.id, 0);
 }
 
+// Add acceleration to Y speed
 void j1Player::Fall()
 {
 	speed.y += gravity;
 }
 
+// Stop Y speed
 void j1Player::Land()
 {
 	speed.y = 0.0f;
 }
 
+// Stop and move slightly up and opposite of current direction, player state changes to AIRBORNE
 void j1Player::Hurt()
 {
 	if (lookingRight == true) {
@@ -358,6 +365,7 @@ void j1Player::PlayerInput()
 	}
 }
 
+// Check player current movement
 void j1Player::PlayerMovement() {
 	if (speed.x > 0.0f) {
 		movingRight = true;
@@ -386,8 +394,8 @@ void j1Player::PlayerMovement() {
 	}
 }
 
-//Decide new player state
-void j1Player::PlayerState() {
+// Check player state
+void j1Player::PlayerState() {	// For each state, check possible new states based on other parameters
 	if (hurt == true) {
 		if (dead == false) {
 			HurtMoveCheck();
@@ -629,7 +637,10 @@ void j1Player::AirEffects()
 
 void j1Player::SlidingEffects()
 {
+	wantMoveRight = false;
+	wantMoveLeft = false;
 	currentAcceleration = slideAcceleration;
+
 	if (playedSlideSfx == false) {
 		App->audio->PlayFx(App->audio->slideSfx.id, 0);
 		playedSlideSfx = true;
@@ -676,16 +687,16 @@ void j1Player::DeadEffects() {
 	}
 }
 
-// Move player position and calculate other movement related factors
+// Move player position and decide/calculate other movement related factors
 void j1Player::MovePlayer()
 {
-	if (state != player_state::SLIDING && wantMoveRight == true && wantMoveLeft == false) {
+	if (wantMoveRight == true && wantMoveLeft == false) {
 		speed.x += currentAcceleration;
 	}
-	else if (state != player_state::SLIDING && wantMoveLeft == true && wantMoveRight == false) {
+	else if (wantMoveLeft == true && wantMoveRight == false) {
 		speed.x -= currentAcceleration;
 	}
-	else if (state != player_state::AIRBORNE) {	// Natural deacceleration
+	else if (state != player_state::AIRBORNE) {	// Natural deacceleration when on ground
 		if (movingRight == true) {
 			speed.x -= currentAcceleration;
 
@@ -700,6 +711,7 @@ void j1Player::MovePlayer()
 		}
 	}
 
+	// If on air, apply gravity
 	if (state == player_state::AIRBORNE) {
 		Fall();
 	}

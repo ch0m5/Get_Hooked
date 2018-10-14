@@ -62,7 +62,7 @@ private:	// @Carles
 	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
-	// Player functions
+	// Player actions
 	void Jump();		// Add Y speed when jump requested
 	void Fall();		// Add acceleration to Y speed
 	void Land();		// Stop Y speed
@@ -172,8 +172,8 @@ private:
 	// Audio
 	uint runSfxTimer = 0;	// Timer to mark time between run sounds
 	int runSfxDelay;		// Time between run sounds
-	bool playedSlideSfx;	// Flag to mark 
-	bool playedHurtSfx;
+	bool playedSlideSfx;	// Flag to mark slide sfx played
+	bool playedHurtSfx;		// Flag to mark hurt sfx played
 
 	// Player rectangles
 	SDL_Rect animRect;		//SamAlert: For animation blit
