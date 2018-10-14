@@ -46,9 +46,12 @@ bool j1FadeScene::Update(float dt)
 	{
 		if (now >= total_time)
 		{
-			// CHANGE/FIX: On this space apply the needed change
-
-			// previously enable/disable modules, now change maps and maybe call some Starts() from maps and player
+			// CHANGE/FIX
+			// SamAlert: Here it previosuly enable/disable modules, what it does now is up to you Sam: Load game, change map, start map from beginning...
+			//fade_out->Disable();
+			//fade_in->Enable();
+			//fade_out = nullptr;
+			//fade_in = nullptr;
 
 			// ---
 			total_time += total_time;
@@ -84,8 +87,8 @@ bool j1FadeScene::FadeToBlack(/*Map* map_off, Map* map_on, */float time)	// Befo
 		start_time = SDL_GetTicks();
 		total_time = (Uint32)(time * 0.5f * 1000.0f);
 
-		//fade_out = module_off;
-		//fade_in = module_on;
+		//fade_out = map_off;
+		//fade_in = map_on;
 
 		ret = true;
 	}

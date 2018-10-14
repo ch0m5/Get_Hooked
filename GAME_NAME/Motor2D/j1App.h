@@ -15,6 +15,7 @@ class j1Scene;
 class j1Map;
 class j1Player;		// @Carles
 class j1Collision;	// @Carles
+class j1FadeScene;	// @Carles
 
 class j1App
 {
@@ -87,6 +88,7 @@ public:
 	j1Map*				map;
 	j1Player*			player;		// @Carles
 	j1Collision*		collision;	// @Carles
+	j1FadeScene*		fade;		// @Carles
 
 private:
 

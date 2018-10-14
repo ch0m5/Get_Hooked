@@ -66,9 +66,9 @@
       </first_sprite>
     </sprites>
     <audio>
-      <runSfxDelay time="350"/>
-      <slideSfx value="false"/>
-      <hurtSfx value="false"/>
+      <runSfxDelay miliseconds="350"/>
+      <slideSfx played="false" />
+      <hurtSfx played="false" />
     </audio>
     <life value="3"/>
     <speed x="0" y="0"/>
@@ -76,11 +76,13 @@
     <hurtSpeed x="2" y="2"/>
     <accelerations x="0.25" gravity="0.2" slide="0.07"/>
     <jump forceY="4"/>
-    <lookingRight value="true"/>
+    <looking right="true"/>
     <somersault used="false"/>
     <hurt value="false"/>
     <dead value="false"/>
-    <deathDelay time="1000"/>
+    <deathDelay miliseconds="1000"/>
+    <fading value="false"/>
+    <fadeDelay seconds="1"/>
     <reset value="false"/>
     <godmode value="false"/>
   </player>

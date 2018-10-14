@@ -7,6 +7,7 @@
 #include "j1Audio.h"
 #include "j1Player.h"
 #include "j1Collision.h"
+#include "j1FadeScene.h"
 #include "p2Animation.h"
 
 j1Player::j1Player()
@@ -39,9 +40,9 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Character stats and flags
 	ImportAllStates(config);
 
-	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("time").as_int();
-	playedSlideSfx = config.child("audio").child("slideSfx").attribute("value").as_bool();
-	playedHurtSfx = config.child("audio").child("hurtSfx").attribute("value").as_bool();
+	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
+	playedSlideSfx = config.child("audio").child("slideSfx").attribute("played").as_bool();
+	playedHurtSfx = config.child("audio").child("hurtSfx").attribute("played").as_bool();
 
 	//Collider
 	//Collider* playerHitbox = nullptr;	//SamAlert
@@ -153,11 +154,17 @@ bool j1Player::Load(pugi::xml_node& data)
 	life = data.child("life").attribute("value").as_uint();
 	currentAcceleration = data.child("acceleration").attribute("type").as_float();
 	state = (player_state)data.child("state").attribute("current").as_uint();
-	lookingRight = data.child("lookingRight").attribute("value").as_bool();
-	somersaultUsed = data.child("somersaultUsed").attribute("value").as_bool();
+	lookingRight = data.child("looking").attribute("right").as_bool();
+	somersaultUsed = data.child("somersault").attribute("used").as_bool();
 	hurt = data.child("hurt").attribute("value").as_bool();
 	dead = data.child("dead").attribute("value").as_bool();
+	deadTimer = data.child("deadTimer").attribute("miliseconds").as_int();
+	playerReset = data.child("reset").attribute("value").as_bool();
 	godmode = data.child("godmode").attribute("value").as_bool();
+
+	runSfxTimer = data.child("runSfxTimer").attribute("miliseconds").as_int();
+	playedSlideSfx = data.child("slideSfx").attribute("played").as_bool();
+	playedHurtSfx = data.child("hurtSfx").attribute("played").as_bool();
 
 	return true;
 }
@@ -182,11 +189,11 @@ bool j1Player::Save(pugi::xml_node& data) const
 	pugi::xml_node stateNode = data.append_child("state");
 	stateNode.append_attribute("current") = (uint)state;
 
-	pugi::xml_node lookingRightNode = data.append_child("lookingRight");
-	lookingRightNode.append_attribute("value") = lookingRight;
+	pugi::xml_node lookingRightNode = data.append_child("looking");
+	lookingRightNode.append_attribute("right") = lookingRight;
 
-	pugi::xml_node somersaultUsedNode = data.append_child("somersaultUsed");
-	somersaultUsedNode.append_attribute("value") = somersaultUsed;
+	pugi::xml_node somersaultUsedNode = data.append_child("somersault");
+	somersaultUsedNode.append_attribute("used") = somersaultUsed;
 
 	pugi::xml_node hurtNode = data.append_child("hurt");
 	hurtNode.append_attribute("value") = hurt;
@@ -194,8 +201,23 @@ bool j1Player::Save(pugi::xml_node& data) const
 	pugi::xml_node deadNode = data.append_child("dead");
 	deadNode.append_attribute("value") = dead;
 
+	pugi::xml_node deadTimerNode = data.append_child("deadTimer");
+	deadTimerNode.append_attribute("miliseconds") = deadTimer;
+
+	pugi::xml_node playerResetNode = data.append_child("reset");
+	playerResetNode.append_attribute("value") = playerReset;
+
 	pugi::xml_node godmodeNode = data.append_child("godmode");
 	godmodeNode.append_attribute("value") = godmode;
+
+	pugi::xml_node runSfxTimerNode = data.append_child("runSfxTimer");
+	runSfxTimerNode.append_attribute("miliseconds") = runSfxTimer;
+
+	pugi::xml_node playedSlideSfxNode = data.append_child("slideSfx");
+	playedSlideSfxNode.append_attribute("played") = playedSlideSfx;
+
+	pugi::xml_node playedHurtSfxNode = data.append_child("hurtSfx");
+	playedHurtSfxNode.append_attribute("played") = playedHurtSfx;
 
 	return true;
 }
@@ -237,11 +259,13 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	jumpVelocity = config.child("jump").attribute("forceY").as_float();
 
 	// Character status flags
-	lookingRight = config.child("lookingRight").attribute("value").as_bool();
+	lookingRight = config.child("looking").attribute("right").as_bool();
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
 	hurt = config.child("hurt").attribute("value").as_bool();
 	dead = config.child("dead").attribute("value").as_bool();
-	deathDelay = config.child("deathDelay").attribute("time").as_int();
+	deathDelay = config.child("deathDelay").attribute("miliseconds").as_int();
+	fading = config.child("fading").attribute("value").as_bool();
+	fadeDelay = config.child("fadeDelay").attribute("seconds").as_int();
 	playerReset = config.child("reset").attribute("value").as_bool();
 	godmode = config.child("godmode").attribute("value").as_bool();
 }
@@ -625,12 +649,17 @@ void j1Player::HurtEffects()
 }
 
 void j1Player::DeadEffects() {
-	if (deadTimer < SDL_GetTicks() - deathDelay) {
+	if (fading == false && deadTimer < SDL_GetTicks() - deathDelay) {
+		App->fade->FadeToBlack(fadeDelay);
+		fading = true;
+	}
+	else if (fading == true && deadTimer < SDL_GetTicks() - deathDelay - fadeDelay * 1000 / 2) {
 		deadAnim.Reset();
 		playedHurtSfx = false;
 		hurt = false;
 		dead = false;
-		App->LoadGame();	// SamAlert: When dead and death animation time ended, load last save, player should restart at the beginning of the level
+		fading = false;
+		App->LoadGame();	// SamAlert: For now it loads the last save when it's fully faded to black, decide what happens
 	}
 	else {
 		wantMoveUp = false;

@@ -8,6 +8,7 @@
 #include "j1Window.h"
 #include "j1Map.h"
 #include "j1Scene.h"
+#include "j1Player.h"	// @Carles
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -50,10 +51,10 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	if(App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+	if(App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false)	// @Carles
 		App->LoadGame();
 
-	if(App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+	if(App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false)	// @Carles
 		App->SaveGame();
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)

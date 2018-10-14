@@ -51,6 +51,11 @@ public:
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
 
+public:
+	bool IsDead() {
+		return dead;
+	}
+
 private:	// @Carles
 	//void MovePlayerOrig();
 	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);
@@ -122,6 +127,8 @@ private:
 	bool dead;
 	int deadTimer = 0;
 	int deathDelay;
+	bool fading;
+	int fadeDelay;
 	bool playerReset;
 	bool godmode;
 	player_state state;

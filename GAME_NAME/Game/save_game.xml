@@ -7,18 +7,24 @@
 	<map />
 	<scene />
 	<player>
-		<position x="74.4599838" y="100" />
+		<position x="85.75" y="92.8181992" />
 		<speed x="0" y="0" />
 		<life value="3" />
 		<acceleration type="0.25" />
 		<state current="0" />
-		<lookingRight value="true" />
-		<somersaultUsed value="false" />
+		<looking right="true" />
+		<somersault used="false" />
 		<hurt value="false" />
 		<dead value="false" />
+		<deadTimer miliseconds="0" />
+		<reset value="false" />
 		<godmode value="false" />
+		<runSfxTimer miliseconds="2115" />
+		<slideSfx played="false" />
+		<hurtSfx played="false" />
 	</player>
 	<collision />
+	<window />
 	<renderer>
 		<camera x="0" y="0" />
 	</renderer>
