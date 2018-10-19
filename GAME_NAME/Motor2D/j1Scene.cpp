@@ -37,7 +37,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load("map1.tmx");	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
+	App->map->Load("testmap.tmx");	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
 	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
 	return true;
 }

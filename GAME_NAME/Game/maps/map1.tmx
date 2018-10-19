@@ -649,8 +649,8 @@
    <tile gid="45"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="36"/>
-   <tile gid="45"/>
+   <tile gid="52"/>
+   <tile gid="61"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -799,8 +799,8 @@
    <tile gid="61"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="36"/>
-   <tile gid="45"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -949,8 +949,8 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="52"/>
-   <tile gid="61"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -3021,13 +3021,13 @@
   </data>
  </layer>
  <objectgroup name="objects">
-  <object id="1" name="start_point" type="start" x="18.75" y="92.8182"/>
-  <object id="2" name="end_point" type="end" x="1171.64" y="77.0909"/>
+  <object id="1" name="-1" type="start" x="18.75" y="92.8182"/>
+  <object id="2" name="5" type="end" x="1171.64" y="77.0909"/>
   <object id="4" name="0" x="0" y="112" width="64" height="48"/>
   <object id="5" name="0" x="136" y="96" width="40" height="64"/>
   <object id="6" name="0" x="176" y="64" width="112" height="96"/>
   <object id="7" name="0" x="208" y="0" width="24" height="48"/>
-  <object id="8" name="0" x="248" y="0" width="16" height="56"/>
+  <object id="8" name="0" x="248" y="0" width="16" height="40"/>
   <object id="9" name="0" x="336" y="80" width="24" height="80"/>
   <object id="11" name="0" x="384" y="80" width="24" height="80"/>
   <object id="12" name="0" x="432" y="80" width="24" height="80"/>
@@ -3050,4 +3050,3 @@
   <object id="29" name="0" x="904" y="0" width="24" height="56"/>
  </objectgroup>
 </map>
-  

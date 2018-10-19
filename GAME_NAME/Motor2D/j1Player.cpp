@@ -63,7 +63,7 @@ bool j1Player::Start()
 	pugi::xml_document config_data;
 	pugi::xml_node root;
 
-	pugi::xml_parse_result result = map_data.load_file("maps/map1.tmx");	// SamAlert: Hardcoded string should get value from a xml file
+	pugi::xml_parse_result result = map_data.load_file("maps/testmap.tmx");	// SamAlert: Hardcoded string should get value from a xml file
 	pugi::xml_parse_result result2 = config_data.load_file("config.xml");
 
 	if (result != NULL && result2 != NULL)
@@ -142,10 +142,10 @@ bool j1Player::Update(float dt)
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 
 	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_NONE, scale);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_NONE);
 	}
 	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_HORIZONTAL, scale);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_HORIZONTAL);
 	}
 
 	return ret;

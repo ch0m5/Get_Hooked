@@ -121,6 +121,7 @@
     <None Include="..\Game\maps\map2.tmx" />
     <None Include="..\Game\maps\parallax1.tmx" />
     <None Include="..\Game\maps\parallax2.tmx" />
+    <None Include="..\Game\maps\testmap.tmx" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Game\config.xml">
