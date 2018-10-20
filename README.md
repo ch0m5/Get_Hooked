@@ -11,8 +11,6 @@ No previous installations is required to play the game, just download and execut
 ## Usage
 ### General Controls
 - ESC: Quit the game
-- F5: Save current state
-- F6: Load previously saved state
 
 ### Player 1 Controls
 - Keyboard:
@@ -25,17 +23,22 @@ No previous installations is required to play the game, just download and execut
 ### Player 2 (Considering implementation!)
 
 ### Debug Mode
-- F1: Start from the first level
-- F2: Start from beginning of current level
-- F3: Recieve instant damage (Unless on godmode)
-- F9: Debug view (Colliders/Logic)
-- F10: Godmode (No damage recieved)
+* F1: Start from the first level
+* F2: Start from beginning of current level
+* F3: Allow debug functionalities and inputs, and display debug data on window title
+* F4: Recieve instant damage (Unless on godmode)
+* F5: Save current state
+* F6: Load previously saved state
+* F9: Debug view (Colliders/Logic)
+* F10: Godmode (No damage recieved)
+* 1/2/3/4/5: Change game scale to number chosen
 
 ## Innovation
 * Player accelerates and deaccelerates when moving on ground, but not while being airborne
 * Player can crouch to evade things that could hit his head area
 * Player slides with a different deacceleration when trying to crouch while moving
 * Player can jump in the air once making a somersault
+* Original Debug Functionalities
 
 ## Contributing
 1. Fork it!

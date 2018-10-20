@@ -352,7 +352,7 @@ void j1Player::Hurt()
 //Check debug input
 void j1Player::DebugInput()
 {
-	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && hurt == false && godMode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (F3 to get hit)
+	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && hurt == false && godMode == false) {	// Hurt player
 
 		Hurt();
 		hurt = true;
@@ -363,28 +363,29 @@ void j1Player::DebugInput()
 		}
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false) {
+	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false) {	// Load game
 		App->LoadGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {
+	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {	// Save game
 		App->SaveGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {
+	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
 		App->collision->mustDebugDraw = true;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == true) {
 		App->collision->mustDebugDraw = false;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// SamAlert: You can't get hurt nor lose life (push F3) in godMode, but what happens when falling in a pit is up to you
+	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// GodMode
 		godMode = true;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
 		godMode = false;
 	}
 
+	// Change scale
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
 		App->win->scale = 1;
 	}
