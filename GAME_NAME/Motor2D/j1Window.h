@@ -37,11 +37,14 @@ public:
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
 
+	//Made public for debug functionality @Carles
+	uint		origScale;
+	uint		scale;
+
 private:
 	p2SString	title;
 	uint		width;
 	uint		height;
-	uint		scale;
 };
 
 #endif // __j1WINDOW_H__

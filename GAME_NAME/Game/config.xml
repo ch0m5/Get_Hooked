@@ -13,17 +13,20 @@
   </renderer>
 
   <collision>
-    <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-    <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-    <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-    <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true"/>
-    <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false"/>
-    <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false"/>
-    <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false"/>
+    <mustDebugDraw value="false" />
+    <matrix>
+      <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
+      <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
+      <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
+      <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true"/>
+      <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false"/>
+      <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false"/>
+      <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false"/>
+    </matrix>
   </collision>
   
   <window>
-    <resolution width="1024" height="768" scale="1"/>
+    <resolution width="1024" height="768" scale="2"/>
     <fullscreen value="false"/>
     <borderless value="false"/>
     <resizable value="false"/>
@@ -62,7 +65,6 @@
     <sprites>
       <spriteSheet>character_sprite_sheet.png</spriteSheet>
       <spriteSize x="50" y="37"/>
-      <scale value="1" />
       <first_sprite>
         <idle column="0" row="0" frames="4" animSpeed ="0.12" loop="true">idle</idle>
         <run column="0" row="4" frames="6" animSpeed ="0.12" loop="true">run</run>
@@ -108,7 +110,8 @@
       <fading value="false"/>
       <fadeDelay seconds="1"/>
       <reset value="false"/>
-      <godmode value="false"/>
+      <debugMode value="false" />
+      <godMode value="false"/>
     </stats>
   </player>
 

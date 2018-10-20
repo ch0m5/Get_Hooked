@@ -19,7 +19,7 @@ bool j1Collision::Awake(pugi::xml_node& config)
 {
 	bool ret = true;
 
-	pugi::xml_node childList = config.first_child();
+	pugi::xml_node childList = config.child("matrix").first_child();
 	pugi::xml_attribute attributeList = childList.first_attribute();
 
 	for (int i = COLLIDER_WALL; i < COLLIDER_MAX; ++i) {	// @Carles, automatically allocate collider matrix using config.xml
@@ -32,6 +32,8 @@ bool j1Collision::Awake(pugi::xml_node& config)
 		childList = childList.next_sibling();
 		attributeList = childList.first_attribute();
 	}
+
+	mustDebugDraw = config.child("mustDebugDraw").attribute("value").as_bool();
 
 	return ret;
 }
@@ -82,7 +84,7 @@ bool j1Collision::PreUpdate()
 
 	return ret;
 
-	// CHANGE/FIX: PREVIOUS CODE
+	// CHECK_ERIC: PREVIOUS CODE
 	/*
 	bool ret = true;
 
@@ -181,17 +183,7 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 
 void j1Collision::DebugDraw()
 {
-	/*if (App->input->colliderView == false || App->input->debugMode == false) {	// SamAlert: This code relates to the debug function of collider viewing
-		return;
-	}*/
-
-	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-	{
-		debug = !debug;
-	}
-
-	if (debug == false)
-	{
+	if (mustDebugDraw == false) {
 		return;
 	}
 
@@ -255,20 +247,6 @@ Collider* j1Collision::AddCollider(Collider* colliderPtr, SDL_Rect rect, COLLIDE
 	ret = colliderPtr;
 
 	return ret;
-
-	// OLD FUNCTION
-	/*Collider* ret = nullptr;
-
-	for (uint i = 0; i < MAX_COLLIDERS; ++i)
-	{
-		if (colliders[i] == nullptr)
-		{
-			ret = colliders[i] = new Collider(rect, type, callback);
-			break;
-		}
-	}
-
-	return ret;*/
 }
 
 // -----------------------------------------------------

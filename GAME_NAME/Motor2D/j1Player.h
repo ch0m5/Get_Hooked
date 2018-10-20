@@ -55,6 +55,12 @@ public:	// @Carles
 	bool IsDead() const {
 		return dead;
 	}
+	fPoint GetPosition() const {
+		return position;
+	}
+	fPoint GetSpeed() const {
+		return speed;
+	}
 
 private:	// @Carles
 	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);	// Import sprite data from config.xml
@@ -68,6 +74,9 @@ private:	// @Carles
 	void Land();		// Stop Y speed
 	void Hurt();		// Stop and move slightly up and opposite of current direction, player state changes to AIRBORNE
 	//void Hook();
+
+	// Debug update
+	void DebugInput();
 
 	// Player update
 	void PlayerInput();		// Check player input
@@ -97,6 +106,7 @@ public:
 	//Collider
 	Collider* hitbox = nullptr;
 	player_state state;	// CHANGE/FIX: Should be private?
+	bool debugMode;		// Flag that marks if debug functionalities are available
 
 private:
 	p2SString folder;
@@ -137,14 +147,13 @@ private:
 	int fadeDelay;		// FadeToBlack duration
 	bool playerReset;	// Flag used to restart animations on player hurt
 	bool playerRespawn; // Flag used to restart position and animations of player after death
-	bool godmode;		// Flag used to mark player invencibility
+	bool godMode;		// Flag used to mark player invencibility
 	//player_state state;	// Flag to mark player current state
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;
 	p2SString characterSheet;
 	iPoint spriteSize;
-	uint scale;
 
 	//Character sprites
 	player_sprite idleSprite;

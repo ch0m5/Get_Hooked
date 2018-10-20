@@ -82,6 +82,9 @@ public:
 
 	Collider* AddCollider(Collider* colliderPtr, SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback);	//@Carles
 	void DebugDraw();
+
+public:
+	bool mustDebugDraw;
 	p2List<Collider*> colliders;
 
 private:
@@ -89,7 +92,6 @@ private:
 	
 	bool matrix[COLLIDER_MAX][COLLIDER_MAX];
 	SDL_Rect screen;
-	bool debug;									//SamAlert: Flag that marks "debug mode" not implemented yet (which let's you use all cheats)
 };
 
 #endif	//__j1COLLISION_H__

@@ -28,7 +28,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
-	p2SString title(config.child("title").child_value());	// @Carles
+	title.create(config.child("title").child_value());	// @Carles
 	App->win->SetTitle(title.GetString());
 
 	return ret;
@@ -51,12 +51,6 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	if(App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false)	// @Carles
-		App->LoadGame();
-
-	if(App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false)	// @Carles
-		App->SaveGame();
-
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		App->render->camera.y -= cameraSpeed.y;
 
@@ -69,15 +63,15 @@ bool j1Scene::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		App->render->camera.x += cameraSpeed.x;
 
+	if (App->player->debugMode == true) {
+		debugTitle();
+	}
+	else {
+		origTitle();
+	}
+
 	//App->render->Blit(img, 0, 0);
 	App->map->Draw();
-	
-	/*p2SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-		App->map->data.width, App->map->data.height,
-		App->map->data.tile_width, App->map->data.tile_height,
-		App->map->data.tilesets.count());
-
-	App->win->SetTitle(title.GetString());*/	//SamAlert: I commented this because the window should have the game title, but i will not erase it for now, just in case.
 
 	return true;
 }
@@ -99,4 +93,26 @@ bool j1Scene::CleanUp()
 	LOG("Freeing scene");
 
 	return true;
+}
+
+void j1Scene::debugTitle()	// @Carles
+{
+	p2SString title("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d)",
+		title.GetString(),
+		(int)App->player->GetPosition().x,
+		(int)App->player->GetPosition().y,
+		(int)App->player->GetSpeed().x,
+		(int)App->player->GetSpeed().y,
+		App->map->data.width, App->map->data.height,
+		App->map->data.tile_width, App->map->data.tile_height,
+		App->map->data.tilesets.count());
+
+	App->win->SetTitle(title.GetString());
+}
+
+void j1Scene::origTitle()	// @Carles
+{
+	p2SString title("%s", title.GetString());
+
+	App->win->SetTitle(title.GetString());
 }

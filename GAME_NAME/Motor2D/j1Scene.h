@@ -32,7 +32,12 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+public:	// @Carles
+	void debugTitle();
+	void origTitle();
+
 private:
+	p2SString title;	// @Carles
 	fPoint cameraSpeed;	// @Carles
 };
 

@@ -8,8 +8,10 @@
 #include "j1Player.h"
 #include "j1Collision.h"
 #include "j1FadeScene.h"
-#include "p2Animation.h"
 #include "j1Collision.h"
+#include "j1Window.h"
+#include "j1Scene.h"
+#include "p2Animation.h"
 
 j1Player::j1Player()
 {
@@ -30,7 +32,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 	// Sprites
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
-	scale = config.child("sprites").child("scale").attribute("value").as_uint();
 
 	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
 	ImportAllSprites(first_sprite);	// Import all sprite data
@@ -116,15 +117,8 @@ bool j1Player::Update(float dt)
 {
 	bool ret = true;
 
-	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && hurt == false && godmode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (F3 to get hit)
-		
-		Hurt();
-		hurt = true;
-
-		if (--life <= 0) {
-			dead = true;
-			deadTimer = SDL_GetTicks();
-		}
+	if (debugMode == true) {
+		DebugInput();	// Check debug input
 	}
 
 	PlayerInput();		// Check player input
@@ -192,7 +186,6 @@ bool j1Player::Load(pugi::xml_node& data)
 	dead = data.child("dead").attribute("value").as_bool();
 	deadTimer = data.child("deadTimer").attribute("miliseconds").as_uint();
 	playerReset = data.child("reset").attribute("value").as_bool();
-	godmode = data.child("godmode").attribute("value").as_bool();
 
 	runSfxTimer = data.child("runSfxTimer").attribute("miliseconds").as_uint();
 	playedSlideSfx = data.child("slideSfx").attribute("played").as_bool();
@@ -240,9 +233,6 @@ bool j1Player::Save(pugi::xml_node& data) const
 
 	tmpNode = data.append_child("reset");
 	tmpNode.append_attribute("value") = playerReset;
-
-	tmpNode = data.append_child("godmode");
-	tmpNode.append_attribute("value") = godmode;
 
 	tmpNode = data.append_child("runSfxTimer");
 	tmpNode.append_attribute("miliseconds") = runSfxTimer;
@@ -304,7 +294,8 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	fading = config.child("fading").attribute("value").as_bool();
 	fadeDelay = config.child("fadeDelay").attribute("seconds").as_int();
 	playerReset = config.child("reset").attribute("value").as_bool();
-	godmode = config.child("godmode").attribute("value").as_bool();
+	debugMode = config.child("debugMode").attribute("value").as_bool();
+	godMode = config.child("godMode").attribute("value").as_bool();
 }
 
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
@@ -358,42 +349,100 @@ void j1Player::Hurt()
 	state = player_state::AIRBORNE;
 }
 
+//Check debug input
+void j1Player::DebugInput()
+{
+	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && hurt == false && godMode == false) {	// IMPROVE: Hardcoded hurt for debugging purposes (F3 to get hit)
+
+		Hurt();
+		hurt = true;
+
+		if (--life <= 0) {
+			dead = true;
+			deadTimer = SDL_GetTicks();
+		}
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false) {
+		App->LoadGame();
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {
+		App->SaveGame();
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {
+		App->collision->mustDebugDraw = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == true) {
+		App->collision->mustDebugDraw = false;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// SamAlert: You can't get hurt nor lose life (push F3) in godMode, but what happens when falling in a pit is up to you
+		godMode = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
+		godMode = false;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
+		App->win->scale = 1;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
+		App->win->scale = 2;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) {
+		App->win->scale = 3;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN) {
+		App->win->scale = 4;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_5) == KEY_DOWN) {
+		App->win->scale = 5;
+	}
+}
+
 //Check player input
 void j1Player::PlayerInput()
 {
-	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE) {
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE) {		// Move left input
 		wantMoveLeft = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		wantMoveLeft = true;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE) {
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_IDLE) {		// Move right input
 		wantMoveRight = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		wantMoveRight = true;
 	}
 	
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE) {
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE) {		// Move up input
 		wantMoveUp = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
 		wantMoveUp = true;
 	}
 	
-	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_IDLE) {
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_IDLE) {		// Move down input
 		wantMoveDown = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
 		wantMoveDown = true;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godmode == false) {	// SamAlert: You can't get hurt nor lose life (push F3) in godmode, but what happens when falling in a pit is up to you
-		godmode = true;
+	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
+		debugMode = true;
+		App->scene->debugTitle();
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godmode == true) {
-		godmode = false;
+	else if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == true) {
+		debugMode = false;
+		godMode = false;
+		App->collision->mustDebugDraw = false;
+		App->win->scale = App->win->origScale;
+		App->scene->origTitle();
 	}
 }
 
@@ -507,51 +556,51 @@ void j1Player::AirMoveCheck()
 		somersaultUsed = true;
 	}
 
-	//if (position.y > 100) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
-	//	position.y = 100;
+	if (position.y > 500) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
+		position.y = 500;
 
-	//	Land();
-	//	jumpAnim.Reset();
-	//	somersaultUsed = false;
+		Land();
+		jumpAnim.Reset();
+		somersaultUsed = false;
 
-	//	if (dead == true) {
-	//		state = player_state::IDLE;
-	//	}
-	//	else {
-	//		if (hurt == true) {
-	//			hurt = false;
-	//			playedHurtSfx = false;
-	//			playerReset = false;
-	//		}
-	//		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
-	//			if (wantMoveDown == true) {
-	//				state = player_state::SLIDING;
-	//			}
-	//			else {
-	//				state = player_state::RUNNING;
-	//			}
-	//		}
-	//		else if (wantMoveDown == true) {
-	//			state = player_state::CROUCHING;
-	//		}
-	//		else {
-	//			state = player_state::IDLE;
-	//		}
-	//	}
-	//}
-	//if (position.y > 300) {	//SamAlert: Hardcoded, if fallen into a pit and godmode == false, die and loadGame, else if godmode == true respawn on height 50
-	//	if (godmode == false) {
-	//		Hurt();
-	//		Land();
-	//		hurt = true;
-	//		dead = true;
-	//		deadTimer = SDL_GetTicks();
-	//		state = player_state::IDLE;
-	//	}
-	//	else {
-	//		position.y = 50;
-	//	}
-	//}
+		if (dead == true) {
+			state = player_state::IDLE;
+		}
+		else {
+			if (hurt == true) {
+				hurt = false;
+				playedHurtSfx = false;
+				playerReset = false;
+			}
+			if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+				if (wantMoveDown == true) {
+					state = player_state::SLIDING;
+				}
+				else {
+					state = player_state::RUNNING;
+				}
+			}
+			else if (wantMoveDown == true) {
+				state = player_state::CROUCHING;
+			}
+			else {
+				state = player_state::IDLE;
+			}
+		}
+	}
+	if (position.y > 800) {	//SamAlert: Hardcoded, if fallen into a pit and godMode == false, die and loadGame, else if godMode == true respawn on height 50
+		if (godMode == false) {
+			Hurt();
+			Land();
+			hurt = true;
+			dead = true;
+			deadTimer = SDL_GetTicks();
+			state = player_state::IDLE;
+		}
+		else {
+			position.y = 50;
+		}
+	}
 }
 
 void j1Player::SlidingMoveCheck()
@@ -778,15 +827,20 @@ void j1Player::MovePlayer()
 	position.x += speed.x;
 	position.y += speed.y;
 
-	// Move camera with player within set limits	// CHANGE/FIX: CAMERA MOVEMENT
-	/*if (App->render->camera.x > -(position.x - 170) * scale) {
-		App->render->camera.x = -(position.x - 170) * scale;
+	// Move camera with player within set limits
+	if (App->render->camera.x < -(position.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left
+		App->render->camera.x = -(position.x * App->win->GetScale() - 350);
 	}
-	else if (App->render->camera.x < -(position.x - 130) * scale) {
-		App->render->camera.x = -(position.x - 130) * scale;
-	}*/
+	else if (App->render->camera.x > -(position.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.x = -(position.x * App->win->GetScale() - 500);
+	}
 
-	//App->render->camera.y = -(position.y - 88) * scale;
+	if (App->render->camera.y < -(position.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
+		App->render->camera.y = -(position.y * App->win->GetScale() - 300);
+	}
+	else if (App->render->camera.y > -(position.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.y = -(position.y * App->win->GetScale() - 400);
+	}
 }
 
 //OLD PLAYER MOVEMENT, take as reference

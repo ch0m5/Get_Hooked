@@ -18,7 +18,6 @@
 		<dead value="false" />
 		<deadTimer miliseconds="0" />
 		<reset value="false" />
-		<godmode value="false" />
 		<runSfxTimer miliseconds="2115" />
 		<slideSfx played="false" />
 		<hurtSfx played="false" />
