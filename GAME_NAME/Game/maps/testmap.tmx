@@ -12008,12 +12008,12 @@
   </data>
  </layer>
  <objectgroup name="Object Layer 1">
-  <object id="1" name="start_point" x="69.25" y="561.75" width="20.5" height="26"/>
-  <object id="2" name="1" x="336" y="592" width="224" height="48"/>
-  <object id="3" name="1" x="512" y="528" width="48" height="64"/>
-  <object id="4" name="1" x="592" y="528" width="272" height="118"/>
-  <object id="5" name="1" x="656" y="336" width="64" height="160"/>
-  <object id="6" name="1" x="768" y="448" width="32" height="64"/>
-  <object id="7" name="1" x="0" y="592" width="272" height="48"/>
+  <object id="1" name="-1" x="69.25" y="561.75" width="20.5" height="26"/>
+  <object id="2" name="0" x="336" y="592" width="224" height="48"/>
+  <object id="3" name="0" x="512" y="528" width="48" height="64"/>
+  <object id="4" name="0" x="592" y="528" width="272" height="118"/>
+  <object id="5" name="0" x="656" y="336" width="64" height="160"/>
+  <object id="6" name="0" x="768" y="448" width="32" height="64"/>
+  <object id="7" name="0" x="0" y="592" width="272" height="48"/>
  </objectgroup>
 </map>
