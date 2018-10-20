@@ -10,6 +10,13 @@
 struct _Mix_Music;
 struct Mix_Chunk;
 
+enum sfx_id_list {	// @Carles: List of sfx as they are put on the sfx p2List
+	SFX_WALK = 1,
+	SFX_JUMP,
+	SFX_SLIDE,
+	SFX_HURT
+};
+
 struct sfx_file {	// @Carles
 	p2SString name;
 	uint id;
