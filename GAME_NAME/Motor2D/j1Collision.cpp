@@ -4,55 +4,34 @@
 #include "j1Input.h"
 #include "j1Render.h"
 #include "j1Collision.h"
+#include "j1Player.h"
 
 j1Collision::j1Collision()
 {
 	name.create("collision");
-
-	/*for (uint i = 0; i < MAX_COLLIDERS; ++i)
-		colliders[i] = nullptr;*/
-
-	matrix[COLLIDER_WALL][COLLIDER_WALL] = false;
-	matrix[COLLIDER_WALL][COLLIDER_PLAYER] = true;
-	matrix[COLLIDER_WALL][COLLIDER_PLAYER_ATTACK] = false;
-	matrix[COLLIDER_WALL][COLLIDER_ENEMY] = true;
-	matrix[COLLIDER_WALL][COLLIDER_ENEMY_ATTACK] = false;
-
-	matrix[COLLIDER_PLAYER][COLLIDER_WALL] = true;
-	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER_ATTACK] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY] = true;
-	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY_ATTACK] = true;
-
-	matrix[COLLIDER_PLAYER_ATTACK][COLLIDER_WALL] = false;
-	matrix[COLLIDER_PLAYER_ATTACK][COLLIDER_PLAYER] = false;
-	matrix[COLLIDER_PLAYER_ATTACK][COLLIDER_PLAYER_ATTACK] = false;
-	matrix[COLLIDER_PLAYER_ATTACK][COLLIDER_ENEMY] = true;
-	matrix[COLLIDER_PLAYER_ATTACK][COLLIDER_ENEMY_ATTACK] = false;
-
-	matrix[COLLIDER_ENEMY][COLLIDER_WALL] = true;
-	matrix[COLLIDER_ENEMY][COLLIDER_PLAYER] = true;
-	matrix[COLLIDER_ENEMY][COLLIDER_PLAYER_ATTACK] = true;
-	matrix[COLLIDER_ENEMY][COLLIDER_ENEMY] = false;
-	matrix[COLLIDER_ENEMY][COLLIDER_ENEMY_ATTACK] = false;
-
-	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_WALL] = false;
-	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_PLAYER] = true;
-	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_PLAYER_ATTACK] = false;
-	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_ENEMY] = false;
-	matrix[COLLIDER_ENEMY_ATTACK][COLLIDER_ENEMY_ATTACK] = false;
-
-	//screen parameter to render bellow and avoid green background @Andres
-	//screen = { 0, 0, SCREEN_WIDTH * SCREEN_SIZE, SCREEN_HEIGHT * SCREEN_SIZE };	//SamAlert: This is code from Project1, I can't remember what it's for, decide if it's relevant to you
 }
 
 j1Collision::~j1Collision()
 {}
 
 // Called before render is available
-bool j1Collision::Awake(pugi::xml_node&)
+bool j1Collision::Awake(pugi::xml_node& config)
 {
 	bool ret = true;
+
+	pugi::xml_node childList = config.first_child();
+	pugi::xml_attribute attributeList = childList.first_attribute();
+
+	for (int i = COLLIDER_WALL; i < COLLIDER_MAX; ++i) {	// @Carles, automatically allocate collider matrix using config.xml
+		for (int j = COLLIDER_WALL; j < COLLIDER_MAX; ++j) {
+
+			matrix[i][j] = attributeList.as_bool();
+			attributeList = attributeList.next_attribute();
+		}
+
+		childList = childList.next_sibling();
+		attributeList = childList.first_attribute();
+	}
 
 	return ret;
 }
@@ -62,7 +41,50 @@ bool j1Collision::PreUpdate()
 {
 	bool ret = true;
 
-	
+	// Remove all colliders scheduled for deletion
+	for (uint i = 0; i < colliders.count(); ++i) {
+		if (colliders[i] != nullptr && colliders[i]->to_delete == true) {
+			delete colliders[i];
+			colliders[i] = nullptr;
+		}
+	}
+
+	// Calculate collisions
+	Collider* c1;
+	Collider* c2;
+
+	for (uint i = 0; i < colliders.count(); ++i) {
+		// skip empty colliders
+		if (colliders[i] == nullptr)
+			continue;
+
+		c1 = colliders[i];
+
+		// avoid checking collisions already checked
+		for (uint k = i + 1; k < colliders.count(); ++k) {
+			// skip empty colliders
+			if (colliders[k] == nullptr)
+				continue;
+
+			c2 = colliders[k];
+			if (c2 != nullptr) {
+
+				if (c1->CheckCollision(c2->rect) == true) {
+					if (matrix[c1->type][c2->type] && c1->callback)
+						c1->callback->OnCollision(c1, c2);
+
+					if (matrix[c2->type][c1->type] && c2->callback)
+						c2->callback->OnCollision(c2, c1);
+				}
+			}
+		}
+	}
+
+	return ret;
+
+	// CHANGE/FIX: PREVIOUS CODE
+	/*
+	bool ret = true;
 
 	// Calculate collisions
 	Collider* c1;
@@ -97,7 +119,9 @@ bool j1Collision::PreUpdate()
 	}
 
 	return ret;
+	*/
 }
+
 bool j1Collision::Update(float dt)
 {
 	bool ret = true;
@@ -121,6 +145,8 @@ bool j1Collision::CleanUp()
 		}
 	}
 
+	colliders.clear();	// @Carles, empty collider list of nullptr
+
 	return true;
 }
 
@@ -130,8 +156,6 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 	LOG("Loading Colliders");
 	bool ret = true;
 	//Load all collider info
-
-	
 
 	pugi::xml_node collider;
 
@@ -151,8 +175,8 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 	}
 
 	return ret;
-	
 }
+
 //bool Save(pugi::xml_node&) const;
 
 void j1Collision::DebugDraw()
@@ -198,6 +222,12 @@ void j1Collision::DebugDraw()
 		case COLLIDER_WALL: // green
 			App->render->DrawQuad(colliders[i]->rect, 0, 255, 0, alpha);
 			break;
+		case COLLIDER_PLATFORM: // magenta
+			App->render->DrawQuad(colliders[i]->rect, 255, 0, 255, alpha);	// SamAlert: Unreadable collider types
+			break;
+		case COLLIDER_FALLING_PLATFORM: // brown
+			App->render->DrawQuad(colliders[i]->rect, 160, 128, 96, alpha);	// SamAlert: Unreadable collider types
+			break;
 		case COLLIDER_PLAYER: // blue
 			App->render->DrawQuad(colliders[i]->rect, 0, 0, 255, alpha);
 			break;
@@ -214,9 +244,20 @@ void j1Collision::DebugDraw()
 	}
 }
 
-Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback)
+Collider* j1Collision::AddCollider(Collider* colliderPtr, SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback)	//@Carles
 {
 	Collider* ret = nullptr;
+
+	colliderPtr->rect = rect;
+	colliderPtr->type = type;
+	colliderPtr->callback = callback;
+	colliders.add(colliderPtr);
+	ret = colliderPtr;
+
+	return ret;
+
+	// OLD FUNCTION
+	/*Collider* ret = nullptr;
 
 	for (uint i = 0; i < MAX_COLLIDERS; ++i)
 	{
@@ -227,7 +268,7 @@ Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* 
 		}
 	}
 
-	return ret;
+	return ret;*/
 }
 
 // -----------------------------------------------------
@@ -235,4 +276,133 @@ Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* 
 bool Collider::CheckCollision(const SDL_Rect& r) const
 {
 	return !(rect.y + rect.h < r.y || rect.y > r.y + r.h || rect.x + rect.w < r.x || rect.x > r.x + r.w);
+}
+
+fPoint Collider::AvoidCollision(fPoint speed, Collider& collider) {
+
+	fPoint new_speed = speed;
+	Collider c1 = collider;
+	c1.rect.x += speed.x;
+	c1.rect.y += speed.y;
+
+	//onGround = false;
+
+	for (uint i = 0; i < App->collision->colliders.count(); ++i)
+	{
+		// skip empty colliders
+		if (App->collision->colliders[i] == nullptr)
+			continue;
+
+		Collider* c2 = App->collision->colliders[i];
+
+		if (c1.CheckCollision(c2->rect) == true)
+		{
+			if (c2->getType() == COLLIDER_WALL || c2->getType() == COLLIDER_PLATFORM) {
+				new_speed = CollisionSpeed(&c1.rect, &c2->rect, new_speed);
+				//if (speed.y == new_speed.y)
+					//onGround = false;
+			}
+			c1.rect.y -= (speed.y - new_speed.y);
+			c1.rect.x -= (speed.x - new_speed.x);
+		}
+
+	}
+
+	//collider.callback->setGround(onGround, isFalling);
+
+	return new_speed;
+}
+
+fPoint Collider::CollisionSpeed(SDL_Rect* collider1, SDL_Rect* collider2, fPoint new_speed) {
+	SDL_Rect overlay;
+	SDL_IntersectRect(collider1, collider2, &overlay);
+
+	if (new_speed.y > 0) {
+		if (collider1->y + collider1->h > collider2->y) {
+			if (new_speed.x > 0) {
+				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
+					new_speed.x -= overlay.w;
+				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
+					new_speed.x += overlay.w;
+				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
+					new_speed.y += overlay.h;
+				}
+				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
+					new_speed.y -= overlay.h;
+					App->player->state = player_state::IDLE; //onGround = true;
+				}
+			}
+			else if (new_speed.x < 0) {
+				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
+					new_speed.x += overlay.w;
+				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
+					new_speed.x -= overlay.w;
+				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
+					new_speed.y += overlay.h;
+				}
+				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
+					new_speed.y -= overlay.h;
+					App->player->state = player_state::IDLE; //onGround = true;
+				}
+			}
+			else {
+				new_speed.y -= overlay.h;
+				App->player->state = player_state::IDLE; //onGround = true;
+			}
+		}
+		else {
+			if (new_speed.x > 0) {
+				if (collider1->x + collider1->w > collider2->x)
+					new_speed.x -= overlay.w;
+			}
+			else if (new_speed.x < 0)
+				if (collider1->x > collider2->x + collider2->w)
+					new_speed.x += overlay.w;
+		}
+	}
+	else if (new_speed.y < 0) {
+		if (collider1->y <= collider2->y + collider2->h) {
+			if (new_speed.x > 0) {
+				if (new_speed.x > 0) {
+					if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
+						new_speed.x -= overlay.w;
+					else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
+						new_speed.x += overlay.w;
+					else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
+						new_speed.y += overlay.h;
+					}
+					else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
+						new_speed.y -= overlay.h;
+					}
+				}
+			}
+			else if (new_speed.x < 0) {
+				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
+					new_speed.x += overlay.w;
+				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
+					new_speed.x -= overlay.w;
+				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
+					new_speed.y += overlay.h;
+				}
+				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
+					new_speed.y -= overlay.h;
+				}
+			}
+			else {
+				new_speed.y += overlay.h;
+				App->player->state = player_state::AIRBORNE; //isFalling = true;
+			}
+		}
+	}
+	else {
+		if (new_speed.x > 0) {
+			if (collider1->x + collider1->w > collider2->x)
+				new_speed.x -= overlay.w;
+		}
+		else if (new_speed.x < 0)
+			if (collider1->x < collider2->x + collider2->w)
+				new_speed.x += overlay.w;
+	}
+
+	return new_speed;
 }

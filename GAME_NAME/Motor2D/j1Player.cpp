@@ -39,14 +39,11 @@ bool j1Player::Awake(pugi::xml_node& config)
 	AllocAllAnimations();	// Allocate all animations with previously recieved sprite data
 
 	// Character stats and flags
-	ImportAllStates(config);	// Import all state data from config.xml
+	ImportAllStates(config.child("stats"));	// Import all state data from config.xml
 
 	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
 	playedSlideSfx = config.child("audio").child("slideSfx").attribute("played").as_bool();
 	playedHurtSfx = config.child("audio").child("hurtSfx").attribute("played").as_bool();
-
-	//Collider
-	//Collider* playerHitbox = nullptr;	//SamAlert
 
 	return ret;
 }
@@ -57,7 +54,6 @@ bool j1Player::Start()
 	bool ret = true;
 
 	hitbox = new Collider();
-	hitbox->type = COLLIDER_TYPE::COLLIDER_PLAYER;
 
 	pugi::xml_document map_data;
 	pugi::xml_document config_data;
@@ -92,13 +88,17 @@ bool j1Player::Start()
 	else
 		LOG("conifg info not loaded. pugi error: %s", result.description());
 
-	App->collision->colliders.add(hitbox);
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
 	state = player_state::IDLE;
 
 	graphics = App->tex->Load(characterSheet.GetString());
-	//hitbox = App->collision->AddCollider({ (int)position.x, (int)position.y, shipWidth, shipHeight }, COLLIDER_PLAYER, this);		//SamAlert: Collider should change with animation or at least be more accurate to character size
+
+	App->collision->AddCollider(hitbox, { (int)position.x, (int)position.y, spriteSize.x, spriteSize.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
+
+	// CHANGE/FIX: HARDCODED TESTING
+	position.x = 80;
+	position.y = 500;
 
 	return ret;
 }
@@ -159,6 +159,7 @@ bool j1Player::CleanUp()
 	LOG("Unloading player");
 
 	App->tex->UnLoad(graphics);
+	hitbox = nullptr;	// @Carles, Deassign collider from player for later CleanUp in j1Collision
 	graphics = nullptr;
 
 	return ret;
@@ -167,12 +168,12 @@ bool j1Player::CleanUp()
 // Called when colliding
 void j1Player::OnCollision(Collider* c1, Collider* c2)
 {
-	if ((c1->type == COLLIDER_TYPE::COLLIDER_PLAYER && c2->type == COLLIDER_TYPE::COLLIDER_WALL)
+	/*if ((c1->type == COLLIDER_TYPE::COLLIDER_PLAYER && c2->type == COLLIDER_TYPE::COLLIDER_WALL)
 		|| (c1->type == COLLIDER_TYPE::COLLIDER_WALL && c2->type == COLLIDER_TYPE::COLLIDER_PLAYER))
 	{
 		speed.x = 0.0f;
 		speed.y = 0.0f;
-	}
+	}*/
 }
 
 // Load Game State
@@ -506,51 +507,51 @@ void j1Player::AirMoveCheck()
 		somersaultUsed = true;
 	}
 
-	if (position.y > 100) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
-		position.y = 100;
+	//if (position.y > 100) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
+	//	position.y = 100;
 
-		Land();
-		jumpAnim.Reset();
-		somersaultUsed = false;
+	//	Land();
+	//	jumpAnim.Reset();
+	//	somersaultUsed = false;
 
-		if (dead == true) {
-			state = player_state::IDLE;
-		}
-		else {
-			if (hurt == true) {
-				hurt = false;
-				playedHurtSfx = false;
-				playerReset = false;
-			}
-			if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
-				if (wantMoveDown == true) {
-					state = player_state::SLIDING;
-				}
-				else {
-					state = player_state::RUNNING;
-				}
-			}
-			else if (wantMoveDown == true) {
-				state = player_state::CROUCHING;
-			}
-			else {
-				state = player_state::IDLE;
-			}
-		}
-	}
-	if (position.y > 300) {	//SamAlert: Hardcoded, if fallen into a pit and godmode == false, die and loadGame, else if godmode == true respawn on height 50
-		if (godmode == false) {
-			Hurt();
-			Land();
-			hurt = true;
-			dead = true;
-			deadTimer = SDL_GetTicks();
-			state = player_state::IDLE;
-		}
-		else {
-			position.y = 50;
-		}
-	}
+	//	if (dead == true) {
+	//		state = player_state::IDLE;
+	//	}
+	//	else {
+	//		if (hurt == true) {
+	//			hurt = false;
+	//			playedHurtSfx = false;
+	//			playerReset = false;
+	//		}
+	//		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+	//			if (wantMoveDown == true) {
+	//				state = player_state::SLIDING;
+	//			}
+	//			else {
+	//				state = player_state::RUNNING;
+	//			}
+	//		}
+	//		else if (wantMoveDown == true) {
+	//			state = player_state::CROUCHING;
+	//		}
+	//		else {
+	//			state = player_state::IDLE;
+	//		}
+	//	}
+	//}
+	//if (position.y > 300) {	//SamAlert: Hardcoded, if fallen into a pit and godmode == false, die and loadGame, else if godmode == true respawn on height 50
+	//	if (godmode == false) {
+	//		Hurt();
+	//		Land();
+	//		hurt = true;
+	//		dead = true;
+	//		deadTimer = SDL_GetTicks();
+	//		state = player_state::IDLE;
+	//	}
+	//	else {
+	//		position.y = 50;
+	//	}
+	//}
 }
 
 void j1Player::SlidingMoveCheck()
@@ -771,17 +772,19 @@ void j1Player::MovePlayer()
 	else if (speed.y < -maxSpeed.y)
 		speed.y = -maxSpeed.y;
 
+	speed = hitbox->AvoidCollision(speed, *hitbox);	// CHECK_ERIC
+
 	// New position
 	position.x += speed.x;
 	position.y += speed.y;
 
-	// Move camera with player within set limits
-	if (App->render->camera.x > -(position.x - 170) * scale) {
+	// Move camera with player within set limits	// CHANGE/FIX: CAMERA MOVEMENT
+	/*if (App->render->camera.x > -(position.x - 170) * scale) {
 		App->render->camera.x = -(position.x - 170) * scale;
 	}
 	else if (App->render->camera.x < -(position.x - 130) * scale) {
 		App->render->camera.x = -(position.x - 130) * scale;
-	}
+	}*/
 
 	//App->render->camera.y = -(position.y - 88) * scale;
 }

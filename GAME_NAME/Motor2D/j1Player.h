@@ -93,6 +93,11 @@ private:	// @Carles
 	void HurtEffects();
 	void DeadEffects();
 
+public:
+	//Collider
+	Collider* hitbox = nullptr;
+	player_state state;	// CHANGE/FIX: Should be private?
+
 private:
 	p2SString folder;
 
@@ -113,12 +118,12 @@ private:
 
 	// Character status flags and directly related data
 	bool wantMoveUp;	// Player input
-	bool wantMoveRight;
+	bool wantMoveRight;	//CHANGE/FIX: Make struct
 	bool wantMoveLeft;
 	bool wantMoveDown;
 	
 	bool movingUp;		// Player current movement
-	bool movingRight;
+	bool movingRight;	//CHANGE/FIX: Make struct
 	bool movingLeft;
 	bool movingDown;
 
@@ -133,7 +138,7 @@ private:
 	bool playerReset;	// Flag used to restart animations on player hurt
 	bool playerRespawn; // Flag used to restart position and animations of player after death
 	bool godmode;		// Flag used to mark player invencibility
-	player_state state;	// Flag to mark player current state
+	//player_state state;	// Flag to mark player current state
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;
@@ -180,10 +185,6 @@ private:
 
 	// Player rectangles
 	SDL_Rect animRect;		//SamAlert: For animation blit
-	
-	
-	//Collider
-	Collider* hitbox = nullptr;
 };
 
 #endif //__j1PLAYER_H__
