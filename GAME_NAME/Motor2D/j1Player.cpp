@@ -881,7 +881,7 @@ void j1Player::MovePlayer()
 	else if (speed.y < -maxSpeed.y)
 		speed.y = -maxSpeed.y;
 
-	speed = hitbox->AvoidCollision(speed, *hitbox);
+	//speed = hitbox->AvoidCollision(speed, *hitbox);	//CHECK_ERIC: COLLISION FUNCTIONALITY
 
 	// New position
 	position.x += speed.x;
