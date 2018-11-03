@@ -102,15 +102,16 @@
       <hitbox x="40" y="32"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
+      <onGround value="true"/>
+      <airborne value="true"/>
       <looking right="true"/>
       <somersault used="false"/>
-      <hurt value="false"/>
       <dead value="false"/>
       <deathDelay miliseconds="1000"/>
       <fading value="false"/>
       <fadeDelay seconds="1"/>
       <reset value="false"/>
-      <debugMode value="false" />
+      <debugMode value="true" />
       <godMode value="false"/>
     </stats>
   </player>
