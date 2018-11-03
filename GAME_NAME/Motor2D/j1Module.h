@@ -72,6 +72,7 @@ public:
 	}
 
 	virtual void OnCollision(Collider*, Collider*) {}	// @Carles
+	virtual void setGround(bool onGround, bool isFalling) {}	//CHECK_ERIC
 
 public:
 

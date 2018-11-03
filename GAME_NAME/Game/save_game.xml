@@ -12,9 +12,10 @@
 		<life value="3" />
 		<acceleration type="0.25" />
 		<state current="0" />
+    <onGround value="false" />
+    <airborne value="true" />
 		<looking right="true" />
 		<somersault used="false" />
-		<hurt value="false" />
 		<dead value="false" />
 		<deadTimer miliseconds="0" />
 		<reset value="false" />

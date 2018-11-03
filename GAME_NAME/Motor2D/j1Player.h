@@ -18,8 +18,10 @@ enum class player_state {	// @Carles, enum that groups all possible player state
 	IDLE,
 	CROUCHING,
 	RUNNING,
-	AIRBORNE,
+	JUMPING,
+	FALLING,
 	SLIDING,
+	HURT,
 	//HOOK
 };
 
@@ -46,6 +48,7 @@ public:
 
 	// Called when colliding
 	void OnCollision(Collider* c1, Collider* c2);	// @Carles
+	void setGround(bool ground, bool falling);	//CHANGE/FIX: REALOCATE
 
 	// Save and Load
 	bool Load(pugi::xml_node&);
@@ -69,10 +72,11 @@ private:	// @Carles
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
 	// Player actions
-	void Jump();		// Add Y speed when jump requested
-	void Fall();		// Add acceleration to Y speed
-	void Land();		// Stop Y speed
-	void Hurt();		// Stop and move slightly up and opposite of current direction, player state changes to AIRBORNE
+	player_state Jump();	// Add Y speed and jump state when requested
+	void Fall();			// Add acceleration to Y speed
+	void Land();			// Stop Y speed
+	void StandUp();			// Return to normal acceleration and reset slide values
+	player_state Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
 	//void Hook();
 
 	// Debug update
@@ -86,18 +90,20 @@ private:	// @Carles
 	void MovePlayer();		// Move player position and decide/calculate other movement related factors
 
 	// Check possible new states in each state and other changes in the player's status
-	void IdleMoveCheck();
-	void CrouchingMoveCheck();
-	void RunningMoveCheck();
-	void AirMoveCheck();
-	void SlidingMoveCheck();
-	void HurtMoveCheck();
+	player_state IdleMoveCheck();
+	player_state CrouchingMoveCheck();
+	player_state RunningMoveCheck();
+	player_state JumpingMoveCheck();
+	player_state FallingMoveCheck();
+	player_state SlidingMoveCheck();
+	player_state HurtMoveCheck();
 	
 	// Apply effects of each state
 	void IdleEffects();
 	void CrouchingEffects();
 	void RunningEffects();
-	void AirEffects();
+	void JumpingEffects();
+	void FallingEffects();
 	void SlidingEffects();
 	void HurtEffects();
 	void DeadEffects();
@@ -115,11 +121,12 @@ private:
 	uint life;
 	uint maxLife;
 	fPoint position;
+	fPoint lastPosition; //CHECK_ERIC: GIVE USE
 	fPoint respawn;
 	fPoint speed;
 	fPoint maxSpeed;
 	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/ killed
-	iPoint offset;		// Collider offset to player rect
+	iPoint offset;		// Collider offset to player rect	//CHANGE/FIX: GIVE US, CHANGE PLAYER COLLIDER SHAPE ON STATE
 	float currentAcceleration;
 	float normalAcceleration;
 	float slideAcceleration;
@@ -137,18 +144,21 @@ private:
 	bool movingLeft;
 	bool movingDown;
 
+	bool onGround;		//CHECK_ERIC
+	bool airborne;		//CHECK_ERIC
 	bool lookingRight;		// Flag for blit flipping and hurt speed x direction
 	bool somersaultUsed;	// Flag for somersault usage
-	bool hurt;
+
 	bool dead;
 	uint deadTimer = 0;	// Timer used for player death
 	int deathDelay;		// Time delay between death and start FadeToBlack
+
 	bool fading;		// Flag used to mark fade starting
-	int fadeDelay;		// FadeToBlack duration
+	float fadeDelay;		// FadeToBlack duration
+
 	bool playerReset;	// Flag used to restart animations on player hurt
 	bool playerRespawn; // Flag used to restart position and animations of player after death
 	bool godMode;		// Flag used to mark player invencibility
-	//player_state state;	// Flag to mark player current state
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;

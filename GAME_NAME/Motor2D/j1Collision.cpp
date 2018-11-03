@@ -264,7 +264,7 @@ fPoint Collider::AvoidCollision(fPoint speed, Collider& collider) {
 	c1.rect.y += speed.y;
 
 	//onGround = false;
-
+	
 	for (uint i = 0; i < App->collision->colliders.count(); ++i)
 	{
 		// skip empty colliders
@@ -275,10 +275,10 @@ fPoint Collider::AvoidCollision(fPoint speed, Collider& collider) {
 
 		if (c1.CheckCollision(c2->rect) == true)
 		{
-			if (c2->getType() == COLLIDER_WALL || c2->getType() == COLLIDER_PLATFORM) {
+			if (c2->getType() == 0) {
 				new_speed = CollisionSpeed(&c1.rect, &c2->rect, new_speed);
-				//if (speed.y == new_speed.y)
-					//onGround = false;
+				if (speed.y == new_speed.y)
+					App->player->state = player_state::FALLING;
 			}
 			c1.rect.y -= (speed.y - new_speed.y);
 			c1.rect.x -= (speed.x - new_speed.x);
@@ -286,7 +286,7 @@ fPoint Collider::AvoidCollision(fPoint speed, Collider& collider) {
 
 	}
 
-	//collider.callback->setGround(onGround, isFalling);
+	//collider.callback->setGround(onGround,isFalling);
 
 	return new_speed;
 }
@@ -295,91 +295,79 @@ fPoint Collider::CollisionSpeed(SDL_Rect* collider1, SDL_Rect* collider2, fPoint
 	SDL_Rect overlay;
 	SDL_IntersectRect(collider1, collider2, &overlay);
 
-	if (new_speed.y > 0) {
-		if (collider1->y + collider1->h > collider2->y) {
+	if (new_speed.y >= 0) {
+		if (collider1->y + collider1->h >= collider2->y) {
 			if (new_speed.x > 0) {
-				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
-					new_speed.x -= overlay.w;
-				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
-					new_speed.x += overlay.w;
-				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
-					new_speed.y += overlay.h;
+				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
+					new_speed.y -= overlay.h;		//Ground
+					App->player->state = player_state::IDLE;
 				}
-				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
-					new_speed.y -= overlay.h;
-					App->player->state = player_state::IDLE; //onGround = true;
+				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
+					new_speed.y += overlay.h;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w && collider1->x > collider2->x) {
+					new_speed.x += overlay.w;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x) {
+					new_speed.x -= overlay.w;		//Lateral Wall
 				}
 			}
 			else if (new_speed.x < 0) {
-				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
-					new_speed.x += overlay.w;
-				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
-					new_speed.x -= overlay.w;
-				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
-					new_speed.y += overlay.h;
+				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
+					new_speed.y -= overlay.h;		//Ground
+					App->player->state = player_state::IDLE;
 				}
-				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
-					new_speed.y -= overlay.h;
-					App->player->state = player_state::IDLE; //onGround = true;
+				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
+					new_speed.y += overlay.h;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x && collider1->x < collider2->x) {
+					new_speed.x -= overlay.w;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w) {
+					new_speed.x += overlay.w;		//Lateral Wall
 				}
 			}
 			else {
 				new_speed.y -= overlay.h;
-				App->player->state = player_state::IDLE; //onGround = true;
+				App->player->state = player_state::IDLE;
 			}
-		}
-		else {
-			if (new_speed.x > 0) {
-				if (collider1->x + collider1->w > collider2->x)
-					new_speed.x -= overlay.w;
-			}
-			else if (new_speed.x < 0)
-				if (collider1->x > collider2->x + collider2->w)
-					new_speed.x += overlay.w;
 		}
 	}
 	else if (new_speed.y < 0) {
-		if (collider1->y <= collider2->y + collider2->h) {
+		if (collider1->y < collider2->y + collider2->h) {
 			if (new_speed.x > 0) {
-				if (new_speed.x > 0) {
-					if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
-						new_speed.x -= overlay.w;
-					else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
-						new_speed.x += overlay.w;
-					else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
-						new_speed.y += overlay.h;
-					}
-					else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
-						new_speed.y -= overlay.h;
-					}
+				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
+					new_speed.y -= overlay.h;		//Ground
+				}
+				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
+					new_speed.y += overlay.h;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w && collider1->x > collider2->x) {
+					new_speed.x += overlay.w;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x) {
+					new_speed.x -= overlay.w;		//Lateral Wall
 				}
 			}
 			else if (new_speed.x < 0) {
-				if ((overlay.w > 1) && overlay.w < overlay.h && collider1->x < collider2->x + collider2->w)
-					new_speed.x += overlay.w;
-				else if (overlay.w < overlay.h && collider1->x + collider1->w > collider2->x)
-					new_speed.x -= overlay.w;
-				else if ((overlay.h > 1) && overlay.h < overlay.w && collider1->y > collider2->y) {
-					new_speed.y += overlay.h;
+				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
+					new_speed.y -= overlay.h;		//Ground
 				}
-				else if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y) {
-					new_speed.y -= overlay.h;
+				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
+					new_speed.y += overlay.h;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x && collider1->x < collider2->x) {
+					new_speed.x -= overlay.w;		//Corners
+				}
+				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w) {
+					new_speed.x += overlay.w;		//Lateral Wall
 				}
 			}
 			else {
 				new_speed.y += overlay.h;
-				App->player->state = player_state::AIRBORNE; //isFalling = true;
+				App->player->state = player_state::FALLING;
 			}
 		}
-	}
-	else {
-		if (new_speed.x > 0) {
-			if (collider1->x + collider1->w > collider2->x)
-				new_speed.x -= overlay.w;
-		}
-		else if (new_speed.x < 0)
-			if (collider1->x < collider2->x + collider2->w)
-				new_speed.x += overlay.w;
 	}
 
 	return new_speed;
