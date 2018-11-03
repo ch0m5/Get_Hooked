@@ -110,7 +110,7 @@
       <fading value="false"/>
       <fadeDelay seconds="1"/>
       <reset value="false"/>
-      <debugMode value="false" />
+      <debugMode value="true" />
       <godMode value="false"/>
     </stats>
   </player>
