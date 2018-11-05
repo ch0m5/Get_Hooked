@@ -54,8 +54,6 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
-	hitbox = new Collider();
-
 	pugi::xml_document map_data;
 	pugi::xml_document config_data;
 	pugi::xml_node root;
@@ -67,19 +65,18 @@ bool j1Player::Start()
 	{
 		root = map_data.first_child();
 
-		position.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
-		position.y = root.child("objectgroup").child("object").attribute("y").as_float();
+		respawnPosition.x = position.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
+		respawnPosition.y = position.y = root.child("objectgroup").child("object").attribute("y").as_float();
 
 		root = config_data.child("player");
 
-		offset.x = root.child("collision_offset").attribute("x").as_uint();
-		offset.y = root.child("collision_ofset").attribute("y").as_uint();
+		offset.x = root.child("collision_offset").attribute("x").as_uint();	// CHANGE/FIX: This should probably be in Awake()
+		offset.y = root.child("collision_ofset").attribute("y").as_uint();	// CHANGE/FIX: This should probably be in Awake()
 
-		hitbox->rect.x = (int)(position.x + offset.x);
-		hitbox->rect.y = (int)(position.y + offset.y);
-		hitbox->rect.w = root.child("hitbox").attribute("x").as_uint();
-		hitbox->rect.h = root.child("hitbox").attribute("y").as_uint();
-
+		//hitbox->rect.x = (int)(position.x + offset.x);
+		//hitbox->rect.y = (int)(position.y + offset.y);
+		//hitbox->rect.w = root.child("hitbox").attribute("x").as_uint();
+		//hitbox->rect.h = root.child("hitbox").attribute("y").as_uint();
 
 		config_data.reset();
 		map_data.reset();
@@ -95,10 +92,10 @@ bool j1Player::Start()
 
 	graphics = App->tex->Load(characterSheet.GetString());
 
-	App->collision->AddCollider(hitbox, { (int)position.x, (int)position.y, spriteSize.x, spriteSize.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
+	hitbox = App->collision->AddCollider({ (int)position.x + offset.x, (int)position.y + offset.y, spriteSize.x, spriteSize.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
 
 	// CHANGE/FIX: HARDCODED TESTING
-	position.x = 80;
+	position.x = 150;
 	position.y = 500;
 
 	return ret;
@@ -162,12 +159,15 @@ bool j1Player::CleanUp()
 // Called when colliding
 void j1Player::OnCollision(Collider* c1, Collider* c2)
 {
-	/*if ((c1->type == COLLIDER_TYPE::COLLIDER_PLAYER && c2->type == COLLIDER_TYPE::COLLIDER_WALL)
-		|| (c1->type == COLLIDER_TYPE::COLLIDER_WALL && c2->type == COLLIDER_TYPE::COLLIDER_PLAYER))
+	if (c1->GetType() == COLLIDER_TYPE::COLLIDER_PLAYER && c2->GetType() == COLLIDER_TYPE::COLLIDER_WALL)
 	{
-		speed.x = 0.0f;
-		speed.y = 0.0f;
-	}*/
+		while (c1->CheckCollision(c2->rect) == true) {	//CHANGE/FIX: On Collision works to an extent!!!! NEEDS IMPROVEMENT AND FIXING
+			c1->rect.y -= 0.1f;
+		}
+
+		position.y = c1->rect.y;	//CHANGE/FIX: Temporal workaround, needs fixing
+		airborne = false;
+	}
 }
 
 // Load Game State
@@ -177,10 +177,9 @@ bool j1Player::Load(pugi::xml_node& data)
 	position.y = data.child("position").attribute("y").as_float();
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
-	life = data.child("life").attribute("value").as_uint();
+	life = (ushort)data.child("life").attribute("value").as_uint();
 	currentAcceleration = data.child("acceleration").attribute("type").as_float();
 	state = (player_state)data.child("state").attribute("current").as_uint();
-	onGround = data.child("onGround").attribute("value").as_bool();
 	airborne = data.child("airborne").attribute("value").as_bool();
 	lookingRight = data.child("looking").attribute("right").as_bool();
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
@@ -216,9 +215,6 @@ bool j1Player::Save(pugi::xml_node& data) const
 
 	tmpNode = data.append_child("state");
 	tmpNode.append_attribute("current") = (uint)state;
-
-	tmpNode = data.append_child("onGround");
-	tmpNode.append_attribute("value") = onGround;
 
 	tmpNode = data.append_child("airborne");
 	tmpNode.append_attribute("value") = airborne;
@@ -280,7 +276,7 @@ void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
 void j1Player::ImportAllStates(pugi::xml_node& config)
 {
 	// Character stats
-	maxLife = config.child("life").attribute("value").as_uint();
+	maxLife = (ushort)config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
@@ -290,7 +286,6 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	jumpVelocity = config.child("jump").attribute("forceY").as_float();
 
 	// Character status flags and directly related data
-	onGround = config.child("onGround").attribute("value").as_bool();
 	airborne = config.child("airborne").attribute("value").as_bool();
 	lookingRight = config.child("looking").attribute("right").as_bool();
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
@@ -324,6 +319,7 @@ void j1Player::AllocAllAnimations()
 player_state j1Player::Jump()	
 {
 	speed.y = -jumpVelocity;
+	airborne = true;
 	App->audio->PlayFx(App->audio->jumpSfx.id, 0);
 	return player_state::JUMPING;
 }
@@ -359,12 +355,15 @@ player_state j1Player::Hurt()
 	}
 
 	speed.y = -hurtSpeed.y;
+	airborne = true;
 
-	if (--life <= 0) {
+	if (--life == 0) {
 		dead = true;
 		deadTimer = SDL_GetTicks();
 	}
 	
+	playerReset = false;
+	playedHurtSfx = false;
 	return player_state::HURT;
 }
 
@@ -392,6 +391,7 @@ void j1Player::DebugInput()
 
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// GodMode
 		godMode = true;
+		playerReset = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
 		godMode = false;
@@ -490,6 +490,9 @@ void j1Player::PlayerMovement() {
 
 // Check player state
 void j1Player::PlayerState() {	// For each state, check possible new states based on other parameters
+	if (godMode == true) {
+
+	}
 	switch (state) {
 	case player_state::IDLE:
 		state = IdleMoveCheck();	//CHECK_ERIC: All are missing a condition: if not touching the ground, state change to falling and maybe something else (ariborne = true)
@@ -519,7 +522,10 @@ player_state j1Player::IdleMoveCheck()
 {
 	player_state ret = player_state::IDLE;
 
-	if (wantMoveRight == true && wantMoveLeft == false || wantMoveLeft == true && wantMoveRight == false) {
+	if (airborne == true) {
+		ret = player_state::FALLING;
+	}
+	else if (wantMoveRight == true && wantMoveLeft == false || wantMoveLeft == true && wantMoveRight == false) {
 		ret = player_state::RUNNING;
 	}
 	else if (wantMoveUp == true) {
@@ -536,7 +542,10 @@ player_state j1Player::CrouchingMoveCheck()
 {
 	player_state ret = player_state::CROUCHING;
 
-	if (wantMoveDown == false) {
+	if (airborne == true) {
+		ret = player_state::FALLING;
+	}
+	else if (wantMoveDown == false) {
 		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true)
 			ret = player_state::RUNNING;
 		else {
@@ -554,7 +563,10 @@ player_state j1Player::RunningMoveCheck()
 {
 	player_state ret = player_state::RUNNING;
 
-	if (wantMoveUp == true) {
+	if (airborne == true) {
+		ret = player_state::FALLING;
+	}
+	else if (wantMoveUp == true) {
 		ret = Jump();
 	}
 	else if (wantMoveDown == true) {
@@ -594,9 +606,7 @@ player_state j1Player::FallingMoveCheck()
 		ret = Jump();
 		somersaultUsed = true;
 	}
-	else if (position.y > 500) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
-		position.y = 500;
-
+	else if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
 		Land();
 
 		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
@@ -614,14 +624,16 @@ player_state j1Player::FallingMoveCheck()
 			ret = player_state::IDLE;
 		}		
 	}
-	if (position.y > 800) {	//SamAlert: Hardcoded, if fallen into a pit and godMode == false, die and loadGame, else if godMode == true respawn on height 50
+	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
 		if (godMode == false) {
-			ret = Hurt();
-			Land();
 			dead = true;
+			deadTimer = SDL_GetTicks();
+			playerReset = false;
+			playedHurtSfx = false;
+			ret = player_state::HURT;
 		}
 		else {
-			position.y = 50;	//CHANGE/FIX: USE "LAST POSITION" VALUE
+			position = lastGroundPosition;
 		}
 	}
 
@@ -632,7 +644,11 @@ player_state j1Player::SlidingMoveCheck()
 {
 	player_state ret = player_state::SLIDING;
 
-	if (wantMoveUp == true) {
+	if (airborne == true) {
+		StandUp();
+		ret = player_state::FALLING;
+	}
+	else if (wantMoveUp == true) {
 		StandUp();
 		ret = Jump();
 	}
@@ -664,48 +680,35 @@ player_state j1Player::HurtMoveCheck()
 {
 	player_state ret = player_state::HURT;
 
-	if (playerReset == false) {
-		jumpAnim.Reset();
-		somersaultUsed = false;
-
-		currentAcceleration = normalAcceleration;
-		playedSlideSfx = false;
-		slideAnim.Reset();
-		
-		playerReset = true;
-	}
-	else if (position.y > 500) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
-		position.y = 500;
-
+	if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
 		Land();
-		
-		playedHurtSfx = false;
-		playerReset = false;
 
-		if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
-			if (wantMoveDown == true) {
-				ret = player_state::SLIDING;
+		if (dead == false) {
+			if (wantMoveRight == true || wantMoveLeft == true || movingRight == true || movingLeft == true) {
+				if (wantMoveDown == true) {
+					ret = player_state::SLIDING;
+				}
+				else {
+					ret = player_state::RUNNING;
+				}
+			}
+			else if (wantMoveDown == true) {
+				ret = player_state::CROUCHING;
 			}
 			else {
-				ret = player_state::RUNNING;
+				ret = player_state::IDLE;
 			}
 		}
-		else if (wantMoveDown == true) {
-			ret = player_state::CROUCHING;
-		}
-		else {
-			ret = player_state::IDLE;
-		}
 	}
-	if (position.y > 800) {	//SamAlert: Hardcoded, if fallen into a pit and godMode == false, die and loadGame, else if godMode == true respawn on height 50
-		if (godMode == false) {
-			ret = Hurt();
-			Land();
+	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
+		if (godMode == false && dead == false) {
 			dead = true;
-			ret = player_state::IDLE;
+			deadTimer = SDL_GetTicks();
+			playerReset = false;
+			playedHurtSfx = false;
 		}
-		else {
-			position.y = 50;
+		else if (godMode == true) {
+			position = lastGroundPosition;
 		}
 	}
 
@@ -715,13 +718,28 @@ player_state j1Player::HurtMoveCheck()
 // Add state effects like movement restrictions, animation and sounds
 void j1Player::PlayerEffects()
 {
-	if (state != player_state::SLIDING && state != player_state::HURT) {
+	if (state != player_state::SLIDING && state != player_state::HURT) {		//CHANGE/FIX: Make function
 		if (wantMoveRight == true && wantMoveLeft == false) {
 			lookingRight = true;
 		}
 		else if (wantMoveLeft == true && wantMoveRight == false) {
 			lookingRight = false;
 		}
+	}
+
+	if (playerReset == false) {	//CHANGE/FIX: Make function
+		jumpAnim.Reset();
+		somersaultUsed = false;
+
+		currentAcceleration = normalAcceleration;
+		playedSlideSfx = false;
+		slideAnim.Reset();
+
+		playerReset = true;
+	}
+
+	if (airborne == false) {
+		lastGroundPosition = position;
 	}
 
 	switch (state) {
@@ -800,18 +818,19 @@ void j1Player::SlidingEffects()
 
 void j1Player::HurtEffects()
 {
+	wantMoveUp = false;
+	wantMoveDown = false;
+	wantMoveRight = false;
+	wantMoveLeft = false;
+	if (playedHurtSfx == false) {
+		App->audio->PlayFx(App->audio->hurtSfx.id, 0);
+		playedHurtSfx = true;
+	}
+
 	if (dead == true) {
 		DeadEffects();
 	}
 	else {
-		wantMoveUp = false;
-		wantMoveDown = false;
-		wantMoveRight = false;
-		wantMoveLeft = false;
-		if (playedHurtSfx == false) {
-			App->audio->PlayFx(App->audio->hurtSfx.id, 0);
-			playedHurtSfx = true;
-		}
 		animPtr = &hurtAnim;
 	}
 }
@@ -850,7 +869,7 @@ void j1Player::MovePlayer()
 	else if (wantMoveLeft == true && wantMoveRight == false) {
 		speed.x -= currentAcceleration;
 	}
-	else if (/*onGround == true*/state != player_state::JUMPING && state != player_state::FALLING && state != player_state::HURT) {	// Natural deacceleration when on ground	//CHANGE/FIX: Make better condition
+	else if (airborne == false) {	// Natural deacceleration when on ground	//CHANGE/FIX: Make better condition
 		if (movingRight == true) {
 			speed.x -= currentAcceleration;
 
@@ -866,20 +885,20 @@ void j1Player::MovePlayer()
 	}
 
 	// If on air, apply gravity
-	if (/*airborne == true*/state == player_state::JUMPING || state == player_state::FALLING) {	//CHANGE/FIX: MAKE BETTER CONDITION
+	if (airborne == true) {	//CHANGE/FIX: MAKE BETTER CONDITION
 		Fall();
 	}
+	
+	// Max Speeds	//CHANGE/FIX: Make function
+	if (speed.x > 0)
+		speed.x = MIN(speed.x, maxSpeed.x);
+	else if (speed.x < 0)
+		speed.x = MAX(speed.x, -maxSpeed.x);
 
-	// Max Speeds
-	if (speed.x > maxSpeed.x)
-		speed.x = maxSpeed.x;
-	else if (speed.x < -maxSpeed.x)
-		speed.x = -maxSpeed.x;
-
-	if (speed.y > maxSpeed.y)
-		speed.y = maxSpeed.y;
-	else if (speed.y < -maxSpeed.y)
-		speed.y = -maxSpeed.y;
+	if (speed.y > 0)
+		speed.y = MIN(speed.y, maxSpeed.y);
+	else if (speed.y < 0)
+		speed.y = MAX(speed.y, -maxSpeed.y);
 
 	//speed = hitbox->AvoidCollision(speed, *hitbox);	//CHECK_ERIC: COLLISION FUNCTIONALITY
 
@@ -901,10 +920,4 @@ void j1Player::MovePlayer()
 	else if (App->render->camera.y > (int)-(position.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
 		App->render->camera.y = (int)-(position.y * App->win->GetScale() - 400);
 	}
-}
-
-void j1Player::setGround(bool ground, bool falling)	//CHECK_ERIC: REALOCATE
-{
-	
-	
 }

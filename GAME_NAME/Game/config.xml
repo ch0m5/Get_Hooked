@@ -99,18 +99,16 @@
       <maxSpeed x="3" y="5"/>
       <hurtSpeed x="2" y="2"/>
       <collision_offset x="5" y="5"/>
-      <hitbox x="40" y="32"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
-      <onGround value="true"/>
-      <airborne value="true"/>
+      <airborne value="false"/>
       <looking right="true"/>
       <somersault used="false"/>
       <dead value="false"/>
       <deathDelay miliseconds="1000"/>
       <fading value="false"/>
       <fadeDelay seconds="1"/>
-      <reset value="false"/>
+      <reset value="true"/>
       <debugMode value="true" />
       <godMode value="false"/>
     </stats>

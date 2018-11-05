@@ -48,7 +48,9 @@ public:
 
 	// Called when colliding
 	void OnCollision(Collider* c1, Collider* c2);	// @Carles
-	void setGround(bool ground, bool falling);	//CHANGE/FIX: REALOCATE
+	//void OnAir(bool airborne) {		//CHECK_ERIC
+	//	this->airborne = airborne;
+	//}
 
 	// Save and Load
 	bool Load(pugi::xml_node&);
@@ -118,11 +120,11 @@ private:
 	p2SString folder;
 
 	// Character stats
-	uint life;
-	uint maxLife;
+	ushort life;
+	ushort maxLife;
 	fPoint position;
-	fPoint lastPosition; //CHECK_ERIC: GIVE USE
-	fPoint respawn;
+	fPoint lastGroundPosition;	//CHANGE/FIX: Should be on xml save/load/config??
+	fPoint respawnPosition;		//CHANGE/FIX: Should be on xml save/load/config??
 	fPoint speed;
 	fPoint maxSpeed;
 	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/ killed
@@ -144,7 +146,6 @@ private:
 	bool movingLeft;
 	bool movingDown;
 
-	bool onGround;		//CHECK_ERIC
 	bool airborne;		//CHECK_ERIC
 	bool lookingRight;		// Flag for blit flipping and hurt speed x direction
 	bool somersaultUsed;	// Flag for somersault usage

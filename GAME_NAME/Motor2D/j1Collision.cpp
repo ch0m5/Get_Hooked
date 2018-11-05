@@ -39,15 +39,18 @@ bool j1Collision::Awake(pugi::xml_node& config)
 }
 
 // Called each loop iteration
-bool j1Collision::PreUpdate()
+bool j1Collision::PreUpdate()	// @Carles
 {
 	bool ret = true;
+	p2List_item<Collider>* tmpCollider;
+	p2List_item<Collider>* nextCollider;
 
 	// Remove all colliders scheduled for deletion
-	for (uint i = 0; i < colliders.count(); ++i) {
-		if (colliders[i] != nullptr && colliders[i]->to_delete == true) {
-			delete colliders[i];
-			colliders[i] = nullptr;
+	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = nextCollider) {
+		nextCollider = tmpCollider->next;
+
+		if (tmpCollider->data.to_delete == true) {
+			colliders.del(tmpCollider);
 		}
 	}
 
@@ -55,62 +58,14 @@ bool j1Collision::PreUpdate()
 	Collider* c1;
 	Collider* c2;
 
-	for (uint i = 0; i < colliders.count(); ++i) {
-		// skip empty colliders
-		if (colliders[i] == nullptr)
-			continue;
+	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
+		c1 = &tmpCollider->data;
 
-		c1 = colliders[i];
+		// Avoid checking already checked collisions
+		for (nextCollider = tmpCollider->next; nextCollider != nullptr; nextCollider = nextCollider->next) {
+			c2 = &nextCollider->data;
 
-		// avoid checking collisions already checked
-		for (uint k = i + 1; k < colliders.count(); ++k) {
-			// skip empty colliders
-			if (colliders[k] == nullptr)
-				continue;
-
-			c2 = colliders[k];
-			if (c2 != nullptr) {
-
-				if (c1->CheckCollision(c2->rect) == true) {
-					if (matrix[c1->type][c2->type] && c1->callback)
-						c1->callback->OnCollision(c1, c2);
-
-					if (matrix[c2->type][c1->type] && c2->callback)
-						c2->callback->OnCollision(c2, c1);
-				}
-			}
-		}
-	}
-
-	return ret;
-
-	// CHECK_ERIC: PREVIOUS CODE
-	/*
-	bool ret = true;
-
-	// Calculate collisions
-	Collider* c1;
-	Collider* c2;
-
-	for (uint i = 0; i < colliders.count(); ++i)
-	{
-		// skip empty colliders
-		if (colliders[i] == nullptr)
-			continue;	
-
-		c1 = colliders[i];
-
-		// avoid checking collisions already checked
-		for (uint k = 0; k < colliders.count(); ++k)
-		{
-			// skip empty colliders
-			if (colliders[k] == nullptr)
-				continue;
-
-			c2 = colliders[k];
-
-			if (c1->CheckCollision(c2->rect) == true)
-			{
+			if (c1->CheckCollision(c2->rect) == true) {
 				if (matrix[c1->type][c2->type] && c1->callback)
 					c1->callback->OnCollision(c1, c2);
 
@@ -121,7 +76,6 @@ bool j1Collision::PreUpdate()
 	}
 
 	return ret;
-	*/
 }
 
 bool j1Collision::Update(float dt)
@@ -138,16 +92,7 @@ bool j1Collision::CleanUp()
 {
 	LOG("Freeing all colliders");
 
-	for (uint i = 0; i < colliders.count(); ++i)
-	{
-		if (colliders[i] != nullptr)
-		{
-			delete colliders[i];
-			colliders[i] = nullptr;
-		}
-	}
-
-	colliders.clear();	// @Carles, empty collider list of nullptr
+	colliders.clear();	// @Carles, empty collider list
 
 	return true;
 }
@@ -165,14 +110,19 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 	{
 		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{
-			Collider* col = new Collider();
+			//CHANGE/FIX: Use AddCollider function. DO NOT CREATE DYNAMIC MEMORY HERE! colliders.add() ALREADY CREATES DYNAMIC MEMORY!
+			/*Collider* col = new Collider();
 			col->rect.x = object.attribute("x").as_uint();
 			col->rect.y = object.attribute("y").as_uint();
 			col->rect.w = object.attribute("width").as_uint();
 			col->rect.h = object.attribute("height").as_uint();
 			col->type = (COLLIDER_TYPE)object.attribute("name").as_uint();
 
-			colliders.add(col);
+			colliders.add(col);*/
+
+			// @Carles Potentially Improved Code(?)
+			SDL_Rect tmpRect = { object.attribute("x").as_uint(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
+			AddCollider(tmpRect, (COLLIDER_TYPE)object.attribute("name").as_uint(), nullptr);
 		}
 	}
 
@@ -189,10 +139,10 @@ void j1Collision::DebugDraw()
 
 	Uint8 alpha = 80;
 	Uint8 alphaHard = 130;
-	for (uint i = 0; i < colliders.count(); ++i)
+
+	p2List_item<Collider>* tmpCollider;
+	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next)
 	{
-		if (colliders[i] == nullptr)
-			continue;
 
 		/* COLORS
 		Red: 255, 0, 0
@@ -206,47 +156,47 @@ void j1Collision::DebugDraw()
 		Brown: 160, 128, 96
 		*/
 
-		switch (colliders[i]->type)
+		switch (tmpCollider->data.GetType())
 		{
 		case COLLIDER_NONE: // white
-			App->render->DrawQuad(colliders[i]->rect, 255, 255, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 255, 255, 255, alpha);
 			break;
 		case COLLIDER_WALL: // green
-			App->render->DrawQuad(colliders[i]->rect, 0, 255, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 0, 255, 0, alpha);
 			break;
 		case COLLIDER_PLATFORM: // magenta
-			App->render->DrawQuad(colliders[i]->rect, 255, 0, 255, alpha);	// SamAlert: Unreadable collider types
+			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 255, alpha);	// SamAlert: Unreadable collider types
 			break;
 		case COLLIDER_FALLING_PLATFORM: // brown
-			App->render->DrawQuad(colliders[i]->rect, 160, 128, 96, alpha);	// SamAlert: Unreadable collider types
+			App->render->DrawQuad(tmpCollider->data.rect, 160, 128, 96, alpha);	// SamAlert: Unreadable collider types
 			break;
 		case COLLIDER_PLAYER: // blue
-			App->render->DrawQuad(colliders[i]->rect, 0, 0, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 0, 0, 255, alpha);
 			break;
 		case COLLIDER_PLAYER_ATTACK: // cyan
-			App->render->DrawQuad(colliders[i]->rect, 0, 255, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 0, 255, 255, alpha);
 			break;
 		case COLLIDER_ENEMY: // red
-			App->render->DrawQuad(colliders[i]->rect, 255, 0, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 0, alpha);
 			break;
 		case COLLIDER_ENEMY_ATTACK: // yellow
-			App->render->DrawQuad(colliders[i]->rect, 255, 255, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data.rect, 255, 255, 0, alpha);
 			break;
 		}
 	}
 }
 
-Collider* j1Collision::AddCollider(Collider* colliderPtr, SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback)	//@Carles
+Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback)	//@Carles
 {
-	Collider* ret = nullptr;
+	Collider tmpCollider;
+	Collider* tmpPtr;
 
-	colliderPtr->rect = rect;
-	colliderPtr->type = type;
-	colliderPtr->callback = callback;
-	colliders.add(colliderPtr);
-	ret = colliderPtr;
+	tmpCollider.rect = rect;
+	tmpCollider.type = type;
+	tmpCollider.callback = callback;
+	tmpPtr = &colliders.add(tmpCollider)->data;
 
-	return ret;
+	return tmpPtr;
 }
 
 // -----------------------------------------------------
@@ -256,119 +206,37 @@ bool Collider::CheckCollision(const SDL_Rect& r) const
 	return !(rect.y + rect.h < r.y || rect.y > r.y + r.h || rect.x + rect.w < r.x || rect.x > r.x + r.w);
 }
 
-fPoint Collider::AvoidCollision(fPoint speed, Collider& collider) {
-
-	fPoint new_speed = speed;
-	Collider c1 = collider;
-	c1.rect.x += speed.x;
-	c1.rect.y += speed.y;
-
-	//onGround = false;
-	
-	for (uint i = 0; i < App->collision->colliders.count(); ++i)
-	{
-		// skip empty colliders
-		if (App->collision->colliders[i] == nullptr)
-			continue;
-
-		Collider* c2 = App->collision->colliders[i];
-
-		if (c1.CheckCollision(c2->rect) == true)
-		{
-			if (c2->getType() == 0) {
-				new_speed = CollisionSpeed(&c1.rect, &c2->rect, new_speed);
-				if (speed.y == new_speed.y)
-					App->player->state = player_state::FALLING;
-			}
-			c1.rect.y -= (speed.y - new_speed.y);
-			c1.rect.x -= (speed.x - new_speed.x);
-		}
-
-	}
-
-	//collider.callback->setGround(onGround,isFalling);
-
-	return new_speed;
-}
-
-fPoint Collider::CollisionSpeed(SDL_Rect* collider1, SDL_Rect* collider2, fPoint new_speed) {
-	SDL_Rect overlay;
-	SDL_IntersectRect(collider1, collider2, &overlay);
-
-	if (new_speed.y >= 0) {
-		if (collider1->y + collider1->h >= collider2->y) {
-			if (new_speed.x > 0) {
-				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
-					new_speed.y -= overlay.h;		//Ground
-					App->player->state = player_state::IDLE;
-				}
-				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
-					new_speed.y += overlay.h;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w && collider1->x > collider2->x) {
-					new_speed.x += overlay.w;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x) {
-					new_speed.x -= overlay.w;		//Lateral Wall
-				}
-			}
-			else if (new_speed.x < 0) {
-				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
-					new_speed.y -= overlay.h;		//Ground
-					App->player->state = player_state::IDLE;
-				}
-				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
-					new_speed.y += overlay.h;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x && collider1->x < collider2->x) {
-					new_speed.x -= overlay.w;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w) {
-					new_speed.x += overlay.w;		//Lateral Wall
-				}
-			}
-			else {
-				new_speed.y -= overlay.h;
-				App->player->state = player_state::IDLE;
-			}
-		}
-	}
-	else if (new_speed.y < 0) {
-		if (collider1->y < collider2->y + collider2->h) {
-			if (new_speed.x > 0) {
-				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
-					new_speed.y -= overlay.h;		//Ground
-				}
-				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
-					new_speed.y += overlay.h;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w && collider1->x > collider2->x) {
-					new_speed.x += overlay.w;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x) {
-					new_speed.x -= overlay.w;		//Lateral Wall
-				}
-			}
-			else if (new_speed.x < 0) {
-				if (overlay.h < overlay.w && collider1->y + collider1->h > collider2->y && collider1->y < collider2->y) {
-					new_speed.y -= overlay.h;		//Ground
-				}
-				else if (overlay.h < overlay.w && collider1->y < collider2->y + collider2->h) {
-					new_speed.y += overlay.h;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x + collider1->w > collider2->x && collider1->x < collider2->x) {
-					new_speed.x -= overlay.w;		//Corners
-				}
-				else if (overlay.w <= overlay.h && collider1->x < collider2->x + collider2->w) {
-					new_speed.x += overlay.w;		//Lateral Wall
-				}
-			}
-			else {
-				new_speed.y += overlay.h;
-				App->player->state = player_state::FALLING;
-			}
-		}
-	}
-
-	return new_speed;
-}
+//fPoint Collider::AvoidCollision(fPoint currentSpeed, Collider& collider)	// CHECK_ERIC
+//{
+//	fPoint newSpeed = currentSpeed;
+//	Collider c1 = collider;
+//	c1.rect.x += currentSpeed.x;
+//	c1.rect.y += currentSpeed.y;
+//
+//	//airborne = true;	//CHECK/FIX: Try to uncomment in case of bugs
+//
+//	for (uint i = 0; i < App->collision->colliders.count(); ++i)
+//	{
+//		// Skip empty spots on the array (no collider)
+//		if (App->collision->colliders[i] == nullptr)
+//			continue;
+//
+//		Collider* c2 = App->collision->colliders[i];
+//
+//		if (c1.CheckCollision(c2->rect) == true)
+//		{
+//			if (c2->GetType() == COLLIDER_WALL) {
+//				newSpeed = CollisionSpeed(&c1.rect, &c2->rect, currentSpeed);
+//				if (currentSpeed.y = newSpeed.y)
+//					airborne == true;
+//			}
+//			c1.rect.y -= (currentSpeed.y - newSpeed.y);
+//			c1.rect.x -= (currentSpeed.x - newSpeed.x);
+//		}
+//
+//	}
+//
+//	collider.callback->OnAir(airborne);
+//
+//	return newSpeed;
+//}

@@ -7,25 +7,24 @@
 	<map />
 	<scene />
 	<player>
-		<position x="85.75" y="92.8181992" />
+		<position x="134" y="499.299957" />
 		<speed x="0" y="0" />
 		<life value="3" />
 		<acceleration type="0.25" />
 		<state current="0" />
-    <onGround value="false" />
-    <airborne value="true" />
+		<airborne value="false" />
 		<looking right="true" />
 		<somersault used="false" />
 		<dead value="false" />
 		<deadTimer miliseconds="0" />
-		<reset value="false" />
-		<runSfxTimer miliseconds="2115" />
+		<reset value="true" />
+		<runSfxTimer miliseconds="2030" />
 		<slideSfx played="false" />
 		<hurtSfx played="false" />
 	</player>
 	<collision />
 	<window />
 	<renderer>
-		<camera x="0" y="0" />
+		<camera x="122" y="-598" />
 	</renderer>
 </game_state>
