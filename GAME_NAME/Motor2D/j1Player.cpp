@@ -494,7 +494,7 @@ void j1Player::PlayerState() {	// For each state, check possible new states base
 
 	}
 	else {	// if no ground -> airborne = true;
-		// CHANGE/FIX: To do this, we should need a pointer to the current player ground collider, the one directly below it
+		// CHANGE/FIX: To do this, we should need a pointer to the current player ground collider, the one directly below it. Either that or raycasting to the ground
 	}
 	switch (state) {
 	case player_state::IDLE:
