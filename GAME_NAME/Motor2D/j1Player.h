@@ -48,9 +48,9 @@ public:
 
 	// Called when colliding
 	void OnCollision(Collider* c1, Collider* c2);	// @Carles
-	//void OnAir(bool airborne) {		//CHECK_ERIC
-	//	this->airborne = airborne;
-	//}
+	void OnAir(bool airborne) {		//CHECK_ERIC
+		this->airborne = airborne;
+	}
 
 	// Save and Load
 	bool Load(pugi::xml_node&);

@@ -490,8 +490,11 @@ void j1Player::PlayerMovement() {
 
 // Check player state
 void j1Player::PlayerState() {	// For each state, check possible new states based on other parameters
-	if (godMode == true) {
+	if (godMode == true) {	//if free movement ON
 
+	}
+	else {	// if no ground -> airborne = true;
+		// CHANGE/FIX: To do this, we should need a pointer to the current player ground collider, the one directly below it
 	}
 	switch (state) {
 	case player_state::IDLE:

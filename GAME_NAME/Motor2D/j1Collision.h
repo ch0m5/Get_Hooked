@@ -24,7 +24,7 @@ struct Collider
 	bool to_delete = false;
 	COLLIDER_TYPE type;
 	j1Module* callback = nullptr;
-	//bool airborne;	// CHECK_ERIC
+	bool airborne;	// CHECK_ERIC
 
 	Collider() :
 		rect({ 0,0 }),
