@@ -98,6 +98,8 @@ bool j1Player::Start()
 	position.x = 150;
 	position.y = 500;
 
+	LimitCameraPos();
+
 	return ret;
 }
 
@@ -290,12 +292,13 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	lookingRight = config.child("looking").attribute("right").as_bool();
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
 	dead = config.child("dead").attribute("value").as_bool();
-	deathDelay = config.child("deathDelay").attribute("miliseconds").as_int();
+	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
 	fading = config.child("fading").attribute("value").as_bool();
 	fadeDelay = config.child("fadeDelay").attribute("seconds").as_float();
 	playerReset = config.child("reset").attribute("value").as_bool();
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
+	godMode = config.child("freeCamera").attribute("value").as_bool();
 }
 
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
@@ -370,16 +373,23 @@ player_state j1Player::Hurt()
 //Check debug input
 void j1Player::DebugInput()
 {
-	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && state != player_state::HURT && godMode == false) {	// Hurt player
-		state = Hurt();
+	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == false) {	// Free camera
+		freeCamera = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == true) {	//CHANGE/FIX: Add to README
+		freeCamera = false;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {	// Save game
+		App->SaveGame();
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false) {	// Load game
 		App->LoadGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {	// Save game
-		App->SaveGame();
+	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && state != player_state::HURT && godMode == false) {	// Hurt player	//CHANGE/FIX: CHANGE README (WAS F4)
+		state = Hurt();
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
@@ -448,14 +458,15 @@ void j1Player::PlayerInput()
 
 	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
 		debugMode = true;
-		App->scene->debugTitle();
+		App->scene->SetDebugTitle();
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == true) {
+	else if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
 		debugMode = false;
 		godMode = false;
+		freeCamera = false;
 		App->collision->mustDebugDraw = false;
 		App->win->scale = App->win->origScale;
-		App->scene->origTitle();
+		App->scene->SetOrigTitle();
 	}
 }
 
@@ -910,7 +921,12 @@ void j1Player::MovePlayer()
 	position.y += speed.y;
 
 	// Move camera with player within set limits	//CHANGE/FIX: MAKE FUNCTION
-	if (App->render->camera.x < (int)-(position.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left
+	if (freeCamera == false)
+		LimitCameraPos();
+}
+
+void j1Player::LimitCameraPos() {
+	if (App->render->camera.x < (int)-(position.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits
 		App->render->camera.x = (int)-(position.x * App->win->GetScale() - 350);
 	}
 	else if (App->render->camera.x > (int)-(position.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right

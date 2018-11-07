@@ -39,6 +39,8 @@ bool j1Scene::Start()
 {
 	App->map->Load("testmap.tmx");	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
 	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
+	App->audio->SetMusicVolume();
+
 	return true;
 }
 
@@ -51,23 +53,14 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		App->render->camera.y -= cameraSpeed.y;
-
-	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		App->render->camera.y += cameraSpeed.y;
-
-	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		App->render->camera.x -= cameraSpeed.x;
-
-	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		App->render->camera.x += cameraSpeed.x;
+	AudioInput();
 
 	if (App->player->debugMode == true) {
-		debugTitle();
+		CameraInput();
+		SetDebugTitle();
 	}
 	else {
-		origTitle();
+		SetOrigTitle();
 	}
 
 	//App->render->Blit(img, 0, 0);
@@ -95,7 +88,44 @@ bool j1Scene::CleanUp()
 	return true;
 }
 
-void j1Scene::debugTitle()	// @Carles
+void j1Scene::CameraInput()	// @Carles
+{
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_IDLE) {
+		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+			App->render->camera.y += cameraSpeed.y;
+
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+			App->render->camera.y -= cameraSpeed.y;
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+			App->render->camera.x += cameraSpeed.x;
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+			App->render->camera.x -= cameraSpeed.x;
+	}
+}
+
+void j1Scene::AudioInput()	// @Carles
+{
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
+		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && App->audio->masterVolume < 100)	// CHANGE/FIX: Add to README
+			App->audio->masterVolume++;
+
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && App->audio->masterVolume > 0)
+			App->audio->masterVolume--;
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && App->audio->musicVolume < 100)
+			App->audio->musicVolume--;
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && App->audio->musicVolume > 0)
+			App->audio->musicVolume++;
+
+		App->audio->SetMusicVolume();
+		App->audio->SetSfxVolume();
+	}
+}
+
+void j1Scene::SetDebugTitle()	// @Carles
 {
 	p2SString title("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d)",
 		title.GetString(),
@@ -110,7 +140,7 @@ void j1Scene::debugTitle()	// @Carles
 	App->win->SetTitle(title.GetString());
 }
 
-void j1Scene::origTitle()	// @Carles
+void j1Scene::SetOrigTitle()	// @Carles
 {
 	p2SString title("%s", title.GetString());
 

@@ -37,15 +37,15 @@
     <path>data.zip</path>
   </file_system>
 
-  <audio>
-    <music>
+  <audio volume="100">
+    <music volume="80">
       <folder>audio/music/</folder>
       <maps>
         <track1>Mystic_Force.ogg</track1>
         <track2>Spellbound.ogg</track2>
       </maps>
     </music>
-    <sfx>
+    <sfx volume="100">
       <folder>audio/fx/</folder>
       <player>
         <run>run.wav</run>
@@ -111,6 +111,7 @@
       <reset value="true"/>
       <debugMode value="true" />
       <godMode value="false"/>
+      <freeCamera value="false"/>
     </stats>
   </player>
 

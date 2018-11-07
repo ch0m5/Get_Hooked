@@ -33,8 +33,13 @@ public:
 	bool CleanUp();
 
 public:	// @Carles
-	void debugTitle();
-	void origTitle();
+	// Inputs
+	void CameraInput();
+	void AudioInput();
+
+	// Title names
+	void SetDebugTitle();
+	void SetOrigTitle();
 
 private:
 	p2SString title;	// @Carles

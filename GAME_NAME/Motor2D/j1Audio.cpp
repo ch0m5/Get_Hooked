@@ -50,9 +50,17 @@ bool j1Audio::Awake(pugi::xml_node& config)
 		ret = true;
 	}
 
-	// @Carles: Load all audio files
+	// Load volumes
+	masterVolume = config.attribute("volume").as_uint();
+	musicVolume = config.child("music").attribute("volume").as_uint();
+	sfxVolume = config.child("sfx").attribute("volume").as_uint();
+
+	// Load all audio files' data (names mainly)
 	LoadAllMusic(config);
 	LoadAllSfx(config);
+
+	// Set channel volume
+	SetSfxVolume();
 
 	return ret;
 }
@@ -79,6 +87,34 @@ bool j1Audio::CleanUp()
 	Mix_CloseAudio();
 	Mix_Quit();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
+
+	return true;
+}
+
+// Load
+bool j1Audio::Load(pugi::xml_node &data)
+{
+	pugi::xml_node tmpNode;
+
+	masterVolume = data.attribute("volume").as_uint();
+	musicVolume = data.child("music").attribute("volume").as_uint();
+	sfxVolume = data.child("sfx").attribute("volume").as_uint();
+
+	return true;
+}
+
+// Save
+bool j1Audio::Save(pugi::xml_node &data) const
+{
+	pugi::xml_node tmpNode;
+
+	data.append_attribute("volume") = masterVolume;
+
+	tmpNode = data.append_child("music");
+	tmpNode.append_attribute("volume") = musicVolume;
+	
+	tmpNode = data.append_child("sfx");
+	tmpNode.append_attribute("volume") = sfxVolume;
 
 	return true;
 }

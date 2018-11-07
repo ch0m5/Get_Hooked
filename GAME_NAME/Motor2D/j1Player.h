@@ -90,6 +90,7 @@ private:	// @Carles
 	void PlayerState();		// Check player state
 	void PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
 	void MovePlayer();		// Move player position and decide/calculate other movement related factors
+	void LimitCameraPos();	// If required, limit camera to player position
 
 	// Check possible new states in each state and other changes in the player's status
 	player_state IdleMoveCheck();
@@ -152,7 +153,7 @@ private:
 
 	bool dead;
 	uint deadTimer = 0;	// Timer used for player death
-	int deathDelay;		// Time delay between death and start FadeToBlack
+	ushort deathDelay;		// Time delay between death and start FadeToBlack
 
 	bool fading;		// Flag used to mark fade starting
 	float fadeDelay;		// FadeToBlack duration
@@ -160,6 +161,7 @@ private:
 	bool playerReset;	// Flag used to restart animations on player hurt
 	bool playerRespawn; // Flag used to restart position and animations of player after death
 	bool godMode;		// Flag used to mark player invencibility
+	bool freeCamera;	// Flag used to mark free camera movement
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;

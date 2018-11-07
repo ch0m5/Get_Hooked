@@ -37,6 +37,10 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Save and Load
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&) const;
+
 	// Play a music file
 	bool PlayMusic(const char* path, float fade_time = DEFAULT_MUSIC_FADE_TIME);
 
@@ -47,13 +51,25 @@ public:
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
 public:	// @Carles
-	p2SString musicMap1;
+	uint SetMusicVolume() const {
+		return Mix_VolumeMusic(masterVolume * (musicVolume * MIX_MAX_VOLUME / 100) / 100);
+	}
+	uint SetSfxVolume() const {
+		return Mix_Volume(-1, masterVolume * (sfxVolume * MIX_MAX_VOLUME / 100) / 100);
+	}
+
+public:	// @Carles
+	p2SString musicMap1;	// IMPROVE: Make list?
 	p2SString musicMap2;
 
-	sfx_file runSfx;
+	sfx_file runSfx;	// IMPROVE: Make list?
 	sfx_file jumpSfx;
 	sfx_file slideSfx;
 	sfx_file hurtSfx;
+	
+	ushort masterVolume;	// IMPROVE: Make list?
+	ushort musicVolume;
+	ushort sfxVolume;
 
 private:
 

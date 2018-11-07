@@ -3,11 +3,14 @@
 	<input />
 	<window />
 	<textures />
-	<audio />
+	<audio volume="100">
+		<music volume="80" />
+		<sfx volume="100" />
+	</audio>
 	<map />
 	<scene />
 	<player>
-		<position x="134" y="499.299957" />
+		<position x="150" y="554" />
 		<speed x="0" y="0" />
 		<life value="3" />
 		<acceleration type="0.25" />
@@ -18,13 +21,13 @@
 		<dead value="false" />
 		<deadTimer miliseconds="0" />
 		<reset value="true" />
-		<runSfxTimer miliseconds="2030" />
+		<runSfxTimer miliseconds="0" />
 		<slideSfx played="false" />
 		<hurtSfx played="false" />
 	</player>
 	<collision />
 	<window />
 	<renderer>
-		<camera x="122" y="-598" />
+		<camera x="50" y="-708" />
 	</renderer>
 </game_state>
