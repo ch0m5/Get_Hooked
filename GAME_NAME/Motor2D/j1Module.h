@@ -12,6 +12,7 @@
 class j1App;
 
 struct Collider;
+enum class collision_type;
 
 class j1Module
 {
@@ -71,7 +72,7 @@ public:
 		return true;
 	}
 
-	virtual void OnCollision(Collider*, Collider*) {}	// @Carles
+	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }	// @Carles
 	virtual void OnAir(bool airborne) {}	//CHECK_ERIC
 
 public:

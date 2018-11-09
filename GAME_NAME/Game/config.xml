@@ -66,28 +66,35 @@
       <spriteSheet>character_sprite_sheet.png</spriteSheet>
       <spriteSize x="50" y="37"/>
       <first_sprite>
-        <idle column="0" row="0" frames="4" animSpeed ="0.12" loop="true">idle</idle>
-        <run column="0" row="4" frames="6" animSpeed ="0.12" loop="true">run</run>
-        <slide column="0" row="5" frames="5" animSpeed ="0.12" loop="false">slide</slide>
-        <crouch column="0" row="6" frames="4" animSpeed ="0.12" loop="true">crouch</crouch>
-        <jump column="0" row="7" frames="4" animSpeed ="0.24" loop="false">jump</jump>
-        <somersault column="0" row="8" frames="4" animSpeed ="0.12" loop="true">somersault</somersault>
-        <fall column="4" row="7" frames="2" animSpeed ="0.12" loop="true">fall</fall>
-        <hurt column="0" row="22" frames="3" animSpeed ="0.12" loop="true">hurt</hurt>
-        <dead column="0" row="23" frames="7" animSpeed ="0.12" loop="false">dead</dead>
+        <idle column="0" row="0" frames="4" animSpeed ="0.12" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </idle>
+        <run column="0" row="4" frames="6" animSpeed ="0.12" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </run>
+        <slide column="0" row="5" frames="5" animSpeed ="0.12" loop="false">
+          <offset x="11" y="20" w="27" h="17"/>
+        </slide>
+        <crouch column="0" row="6" frames="4" animSpeed ="0.12" loop="true">
+          <offset x="14" y="14" w="22" h="23"/>
+        </crouch>
+        <jump column="0" row="7" frames="4" animSpeed ="0.24" loop="false">
+          <offset x="14" y="6" w="22" h="31"/>
+        </jump>
+        <somersault column="0" row="8" frames="4" animSpeed ="0.12" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </somersault>
+        <fall column="4" row="7" frames="2" animSpeed ="0.12" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </fall>
+        <hurt column="0" row="22" frames="3" animSpeed ="0.12" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </hurt>
+        <dead column="0" row="23" frames="7" animSpeed ="0.12" loop="false">
+          <offset x="14" y="6" w="22" h="31"/>
+        </dead>
       </first_sprite>
     </sprites>
-    <colliders>
-      <idle />
-      <run />
-      <slide />
-      <crouch />
-      <jump />
-      <somersault />
-      <fall />
-      <hurt />
-      <dead />
-    </colliders>
     <audio>
       <runSfxDelay miliseconds="350"/>
       <slideSfx played="false" />
@@ -98,7 +105,6 @@
       <speed x="0" y="0"/>
       <maxSpeed x="3" y="5"/>
       <hurtSpeed x="2" y="2"/>
-      <collision_offset x="5" y="5"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
       <airborne value="false"/>

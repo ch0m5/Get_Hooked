@@ -116,13 +116,13 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 			col->rect.y = object.attribute("y").as_uint();
 			col->rect.w = object.attribute("width").as_uint();
 			col->rect.h = object.attribute("height").as_uint();
-			col->type = (COLLIDER_TYPE)object.attribute("name").as_uint();
+			col->type = (collider_type)object.attribute("name").as_uint();
 
 			colliders.add(col);*/
 
 			// @Carles Potentially Improved Code(?)
 			SDL_Rect tmpRect = { object.attribute("x").as_uint(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
-			AddCollider(tmpRect, (COLLIDER_TYPE)object.attribute("name").as_uint(), nullptr);
+			AddCollider(tmpRect, (collider_type)object.attribute("name").as_uint(), nullptr);
 		}
 	}
 
@@ -186,7 +186,7 @@ void j1Collision::DebugDraw()
 	}
 }
 
-Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback)	//@Carles
+Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, j1Module* callback)	//@Carles
 {
 	Collider tmpCollider;
 	Collider* tmpPtr;
@@ -204,6 +204,29 @@ Collider* j1Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* 
 bool Collider::CheckCollision(const SDL_Rect& r) const
 {
 	return !(rect.y + rect.h < r.y || rect.y > r.y + r.h || rect.x + rect.w < r.x || rect.x > r.x + r.w);
+}
+
+bool j1Collision::CheckGroundCollision(Collider* hitbox) const
+{
+	bool ret = false;
+
+	Collider tmpHitbox = *hitbox;
+	Collider* nextCollider;
+
+	tmpHitbox.rect.y++;
+
+	for (p2List_item<Collider>* tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
+		Collider* nextCollider = &tmpCollider->data;
+
+		if (tmpHitbox.CheckCollision(nextCollider->rect) == true) {
+			if (matrix[tmpHitbox.type][nextCollider->type] && tmpHitbox.callback)
+				ret = true;
+			if (matrix[nextCollider->type][tmpHitbox.type] && nextCollider->callback)
+				ret = true;
+		}
+	}
+
+	return ret;
 }
 
 //fPoint Collider::AvoidCollision(fPoint currentSpeed, Collider& collider)	// CHECK_ERIC

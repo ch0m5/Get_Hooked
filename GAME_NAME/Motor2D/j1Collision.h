@@ -4,8 +4,7 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
-enum COLLIDER_TYPE
-{
+enum collider_type {	// @Carles, collider types
 	COLLIDER_NONE = -1,
 	COLLIDER_WALL,
 	COLLIDER_PLATFORM,
@@ -18,27 +17,36 @@ enum COLLIDER_TYPE
 	COLLIDER_MAX
 };
 
+enum class collision_type {	//@Carles, enumerates collision types
+	NONE = -1,
+	UNDEFINED,
+	ON_LEFT,
+	ON_RIGHT,
+	ON_TOP,
+	ON_BOTTOM
+};
+
 struct Collider
 {
 	SDL_Rect rect;
 	bool to_delete = false;
-	COLLIDER_TYPE type;
+	collider_type type;
 	j1Module* callback = nullptr;
 	bool airborne;	// CHECK_ERIC
 
 	Collider() :
 		rect({ 0,0 }),
-		type(COLLIDER_TYPE::COLLIDER_NONE),
+		type(collider_type::COLLIDER_NONE),
 		callback(nullptr)
 	{}
 
-	Collider(SDL_Rect rectangle, COLLIDER_TYPE type, j1Module* callback = nullptr) :
+	Collider(SDL_Rect rectangle, collider_type type, j1Module* callback = nullptr) :
 		rect(rectangle),
 		type(type),
 		callback(callback)
 	{}
 
-	COLLIDER_TYPE GetType() const { return type; }
+	collider_type GetType() const { return type; }
 
 	void SetPos(int x, int y)
 	{
@@ -70,8 +78,11 @@ public:
 	bool Load(pugi::xml_document& map_file);
 	//bool Save(pugi::xml_node&) const;
 
-	Collider* AddCollider(SDL_Rect rect, COLLIDER_TYPE type, j1Module* callback);	//@Carles
+	Collider* AddCollider(SDL_Rect rect, collider_type type, j1Module* callback);	//@Carles
 	void DebugDraw();
+
+public:	// @Carles
+	bool CheckGroundCollision(Collider* hitbox) const;
 
 public:
 	bool mustDebugDraw;

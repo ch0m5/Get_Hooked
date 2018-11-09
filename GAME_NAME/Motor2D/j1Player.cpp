@@ -29,6 +29,9 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	folder.create(config.child("folder").child_value());
 
+	// Character stats and flags
+	ImportAllStates(config.child("stats"));	// Import all state data from config.xml
+
 	// Sprites
 	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
@@ -38,9 +41,6 @@ bool j1Player::Awake(pugi::xml_node& config)
 
 	// Animations
 	AllocAllAnimations();	// Allocate all animations with previously recieved sprite data
-
-	// Character stats and flags
-	ImportAllStates(config.child("stats"));	// Import all state data from config.xml
 
 	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
 	playedSlideSfx = config.child("audio").child("slideSfx").attribute("played").as_bool();
@@ -65,18 +65,8 @@ bool j1Player::Start()
 	{
 		root = map_data.first_child();
 
-		respawnPosition.x = position.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
-		respawnPosition.y = position.y = root.child("objectgroup").child("object").attribute("y").as_float();
-
-		root = config_data.child("player");
-
-		offset.x = root.child("collision_offset").attribute("x").as_uint();	// CHANGE/FIX: This should probably be in Awake()
-		offset.y = root.child("collision_ofset").attribute("y").as_uint();	// CHANGE/FIX: This should probably be in Awake()
-
-		//hitbox->rect.x = (int)(position.x + offset.x);
-		//hitbox->rect.y = (int)(position.y + offset.y);
-		//hitbox->rect.w = root.child("hitbox").attribute("x").as_uint();
-		//hitbox->rect.h = root.child("hitbox").attribute("y").as_uint();
+		respawnPosition.x = currentPosition.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
+		respawnPosition.y = currentPosition.y = root.child("objectgroup").child("object").attribute("y").as_float();
 
 		config_data.reset();
 		map_data.reset();
@@ -88,15 +78,13 @@ bool j1Player::Start()
 
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
+	currentHitboxOffset = idleSprite.colliderOffset;
 	state = player_state::IDLE;
 
 	graphics = App->tex->Load(characterSheet.GetString());
-
-	hitbox = App->collision->AddCollider({ (int)position.x + offset.x, (int)position.y + offset.y, spriteSize.x, spriteSize.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
-
-	// CHANGE/FIX: HARDCODED TESTING
-	position.x = 150;
-	position.y = 500;
+	
+	hitbox = App->collision->AddCollider({ (int)currentPosition.x + currentHitboxOffset.x, (int)currentPosition.y + currentHitboxOffset.y, currentHitboxOffset.x, currentHitboxOffset.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
+	prevHitboxPosition = hitbox->rect;
 
 	LimitCameraPos();
 
@@ -125,20 +113,14 @@ bool j1Player::Update(float dt)
 	PlayerState();		// Check player state
 	PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
 	MovePlayer();		// Move player position and calculate other movement related factors
-
-	animRect.x = (int)position.x;
-	animRect.y = (int)position.y;
-
-	hitbox->rect.x = (int)(position.x + offset.x);
-	hitbox->rect.y = (int)(position.y + offset.y);
+	UpdateHitbox();		// Transform player collider depending on new position and state
 
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
-
 	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_NONE);
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);
 	}
 	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &playerRect, SDL_FLIP_HORIZONTAL);
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
 	}
 
 	return ret;
@@ -159,24 +141,76 @@ bool j1Player::CleanUp()
 }
 
 // Called when colliding
-void j1Player::OnCollision(Collider* c1, Collider* c2)
+collision_type j1Player::OnCollision(Collider* c1, Collider* c2)
 {
-	if (c1->GetType() == COLLIDER_TYPE::COLLIDER_PLAYER && c2->GetType() == COLLIDER_TYPE::COLLIDER_WALL)
-	{
-		while (c1->CheckCollision(c2->rect) == true) {	//CHANGE/FIX: On Collision works to an extent!!!! NEEDS IMPROVEMENT AND FIXING
-			c1->rect.y -= 0.1f;
+	collision_type ret = collision_type::NONE;
+
+	if (godMode == false) {
+		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_WALL) {
+			ret = WallCollision(c1, c2);
+		}
+	}
+
+	return ret;
+}
+
+collision_type j1Player::WallCollision(Collider* c1, Collider* c2)
+{
+	collision_type ret = collision_type::UNDEFINED;
+
+	SDL_Rect collisionOverlay;
+	SDL_IntersectRect(&c1->rect, &c2->rect, &collisionOverlay);
+
+	if (collisionOverlay.w >= collisionOverlay.h) {
+		if (c1->rect.y + c1->rect.h > c2->rect.y && c1->rect.y < c2->rect.y && movingDown == true) {	//Ground
+			while (c1->CheckCollision(c2->rect) == true) {
+				c1->rect.y--;
+			}
+			c1->rect.y++;
+			speed.y = 0.0f;
+			airborne = false;
+			ret = collision_type::ON_BOTTOM;
+		}
+		else if (c1->rect.y < c2->rect.y + c2->rect.h && c1->rect.y + c1->rect.h > c2->rect.y + c2->rect.h && movingUp == true) {	//Ceiling
+			while (c1->CheckCollision(c2->rect) == true) {
+				c1->rect.y++;
+			}
+			c1->rect.y--;
+			speed.y = 0.0f;
+			ret = collision_type::ON_TOP;
 		}
 
-		position.y = c1->rect.y;	//CHANGE/FIX: Temporal workaround, needs fixing
-		airborne = false;
+		currentPosition.y = c1->rect.y - currentHitboxOffset.y;
 	}
+	else {
+		if (c1->rect.x + c1->rect.w >= c2->rect.x && c1->rect.x < c2->rect.x && movingRight == true) {	//Right
+			while (c1->CheckCollision(c2->rect) == true) {
+				c1->rect.x--;
+			}
+			c1->rect.x++;
+			speed.x = 0.0f;
+			ret = collision_type::ON_RIGHT;
+		}
+		else if (c1->rect.x <= c2->rect.x + c2->rect.w && c1->rect.x + c1->rect.w > c2->rect.x + c2->rect.w && movingLeft == true) {	//Left	//IMPROVE: movingLeft makes the image lagg
+			while (c1->CheckCollision(c2->rect) == true) {
+				c1->rect.x++;
+			}
+			c1->rect.x--;
+			speed.x = 0.0f;
+			ret = collision_type::ON_LEFT;
+		}
+
+		currentPosition.x = c1->rect.x - currentHitboxOffset.x;
+	}
+
+	return ret;
 }
 
 // Load Game State
 bool j1Player::Load(pugi::xml_node& data)
 {
-	position.x = data.child("position").attribute("x").as_float();
-	position.y = data.child("position").attribute("y").as_float();
+	currentPosition.x = data.child("position").attribute("x").as_float();
+	currentPosition.y = data.child("position").attribute("y").as_float();
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
 	life = (ushort)data.child("life").attribute("value").as_uint();
@@ -202,8 +236,8 @@ bool j1Player::Save(pugi::xml_node& data) const
 	pugi::xml_node tmpNode;
 
 	tmpNode = data.append_child("position");
-	tmpNode.append_attribute("x") = position.x;
-	tmpNode.append_attribute("y") = position.y;
+	tmpNode.append_attribute("x") = currentPosition.x;
+	tmpNode.append_attribute("y") = currentPosition.y;
 
 	tmpNode = data.append_child("speed");
 	tmpNode.append_attribute("x") = speed.x;
@@ -250,30 +284,6 @@ bool j1Player::Save(pugi::xml_node& data) const
 
 //------------------------------------------------
 
-// Imports from the xml file all data of the first sprite of each animation and other important data like animation speed, frames and if it loops
-void j1Player::ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node& first_sprite)
-{
-	sprite->position.x = first_sprite.child(spriteName).attribute("column").as_int();
-	sprite->position.y = first_sprite.child(spriteName).attribute("row").as_int();
-	sprite->frames = first_sprite.child(spriteName).attribute("frames").as_uint();
-	sprite->animSpeed = first_sprite.child(spriteName).attribute("animSpeed").as_float();
-	sprite->loop = first_sprite.child(spriteName).attribute("loop").as_bool();
-}
-
-// Import all sprite data using the above function for each animation
-void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
-{
-	ImportSpriteData(first_sprite.child("idle").child_value(), &idleSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("run").child_value(), &runSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("slide").child_value(), &slideSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("crouch").child_value(), &crouchSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("jump").child_value(), &jumpSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("somersault").child_value(), &somersaultSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("fall").child_value(), &fallSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("hurt").child_value(), &hurtSprite, first_sprite);
-	ImportSpriteData(first_sprite.child("dead").child_value(), &deadSprite, first_sprite);
-}
-
 // Import all state data from config.xml
 void j1Player::ImportAllStates(pugi::xml_node& config)
 {
@@ -298,7 +308,36 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	playerReset = config.child("reset").attribute("value").as_bool();
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
-	godMode = config.child("freeCamera").attribute("value").as_bool();
+	freeCamera = config.child("freeCamera").attribute("value").as_bool();
+}
+
+// Imports from the xml file all data of the first sprite of each animation and other important data like animation speed, frames and if it loops
+void j1Player::ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node& first_sprite)
+{
+	sprite->position.x = first_sprite.child(spriteName).attribute("column").as_int();
+	sprite->position.y = first_sprite.child(spriteName).attribute("row").as_int();
+	sprite->frames = first_sprite.child(spriteName).attribute("frames").as_uint();
+	sprite->animSpeed = first_sprite.child(spriteName).attribute("animSpeed").as_float();
+	sprite->loop = first_sprite.child(spriteName).attribute("loop").as_bool();
+
+	sprite->colliderOffset.x = first_sprite.child(spriteName).child("offset").attribute("x").as_int();
+	sprite->colliderOffset.y = first_sprite.child(spriteName).child("offset").attribute("y").as_int();
+	sprite->colliderOffset.w = first_sprite.child(spriteName).child("offset").attribute("w").as_int();
+	sprite->colliderOffset.h = first_sprite.child(spriteName).child("offset").attribute("h").as_int();
+}
+
+// Import all sprite data using the above function for each animation
+void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
+{
+	ImportSpriteData("idle", &idleSprite, first_sprite);
+	ImportSpriteData("run", &runSprite, first_sprite);
+	ImportSpriteData("slide", &slideSprite, first_sprite);
+	ImportSpriteData("crouch", &crouchSprite, first_sprite);
+	ImportSpriteData("jump", &jumpSprite, first_sprite);
+	ImportSpriteData("somersault", &somersaultSprite, first_sprite);
+	ImportSpriteData("fall", &fallSprite, first_sprite);
+	ImportSpriteData("hurt", &hurtSprite, first_sprite);
+	ImportSpriteData("dead", &deadSprite, first_sprite);
 }
 
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
@@ -331,6 +370,12 @@ player_state j1Player::Jump()
 void j1Player::Fall()
 {
 	speed.y += gravity;
+}
+
+// Stop X speed
+void j1Player::LateralStop()
+{
+	speed.x = 0.0f;
 }
 
 // Stop Y speed
@@ -401,6 +446,8 @@ void j1Player::DebugInput()
 
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// GodMode
 		godMode = true;
+		speed = { 0, 0 };
+		state = player_state::FALLING;
 		playerReset = false;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
@@ -501,34 +548,36 @@ void j1Player::PlayerMovement() {
 
 // Check player state
 void j1Player::PlayerState() {	// For each state, check possible new states based on other parameters
-	if (godMode == true) {	//if free movement ON
+	if (godMode == true) {
+		airborne = true;
+	}
+	else {
+		if (App->collision->CheckGroundCollision(hitbox) == false)
+			airborne = true;
 
-	}
-	else {	// if no ground -> airborne = true;
-		// CHANGE/FIX: To do this, we should need a pointer to the current player ground collider, the one directly below it. Either that or raycasting to the ground
-	}
-	switch (state) {
-	case player_state::IDLE:
-		state = IdleMoveCheck();	//CHECK_ERIC: All are missing a condition: if not touching the ground, state change to falling and maybe something else (ariborne = true)
-		break;
-	case player_state::CROUCHING:
-		state = CrouchingMoveCheck();
-		break;
-	case player_state::RUNNING:
-		state = RunningMoveCheck();
-		break;
-	case player_state::JUMPING:
-		state = JumpingMoveCheck();
-		break;
-	case player_state::FALLING:
-		state = FallingMoveCheck();
-		break;
-	case player_state::SLIDING:
-		state = SlidingMoveCheck();
-		break;
-	case player_state::HURT:
-		state = HurtMoveCheck();
-		break;
+		switch (state) {
+		case player_state::IDLE:
+			state = IdleMoveCheck();	//CHECK_ERIC: All are missing a condition: if not touching the ground, state change to falling and maybe something else (ariborne = true)
+			break;
+		case player_state::CROUCHING:
+			state = CrouchingMoveCheck();
+			break;
+		case player_state::RUNNING:
+			state = RunningMoveCheck();
+			break;
+		case player_state::JUMPING:
+			state = JumpingMoveCheck();
+			break;
+		case player_state::FALLING:
+			state = FallingMoveCheck();
+			break;
+		case player_state::SLIDING:
+			state = SlidingMoveCheck();
+			break;
+		case player_state::HURT:
+			state = HurtMoveCheck();
+			break;
+		}
 	}
 }
 
@@ -638,7 +687,7 @@ player_state j1Player::FallingMoveCheck()
 			ret = player_state::IDLE;
 		}		
 	}
-	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
+	if (currentPosition.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
 		if (godMode == false) {
 			dead = true;
 			deadTimer = SDL_GetTicks();
@@ -647,7 +696,7 @@ player_state j1Player::FallingMoveCheck()
 			ret = player_state::HURT;
 		}
 		else {
-			position = lastGroundPosition;
+			currentPosition = lastGroundPosition;
 		}
 	}
 
@@ -714,7 +763,7 @@ player_state j1Player::HurtMoveCheck()
 			}
 		}
 	}
-	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
+	if (currentPosition.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
 		if (godMode == false && dead == false) {
 			dead = true;
 			deadTimer = SDL_GetTicks();
@@ -722,7 +771,7 @@ player_state j1Player::HurtMoveCheck()
 			playedHurtSfx = false;
 		}
 		else if (godMode == true) {
-			position = lastGroundPosition;
+			currentPosition = lastGroundPosition;
 		}
 	}
 
@@ -753,7 +802,7 @@ void j1Player::PlayerEffects()
 	}
 
 	if (airborne == false) {
-		lastGroundPosition = position;
+		lastGroundPosition = currentPosition;
 	}
 
 	switch (state) {
@@ -806,6 +855,7 @@ void j1Player::JumpingEffects()
 {
 	if (somersaultUsed == true) {
 		animPtr = &somersaultAnim;
+		ReshapeCollider(somersaultSprite);
 	}
 	else {
 		animPtr = &jumpAnim;
@@ -877,13 +927,55 @@ void j1Player::DeadEffects() {
 // Move player position and decide/calculate other movement related factors
 void j1Player::MovePlayer()
 {
+	if (godMode == true) {
+		GodModeMovement();
+	}
+	else {
+		NormalMovement();
+	}
+
+	// Max Speeds
+	LimitSpeed();
+
+	// New position
+	currentPosition.x += speed.x;
+	currentPosition.y += speed.y;
+
+	// Move camera with player within set limits	//CHANGE/FIX: MAKE FUNCTION
+	if (freeCamera == false)
+		LimitCameraPos();
+
+	animRect.x = (int)currentPosition.x;
+	animRect.y = (int)currentPosition.y;
+}
+
+fPoint j1Player::GodModeMovement()
+{
+	if (wantMoveRight == true && wantMoveLeft == false) {
+		currentPosition.x += 3;
+	}
+	if (wantMoveLeft == true && wantMoveRight == false) {
+		currentPosition.x -= 3;
+	}
+	if (wantMoveUp == true && wantMoveDown == false) {
+		currentPosition.y -= 3;
+	}
+	if (wantMoveDown == true && wantMoveUp == false) {
+		currentPosition.y += 3;
+	}
+
+	return currentPosition;
+}
+
+fPoint j1Player::NormalMovement()
+{
 	if (wantMoveRight == true && wantMoveLeft == false) {
 		speed.x += currentAcceleration;
 	}
 	else if (wantMoveLeft == true && wantMoveRight == false) {
 		speed.x -= currentAcceleration;
 	}
-	else if (airborne == false) {	// Natural deacceleration when on ground	//CHANGE/FIX: Make better condition
+	else if (airborne == false) {	// Natural deacceleration when on ground
 		if (movingRight == true) {
 			speed.x -= currentAcceleration;
 
@@ -899,11 +991,15 @@ void j1Player::MovePlayer()
 	}
 
 	// If on air, apply gravity
-	if (airborne == true) {	//CHANGE/FIX: MAKE BETTER CONDITION
+	if (airborne == true) {
 		Fall();
 	}
-	
-	// Max Speeds	//CHANGE/FIX: Make function
+
+	return speed;
+}
+
+fPoint j1Player::LimitSpeed()
+{
 	if (speed.x > 0)
 		speed.x = MIN(speed.x, maxSpeed.x);
 	else if (speed.x < 0)
@@ -914,29 +1010,67 @@ void j1Player::MovePlayer()
 	else if (speed.y < 0)
 		speed.y = MAX(speed.y, -maxSpeed.y);
 
-	//speed = hitbox->AvoidCollision(speed, *hitbox);	//CHECK_ERIC: COLLISION FUNCTIONALITY
-
-	// New position
-	position.x += speed.x;
-	position.y += speed.y;
-
-	// Move camera with player within set limits	//CHANGE/FIX: MAKE FUNCTION
-	if (freeCamera == false)
-		LimitCameraPos();
+	return speed;
 }
 
-void j1Player::LimitCameraPos() {
-	if (App->render->camera.x < (int)-(position.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits
-		App->render->camera.x = (int)-(position.x * App->win->GetScale() - 350);
+SDL_Rect j1Player::LimitCameraPos()
+{
+	if (App->render->camera.x < (int)-(currentPosition.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits
+		App->render->camera.x = (int)-(currentPosition.x * App->win->GetScale() - 350);
 	}
-	else if (App->render->camera.x > (int)-(position.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
-		App->render->camera.x = (int)-(position.x * App->win->GetScale() - 500);
+	else if (App->render->camera.x > (int)-(currentPosition.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.x = (int)-(currentPosition.x * App->win->GetScale() - 500);
 	}
 
-	if (App->render->camera.y < (int)-(position.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
-		App->render->camera.y = (int)-(position.y * App->win->GetScale() - 300);
+	if (App->render->camera.y < (int)-(currentPosition.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
+		App->render->camera.y = (int)-(currentPosition.y * App->win->GetScale() - 300);
 	}
-	else if (App->render->camera.y > (int)-(position.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
-		App->render->camera.y = (int)-(position.y * App->win->GetScale() - 400);
+	else if (App->render->camera.y > (int)-(currentPosition.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.y = (int)-(currentPosition.y * App->win->GetScale() - 400);
 	}
+
+	return App->render->camera;
+}
+
+void j1Player::UpdateHitbox()
+{
+	prevHitboxPosition = hitbox->rect;
+
+	switch (state) {
+	case player_state::IDLE:
+		currentHitboxOffset = ReshapeCollider(idleSprite);
+		break;
+	case player_state::CROUCHING:
+		currentHitboxOffset = ReshapeCollider(crouchSprite);
+		break;
+	case player_state::RUNNING:
+		currentHitboxOffset = ReshapeCollider(runSprite);
+		break;
+	case player_state::JUMPING:
+		if (somersaultUsed == true)
+			currentHitboxOffset = ReshapeCollider(somersaultSprite);
+		else
+			currentHitboxOffset = ReshapeCollider(jumpSprite);
+		break;
+	case player_state::FALLING:
+		currentHitboxOffset = ReshapeCollider(fallSprite);
+		break;
+	case player_state::SLIDING:
+		currentHitboxOffset = ReshapeCollider(slideSprite);
+		break;
+	case player_state::HURT:
+		currentHitboxOffset = ReshapeCollider(hurtSprite);
+		break;
+	default:
+		break;
+	}
+}
+
+SDL_Rect j1Player::ReshapeCollider(player_sprite sprite)
+{
+	hitbox->rect.x = (int)currentPosition.x + sprite.colliderOffset.x;
+	hitbox->rect.y = (int)currentPosition.y + sprite.colliderOffset.y;
+	hitbox->rect.w = sprite.colliderOffset.w;
+	hitbox->rect.h = sprite.colliderOffset.h;
+	return sprite.colliderOffset;
 }

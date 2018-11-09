@@ -108,17 +108,17 @@ void j1Scene::CameraInput()	// @Carles
 void j1Scene::AudioInput()	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
-		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && App->audio->masterVolume < 100)	// CHANGE/FIX: Add to README
+		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && App->audio->masterVolume < 100)
 			App->audio->masterVolume++;
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && App->audio->masterVolume > 0)
 			App->audio->masterVolume--;
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && App->audio->musicVolume < 100)
-			App->audio->musicVolume--;
+			App->audio->musicVolume++;
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && App->audio->musicVolume > 0)
-			App->audio->musicVolume++;
+			App->audio->musicVolume--;
 
 		App->audio->SetMusicVolume();
 		App->audio->SetSfxVolume();

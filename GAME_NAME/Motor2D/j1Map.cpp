@@ -370,6 +370,6 @@ bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 //	uint i = 0;
 //	while (i < data.colliders.collider_rects.count())
 //	{
-//		data.colliders.colliders.add(App->collision->AddCollider(data.colliders.collider_rects[i++], COLLIDER_TYPE::COLLIDER_WALL, nullptr));
+//		data.colliders.colliders.add(App->collision->AddCollider(data.colliders.collider_rects[i++], collider_type::COLLIDER_WALL, nullptr));
 //	}
 //}

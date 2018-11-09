@@ -10,27 +10,30 @@ No previous installations is required to play the game, just download and execut
 
 ## Usage
 ### General Controls
-- ESC: Quit the game
+* ESC: Quit the game
+* F3: Enter Debug Mode
+* Up/Down: Change master volume
+* Left/Right: Change music volume
 
 ### Player 1 Controls
-- Keyboard:
+* Keyboard:
 	- Run: A/D
 	- Jump: W
-	- Crouch: S
+	- Crouch/Slide: S
 	
-- XBOX Controller: (Planned!)
+* XBOX Controller: (Planned!)
 
 ### Player 2 (Considering implementation!)
 
 ### Debug Mode
 * F1: Start from the first level
 * F2: Start from beginning of current level
-* F3: Allow debug functionalities and inputs, and display debug data on window title
-* F4: Recieve instant damage (Unless on godmode)
+* F4: Free camera movement
 * F5: Save current state
 * F6: Load previously saved state
+* F7: Recieve instant damage (Unless on godmode)
 * F9: Debug view (Colliders/Logic)
-* F10: Godmode (No damage recieved)
+* F10: Godmode (No damage, no collisions, and free movment)
 * 1/2/3/4/5: Change game scale to number chosen
 
 ## Innovation

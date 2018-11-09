@@ -9,6 +9,7 @@ struct SDL_Texture;
 
 struct player_sprite {	// @Carles, struct used to store xml data of the first sprite of an animation to then automatize the animation allocation process
 	iPoint position;
+	SDL_Rect colliderOffset;
 	float animSpeed;
 	uint frames;
 	bool loop;
@@ -47,7 +48,9 @@ public:
 	bool CleanUp();
 
 	// Called when colliding
-	void OnCollision(Collider* c1, Collider* c2);	// @Carles
+	collision_type OnCollision(Collider* c1, Collider* c2);	// @Carles
+	collision_type WallCollision(Collider* c1, Collider* c2);
+
 	void OnAir(bool airborne) {		//CHECK_ERIC
 		this->airborne = airborne;
 	}
@@ -61,21 +64,22 @@ public:	// @Carles
 		return dead;
 	}
 	fPoint GetPosition() const {
-		return position;
+		return currentPosition;
 	}
 	fPoint GetSpeed() const {
 		return speed;
 	}
 
 private:	// @Carles
+	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
 	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);	// Import sprite data from config.xml
 	void ImportAllSprites(pugi::xml_node&);													// Import all sprite data using the above function for each animation
-	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
 	// Player actions
 	player_state Jump();	// Add Y speed and jump state when requested
 	void Fall();			// Add acceleration to Y speed
+	void LateralStop();		// Stop X speed
 	void Land();			// Stop Y speed
 	void StandUp();			// Return to normal acceleration and reset slide values
 	player_state Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
@@ -90,7 +94,7 @@ private:	// @Carles
 	void PlayerState();		// Check player state
 	void PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
 	void MovePlayer();		// Move player position and decide/calculate other movement related factors
-	void LimitCameraPos();	// If required, limit camera to player position
+	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 	// Check possible new states in each state and other changes in the player's status
 	player_state IdleMoveCheck();
@@ -111,6 +115,13 @@ private:	// @Carles
 	void HurtEffects();
 	void DeadEffects();
 
+	// Movement and final changes
+	SDL_Rect LimitCameraPos();	// If required, limit camera to player position
+	fPoint GodModeMovement();
+	fPoint NormalMovement();
+	fPoint LimitSpeed();
+	SDL_Rect ReshapeCollider(player_sprite sprite);
+
 public:
 	//Collider
 	Collider* hitbox = nullptr;
@@ -123,13 +134,18 @@ private:
 	// Character stats
 	ushort life;
 	ushort maxLife;
-	fPoint position;
-	fPoint lastGroundPosition;	//CHANGE/FIX: Should be on xml save/load/config??
-	fPoint respawnPosition;		//CHANGE/FIX: Should be on xml save/load/config??
+
+	fPoint currentPosition;
+	fPoint lastGroundPosition;		//CHANGE/FIX: Should be on xml save/load/config??
+	fPoint respawnPosition;			//CHANGE/FIX: Should be on xml save/load/config??
+
+	SDL_Rect prevHitboxPosition;		//CHANGE/FIX: Should be on save/load (config not needed)
+	SDL_Rect currentHitboxOffset;
+
 	fPoint speed;
 	fPoint maxSpeed;
-	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/ killed
-	iPoint offset;		// Collider offset to player rect	//CHANGE/FIX: GIVE US, CHANGE PLAYER COLLIDER SHAPE ON STATE
+	fPoint hurtSpeed;			// Speed that the player adopts when getting hurt/killed
+	public:
 	float currentAcceleration;
 	float normalAcceleration;
 	float slideAcceleration;
