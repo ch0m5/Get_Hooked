@@ -1,0 +1,13 @@
+Carles:
+Audio
+Collisions
+Inputs
+Player
+Debug Functionalities
+Fade
+XML Save/Load/Config
+Pathfinding
+Framerate Logic
+
+Sam:
+Maps

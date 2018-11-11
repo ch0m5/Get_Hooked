@@ -228,38 +228,3 @@ bool j1Collision::CheckGroundCollision(Collider* hitbox) const
 
 	return ret;
 }
-
-//fPoint Collider::AvoidCollision(fPoint currentSpeed, Collider& collider)	// CHECK_ERIC
-//{
-//	fPoint newSpeed = currentSpeed;
-//	Collider c1 = collider;
-//	c1.rect.x += currentSpeed.x;
-//	c1.rect.y += currentSpeed.y;
-//
-//	//airborne = true;	//CHECK/FIX: Try to uncomment in case of bugs
-//
-//	for (uint i = 0; i < App->collision->colliders.count(); ++i)
-//	{
-//		// Skip empty spots on the array (no collider)
-//		if (App->collision->colliders[i] == nullptr)
-//			continue;
-//
-//		Collider* c2 = App->collision->colliders[i];
-//
-//		if (c1.CheckCollision(c2->rect) == true)
-//		{
-//			if (c2->GetType() == COLLIDER_WALL) {
-//				newSpeed = CollisionSpeed(&c1.rect, &c2->rect, currentSpeed);
-//				if (currentSpeed.y = newSpeed.y)
-//					airborne == true;
-//			}
-//			c1.rect.y -= (currentSpeed.y - newSpeed.y);
-//			c1.rect.x -= (currentSpeed.x - newSpeed.x);
-//		}
-//
-//	}
-//
-//	collider.callback->OnAir(airborne);
-//
-//	return newSpeed;
-//}
