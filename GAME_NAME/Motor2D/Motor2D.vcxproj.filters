@@ -154,6 +154,12 @@
     <None Include="..\Game\maps\parallax2.tmx">
       <Filter>Desenvolupament  ========\XML Files\Maps</Filter>
     </None>
+    <None Include="..\Game\maps\level1.tmx">
+      <Filter>Desenvolupament  ========\XML Files\Maps</Filter>
+    </None>
+    <None Include="..\Game\maps\level2.tmx">
+      <Filter>Desenvolupament  ========\XML Files\Maps</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Game\save_game.xml">

@@ -65,8 +65,17 @@ bool j1Player::Start()
 	{
 		root = map_data.first_child();
 
-		respawnPosition.x = currentPosition.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
-		respawnPosition.y = currentPosition.y = root.child("objectgroup").child("object").attribute("y").as_float();
+		//respawnPosition.x = currentPosition.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
+		//respawnPosition.y = currentPosition.y = root.child("objectgroup").child("object").attribute("y").as_float();
+
+		for (pugi::xml_node node = root; root.next_sibling() != NULL; node = node.next_sibling())
+		{
+			if (node.attribute("name").as_string() == "start")
+			{
+				respawnPosition.x = node.attribute("x").as_float();
+				respawnPosition.y = node.attribute("y").as_float();
+			}
+		}
 
 		config_data.reset();
 		map_data.reset();

@@ -15,13 +15,13 @@
   <collision>
     <mustDebugDraw value="false" />
     <matrix>
-      <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-      <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-      <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false"/>
-      <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true"/>
-      <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false"/>
-      <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false"/>
-      <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false"/>
+      <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
+      <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
+      <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
+      <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true" end="true" hazard="true"/>
+      <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
+      <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false" end="false" hazard="true"/>
+      <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false" end="false" hazard="false"/>
     </matrix>
   </collision>
   
@@ -124,11 +124,11 @@
   <scene>   <!-- map_name is a placeholder -->
     <title>Get Hooked v0.1</title>
     <cameraSpeed x="5" y="5"/>
-    <map_one name="map1.tmx">
+    <map_one name="level1.tmx">
       <playerStartPos x="0" y="0"/>
       <playerStartSpeed x="0" y="0"/>
     </map_one>
-    <map_two name="map2.tmx">
+    <map_two name="maps/level2.tmx">
       <playerStartPos x="0" y="0"/>
       <playerStartSpeed x="0" y="0"/>
     </map_two>
