@@ -932,7 +932,22 @@ void j1Player::DeadEffects() {
 		dead = false;
 		fading = false;
 		currentPosition = respawnPosition;
-		App->LoadGame();	// SamAlert: For now it loads the last save when it's fully faded to black, decide what happens
+		if (App->scene2->active)
+		{
+			App->scene2->CleanUp();
+			App->fade->FadeToBlack(App->scene2, App->scene2);
+			App->scene2->Start();
+			App->player->Start();
+		}
+
+		else if (App->scene->active)
+		{
+			App->scene->CleanUp();
+			App->fade->FadeToBlack(App->scene, App->scene);
+			App->scene->Start();
+			App->player->Start();
+		}
+		//App->LoadGame();	// SamAlert: For now it loads the last save when it's fully faded to black, decide what happens
 	}
 	else {
 		wantMoveUp = false;
