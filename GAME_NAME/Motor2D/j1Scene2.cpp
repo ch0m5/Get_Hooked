@@ -67,8 +67,8 @@ bool j1Scene2::Update(float dt)
 		if (App->player->debugMode == true)
 			CameraInput();
 
-		if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN)
-			ChangeScene();
+		/*if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)	//CHANGE/FIX: ???
+			ChangeScene();*/
 
 		//App->render->Blit(img, 0, 0);
 		App->map->Draw();
