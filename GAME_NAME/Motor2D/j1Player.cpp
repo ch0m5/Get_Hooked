@@ -62,12 +62,12 @@ bool j1Player::Start()
 
 	if (App->scene->active)
 	{
-		respawnPosition = App->scene2->playerPos;
+		respawnPosition = App->scene->playerPos;
 		currentPosition = currentPosition;
 	}
 	else if (App->scene2->active)
 	{
-		respawnPosition = App->scene->playerPos;
+		respawnPosition = App->scene2->playerPos;
 		currentPosition = currentPosition;
 	}
 

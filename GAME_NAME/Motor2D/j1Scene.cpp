@@ -33,8 +33,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
 	map.create(config.child("map").attribute("name").as_string());
-	playerPos.x = config.child("map").child("PlayerStartPos").attribute("x").as_float();
-	playerPos.y = config.child("map").child("PlayerStartPos").attribute("y").as_float();
+	playerPos.x = config.child("map").child("playerStartPos").attribute("x").as_float();
+	playerPos.y = config.child("map").child("playerStartPos").attribute("y").as_float();
 	return ret;
 }
 
