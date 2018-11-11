@@ -10008,7 +10008,7 @@
   </data>
  </layer>
  <objectgroup name="Object Layer 1">
-  <object id="1" name="0" x="0" y="560" width="256" height="80"/>
+  <object id="1" name="0" x="0" y="560" width="256" height="80"/> 
   <object id="2" name="0" x="304" y="560" width="160" height="80"/>
   <object id="3" name="0" x="496" y="528" width="80" height="32"/>
   <object id="7" name="0" x="784" y="0" width="64" height="336"/>
