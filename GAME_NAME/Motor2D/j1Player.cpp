@@ -63,12 +63,12 @@ bool j1Player::Start()
 	if (App->scene->active)
 	{
 		respawnPosition = App->scene->playerPos;
-		currentPosition = currentPosition;
+		currentPosition = respawnPosition;
 	}
 	else if (App->scene2->active)
 	{
 		respawnPosition = App->scene2->playerPos;
-		currentPosition = currentPosition;
+		currentPosition = respawnPosition;
 	}
 
 	graphics = App->tex->Load(characterSheet.GetString());
@@ -105,6 +105,39 @@ bool j1Player::Update(float dt)
 	MovePlayer();		// Move player position and calculate other movement related factors
 	UpdateHitbox();		// Transform player collider depending on new position and state
 
+	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+	{
+		if (App->scene2->active)
+			App->scene2->ChangeScene();
+
+		else if (App->scene->active)
+		{
+			App->scene->CleanUp();
+			App->fade->FadeToBlack(App->scene, App->scene);
+			App->scene->Start();
+			App->player->Start();
+		}	
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
+	{
+		if (App->scene2->active)
+		{
+			App->scene2->CleanUp();
+			App->fade->FadeToBlack(App->scene2, App->scene2);
+			App->scene2->Start();
+			App->player->Start();
+		}
+
+		else if (App->scene->active)
+		{
+			App->scene->CleanUp();
+			App->fade->FadeToBlack(App->scene, App->scene);
+			App->scene->Start();
+			App->player->Start();
+		}
+	}
+
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
 	if (lookingRight == true) {
 		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);
@@ -124,6 +157,7 @@ bool j1Player::CleanUp()
 	LOG("Unloading player");
 
 	App->tex->UnLoad(graphics);
+	currentPosition = respawnPosition;
 	hitbox = nullptr;	// @Carles, Deassign collider from player for later CleanUp in j1Collision
 	graphics = nullptr;
 
