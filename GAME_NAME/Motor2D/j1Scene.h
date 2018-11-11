@@ -40,14 +40,9 @@ public:	// @Carles
 	void CameraInput();
 	void AudioInput();
 
-	// Title names
-	void SetDebugTitle();
-	void SetOrigTitle();
-
 private:
-	p2SString title;	// @Carles
 	fPoint cameraSpeed;	// @Carles
-	p2SString current;
+	p2SString currentMap;
 };
 
 #endif // __j1SCENE_H__

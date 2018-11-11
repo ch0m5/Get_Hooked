@@ -43,6 +43,12 @@
     <ClCompile Include="j1FadeScene.cpp">
       <Filter>Desenvolupament  ========\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="j1Timer.cpp">
+      <Filter>Desenvolupament  ========\Tools\Timers</Filter>
+    </ClCompile>
+    <ClCompile Include="j1PerfTimer.cpp">
+      <Filter>Desenvolupament  ========\Tools\Timers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="j1Window.h">
@@ -108,6 +114,12 @@
     <ClInclude Include="j1FadeScene.h">
       <Filter>Desenvolupament  ========\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="j1PerfTimer.h">
+      <Filter>Desenvolupament  ========\Tools\Timers</Filter>
+    </ClInclude>
+    <ClInclude Include="j1Timer.h">
+      <Filter>Desenvolupament  ========\Tools\Timers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Programacio 2 ===========">
@@ -136,6 +148,9 @@
     </Filter>
     <Filter Include="Desenvolupament  ========\XML Files\Saves">
       <UniqueIdentifier>{fc924d21-fd50-4459-850a-000e9842b02f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Desenvolupament  ========\Tools\Timers">
+      <UniqueIdentifier>{a3f71b58-2439-41f2-a0c7-5032a528420f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

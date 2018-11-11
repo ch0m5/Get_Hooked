@@ -3,6 +3,8 @@
 
 #include "p2List.h"
 #include "j1Module.h"
+#include "j1PerfTimer.h"
+#include "j1Timer.h"
 #include "PugiXml\src\pugixml.hpp"
 
 // Modules
@@ -76,6 +78,11 @@ private:
 	bool LoadGameNow();
 	bool SavegameNow() const;
 
+	// Framerate calculations (returns delayTime)
+	void FramerateLogic();
+	p2SString DefaultTitle();
+	p2SString DebugTitle();
+
 public:
 
 	// Modules
@@ -93,11 +100,10 @@ public:
 private:
 
 	p2List<j1Module*>	modules;
-	uint				frames;
-	float				dt;
 	int					argc;
 	char**				args;
 
+	p2SString			name;
 	p2SString			title;
 	p2SString			organization;
 
@@ -106,8 +112,24 @@ private:
 	p2SString			load_game;
 	mutable p2SString	save_game;
 
-	p2List<p2SString>	save_list;	// @Carles, list of save file names
+	p2List<p2SString>	save_list;	// @Carles, list of save file names	//IMPROVE: Make the game work with a list of saved files
 	char				save_number;	// @Carles, save file list order counter
+
+	j1PerfTimer			perfTimer;
+	j1PerfTimer			delayTimer;
+	uint64				totalFrameCount = 0;
+	j1Timer				gameTimer;
+	j1Timer				frameTimer;
+	j1Timer				secTimer;
+	uint32				currFPS = 0;
+	uint32				prevFPS = 0;
+	uint16				fpsCap;
+	float				dt = 0;
+
+	// Readability variables (not essential, but simplifies reading)
+	float avgFPS;
+	float gameTime;
+	uint32 lastFrameMs;
 };
 
 extern j1App* App;

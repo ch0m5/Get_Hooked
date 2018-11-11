@@ -143,7 +143,6 @@ void j1Collision::DebugDraw()
 	p2List_item<Collider>* tmpCollider;
 	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next)
 	{
-
 		/* COLORS
 		Red: 255, 0, 0
 		Green: 0, 255, 0
@@ -165,10 +164,10 @@ void j1Collision::DebugDraw()
 			App->render->DrawQuad(tmpCollider->data.rect, 0, 255, 0, alpha);
 			break;
 		case COLLIDER_PLATFORM: // magenta
-			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 255, alpha);	// SamAlert: Unreadable collider types
+			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 255, alpha);
 			break;
 		case COLLIDER_FALLING_PLATFORM: // brown
-			App->render->DrawQuad(tmpCollider->data.rect, 160, 128, 96, alpha);	// SamAlert: Unreadable collider types
+			App->render->DrawQuad(tmpCollider->data.rect, 160, 128, 96, alpha);
 			break;
 		case COLLIDER_PLAYER: // blue
 			App->render->DrawQuad(tmpCollider->data.rect, 0, 0, 255, alpha);

@@ -514,7 +514,6 @@ void j1Player::PlayerInput()
 
 	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
 		debugMode = true;
-		App->scene->SetDebugTitle();
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
 		debugMode = false;
@@ -522,7 +521,6 @@ void j1Player::PlayerInput()
 		freeCamera = false;
 		App->collision->mustDebugDraw = false;
 		App->win->scale = App->win->origScale;
-		App->scene->SetOrigTitle();
 	}
 }
 

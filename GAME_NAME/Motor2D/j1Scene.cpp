@@ -28,10 +28,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
-	title.create(config.child("title").child_value());	// @Carles
-	App->win->SetTitle(title.GetString());
-
-	current.create(config.child("map_one").attribute("name").as_string());
+	currentMap.create(config.child("map_one").attribute("name").as_string());
 
 	return ret;
 }
@@ -39,7 +36,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load(current.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
+	App->map->Load(currentMap.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
 	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
 	App->audio->SetMusicVolume();
 
@@ -54,7 +51,7 @@ bool j1Scene::PreUpdate()
 
 p2SString j1Scene::GetCurrent()
 {
-	return current;
+	return currentMap;
 }
 
 // Called each loop iteration
@@ -62,13 +59,8 @@ bool j1Scene::Update(float dt)
 {
 	AudioInput();
 
-	if (App->player->debugMode == true) {
+	if (App->player->debugMode == true)
 		CameraInput();
-		SetDebugTitle();
-	}
-	else {
-		SetOrigTitle();
-	}
 
 	//App->render->Blit(img, 0, 0);
 	App->map->Draw();
@@ -130,26 +122,4 @@ void j1Scene::AudioInput()	// @Carles
 		App->audio->SetMusicVolume();
 		App->audio->SetSfxVolume();
 	}
-}
-
-void j1Scene::SetDebugTitle()	// @Carles
-{
-	p2SString title("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d)",
-		title.GetString(),
-		(int)App->player->GetPosition().x,
-		(int)App->player->GetPosition().y,
-		(int)App->player->GetSpeed().x,
-		(int)App->player->GetSpeed().y,
-		App->map->data.width, App->map->data.height,
-		App->map->data.tile_width, App->map->data.tile_height,
-		App->map->data.tilesets.count());
-
-	App->win->SetTitle(title.GetString());
-}
-
-void j1Scene::SetOrigTitle()	// @Carles
-{
-	p2SString title("%s", title.GetString());
-
-	App->win->SetTitle(title.GetString());
 }

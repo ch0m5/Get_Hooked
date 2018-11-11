@@ -1,8 +1,8 @@
 <!-- Config file for the game -->
 
 <config>
-  <app>
-    <title>Get Hooked</title>
+  <app fpsCap="60">
+    <name>Get Hooked v0.1</name>
     <organization>UPC</organization>
     <save>save_game.xml</save>
     <load>save_game.xml</load>
@@ -122,7 +122,6 @@
   </player>
 
   <scene>   <!-- map_name is a placeholder -->
-    <title>Get Hooked v0.1</title>
     <cameraSpeed x="5" y="5"/>
     <map_one name="level1.tmx">
       <playerStartPos x="0" y="0"/>

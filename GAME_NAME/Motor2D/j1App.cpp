@@ -18,7 +18,8 @@
 // Constructor
 j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 {
-	frames = 0;
+	PERF_START(perfTimer);
+
 	want_to_save = want_to_load = false;
 
 	input = new j1Input();
@@ -44,8 +45,10 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(collision);	// @Carles
 	AddModule(fade);
 
-	// render last to swap buffer
+	// Render last to swap buffer
 	AddModule(render);
+
+	PERF_PEEK(perfTimer);
 }
 
 // Destructor
@@ -72,6 +75,8 @@ void j1App::AddModule(j1Module* module)
 // Called before render is available
 bool j1App::Awake()
 {
+	PERF_START(perfTimer);
+
 	pugi::xml_document	config_file;
 	pugi::xml_node		config;
 	pugi::xml_node		app_config;
@@ -85,10 +90,13 @@ bool j1App::Awake()
 		// self-config
 		ret = true;
 		app_config = config.child("app");
-		title.create(app_config.child("title").child_value());
+		name.create(app_config.child("name").child_value());
 		organization.create(app_config.child("organization").child_value());
+
 		save_game.create(app_config.child("save").child_value());	// @Carles
 		load_game.create(app_config.child("load").child_value());	// @Carles
+
+		fpsCap = app_config.attribute("fpsCap").as_uint();
 	}
 
 	if(ret == true)
@@ -103,12 +111,16 @@ bool j1App::Awake()
 		}
 	}
 
+	PERF_PEEK(perfTimer);
+
 	return ret;
 }
 
 // Called before the first frame
 bool j1App::Start()
 {
+	PERF_START(perfTimer);
+
 	bool ret = true;
 	p2List_item<j1Module*>* item;
 	item = modules.start;
@@ -118,6 +130,10 @@ bool j1App::Start()
 		ret = item->data->Start();
 		item = item->next;
 	}
+
+	gameTimer.Start();
+
+	PERF_PEEK(perfTimer);
 
 	return ret;
 }
@@ -162,6 +178,13 @@ pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
 // ---------------------------------------------
 void j1App::PrepareUpdate()
 {
+	totalFrameCount++;
+	currFPS++;
+	dt = frameTimer.ReadSec();
+
+	// Restart timers
+	frameTimer.Start();
+	delayTimer.Start();
 }
 
 // ---------------------------------------------
@@ -172,6 +195,8 @@ void j1App::FinishUpdate()
 
 	if(want_to_load == true)
 		LoadGameNow();
+
+	FramerateLogic();
 }
 
 // Call modules before each loop iteration
@@ -212,6 +237,7 @@ bool j1App::DoUpdate()
 			continue;
 		}
 
+		//ret = item->data->UpdateTick(dt);
 		ret = item->data->Update(dt);
 	}
 
@@ -242,6 +268,8 @@ bool j1App::PostUpdate()
 // Called before quitting
 bool j1App::CleanUp()
 {
+	PERF_START(perfTimer);
+
 	bool ret = true;
 	p2List_item<j1Module*>* item;
 	item = modules.end;
@@ -251,6 +279,8 @@ bool j1App::CleanUp()
 		ret = item->data->CleanUp();
 		item = item->prev;
 	}
+
+	PERF_PEEK(perfTimer);
 
 	return ret;
 }
@@ -377,4 +407,64 @@ bool j1App::SavegameNow() const
 	data.reset();
 	want_to_save = false;
 	return ret;
+}
+
+void j1App::FramerateLogic() {
+	if (secTimer.Read() > 1000) {
+		secTimer.Start();
+		prevFPS = currFPS;
+		currFPS = 0;
+	}
+
+	avgFPS = float(totalFrameCount) / gameTimer.ReadSec();
+	gameTime = gameTimer.ReadSec();
+	lastFrameMs = frameTimer.Read();
+
+	if (App->player->debugMode == true) {
+		App->win->SetTitle(DebugTitle().GetString());
+	}
+	else {
+		App->win->SetTitle(DefaultTitle().GetString());
+	}
+
+	int delayTime = (1000 / fpsCap) - lastFrameMs;
+	if (delayTime > 0) {
+		SDL_Delay(delayTime);
+		LOG("We waited for %u and got back in %f", delayTime, delayTimer.ReadMs());
+	}
+}
+
+p2SString j1App::DebugTitle()	// @Carles
+{
+	title.create("%s (Position: %dx%d / Av.FPS: %.2f / Last Frame Ms: %02u / Last sec frames: %i / Time since startup: %.3f / Frame Count: %lu)",
+		name.GetString(),
+		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y,
+		avgFPS,
+		lastFrameMs,
+		prevFPS,
+		gameTime,
+		totalFrameCount);
+
+	// Full debug
+	/*title.create("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d / Av.FPS:%.2f / Last Frame Ms:%02u / Last sec frames:%i / Time since startup:%.3f / Frame Count:%lu)",
+		name.GetString(),
+		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y,
+		(int)App->player->GetSpeed().x, (int)App->player->GetSpeed().y,
+		App->map->data.width, App->map->data.height,
+		App->map->data.tile_width, App->map->data.tile_height,
+		App->map->data.tilesets.count(),
+		avgFPS,
+		lastFrameMs,
+		prevFPS,
+		gameTime,
+		totalFrameCount);*/
+
+	return title;
+}
+
+p2SString j1App::DefaultTitle()	// @Carles
+{
+	title.create("%s", name.GetString());
+
+	return title;
 }
