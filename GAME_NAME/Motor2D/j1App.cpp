@@ -237,8 +237,8 @@ bool j1App::DoUpdate()
 			continue;
 		}
 
-		//ret = item->data->UpdateTick(dt);
-		ret = item->data->Update(dt);
+		ret = item->data->UpdateTick(dt);
+		ret = item->data->Update();
 	}
 
 	return ret;
@@ -436,9 +436,10 @@ void j1App::FramerateLogic() {
 
 p2SString j1App::DebugTitle()	// @Carles
 {
-	title.create("%s (Position: %dx%d / Av.FPS: %.2f / Last Frame Ms: %02u / Last sec frames: %i / Time since startup: %.3f / Frame Count: %lu)",
+	title.create("%s (Position: %dx%d / Speed:%dx%d / Av.FPS: %.2f / Last Frame Ms: %02u / Last sec frames: %i / Time since startup: %.3f / Frame Count: %lu)",
 		name.GetString(),
 		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y,
+		(int)App->player->GetSpeed().x, (int)App->player->GetSpeed().y,
 		avgFPS,
 		lastFrameMs,
 		prevFPS,

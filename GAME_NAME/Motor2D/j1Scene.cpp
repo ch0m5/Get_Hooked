@@ -54,15 +54,20 @@ p2SString j1Scene::GetCurrent()
 	return currentMap;
 }
 
-// Called each loop iteration
-bool j1Scene::Update(float dt)
+// Called each frame (logic)
+bool j1Scene::UpdateTick(float dt)
 {
 	AudioInput();
 
 	if (App->player->debugMode == true)
-		CameraInput();
+		CameraInput(dt);
 
-	//App->render->Blit(img, 0, 0);
+	return true;
+}
+
+// Called each loop iteration (graphic)
+bool j1Scene::Update()
+{
 	App->map->Draw();
 
 	return true;
@@ -87,20 +92,20 @@ bool j1Scene::CleanUp()
 	return true;
 }
 
-void j1Scene::CameraInput()	// @Carles
+void j1Scene::CameraInput(float dt)	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_IDLE) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-			App->render->camera.y += cameraSpeed.y;
+			App->render->camera.y += ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-			App->render->camera.y -= cameraSpeed.y;
+			App->render->camera.y -= ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-			App->render->camera.x += cameraSpeed.x;
+			App->render->camera.x += ceil(cameraSpeed.x * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-			App->render->camera.x -= cameraSpeed.x;
+			App->render->camera.x -= ceil(cameraSpeed.x * dt);
 	}
 }
 

@@ -78,7 +78,7 @@ bool j1Collision::PreUpdate()	// @Carles
 	return ret;
 }
 
-bool j1Collision::Update(float dt)
+bool j1Collision::Update()
 {
 	bool ret = true;
 
@@ -102,11 +102,9 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 {
 	LOG("Loading Colliders");
 	bool ret = true;
+
 	//Load all collider info
-
-	pugi::xml_node collider;
-
-	for (collider = map_file.child("map").child("objectgroup"); collider && ret; collider = collider.next_sibling("objectgroup"))
+	for (pugi::xml_node collider = map_file.child("map").child("objectgroup"); collider && ret; collider = collider.next_sibling("objectgroup"))
 	{
 		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{

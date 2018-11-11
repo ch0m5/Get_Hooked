@@ -42,7 +42,8 @@ public:
 
 	// Called each loop iteration
 	bool PreUpdate();
-	bool Update(float dt);
+	bool UpdateTick(float dt);
+	bool Update();
 
 	// Called before quitting
 	bool CleanUp();
@@ -93,7 +94,7 @@ private:	// @Carles
 	void PlayerMovement();	// Check player current movement
 	void PlayerState();		// Check player state
 	void PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
-	void MovePlayer();		// Move player position and decide/calculate other movement related factors
+	void MovePlayer(float dt);		// Move player position and decide/calculate other movement related factors
 	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 	// Check possible new states in each state and other changes in the player's status
@@ -117,8 +118,8 @@ private:	// @Carles
 
 	// Movement and final changes
 	SDL_Rect LimitCameraPos();	// If required, limit camera to player position
-	fPoint GodModeMovement();
-	fPoint NormalMovement();
+	fPoint GodModeMovement(float dt);
+	fPoint NormalMovement(float dt);
 	fPoint LimitSpeed();
 	SDL_Rect ReshapeCollider(player_sprite sprite);
 

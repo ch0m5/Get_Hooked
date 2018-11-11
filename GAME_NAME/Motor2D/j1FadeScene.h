@@ -18,8 +18,8 @@ public:
 	// Called before the first frame
 	bool Start();
 
-	// Called each loop iteration
-	bool Update(float dt);
+	// Called each loop iteration (graphic)
+	bool Update();
 
 	bool FadeToBlack(/*Map* map_off, Map* map_on, */float time = 2.0f);
 

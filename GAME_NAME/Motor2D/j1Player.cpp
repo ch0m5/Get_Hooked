@@ -109,7 +109,7 @@ bool j1Player::PreUpdate()	// IMPROVE: Player input here?
 }
 
 //input and logic
-bool j1Player::Update(float dt)
+bool j1Player::UpdateTick(float dt)
 {
 	bool ret = true;
 
@@ -121,7 +121,7 @@ bool j1Player::Update(float dt)
 	PlayerMovement();	// Check player current movement
 	PlayerState();		// Check player state
 	PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
-	MovePlayer();		// Move player position and calculate other movement related factors
+	MovePlayer(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();		// Transform player collider depending on new position and state
 
 	SDL_Rect playerRect = animPtr->GetCurrentFrame();
@@ -131,6 +131,13 @@ bool j1Player::Update(float dt)
 	else {
 		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
 	}
+
+	return ret;
+}
+
+bool j1Player::Update()
+{
+	bool ret = true;
 
 	return ret;
 }
@@ -512,10 +519,10 @@ void j1Player::PlayerInput()
 		wantMoveDown = true;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
+	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
 		debugMode = true;
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
+	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
 		debugMode = false;
 		godMode = false;
 		freeCamera = false;
@@ -932,13 +939,13 @@ void j1Player::DeadEffects() {
 }
 
 // Move player position and decide/calculate other movement related factors
-void j1Player::MovePlayer()
+void j1Player::MovePlayer(float dt)
 {
 	if (godMode == true) {
-		GodModeMovement();
+		GodModeMovement(dt);
 	}
 	else {
-		NormalMovement();
+		NormalMovement(dt);
 	}
 
 	// Max Speeds
@@ -956,25 +963,25 @@ void j1Player::MovePlayer()
 	animRect.y = (int)currentPosition.y;
 }
 
-fPoint j1Player::GodModeMovement()
+fPoint j1Player::GodModeMovement(float dt)
 {
 	if (wantMoveRight == true && wantMoveLeft == false) {
-		currentPosition.x += 3;
+		currentPosition.x += 200 * dt;
 	}
 	if (wantMoveLeft == true && wantMoveRight == false) {
-		currentPosition.x -= 3;
+		currentPosition.x -= 200 * dt;
 	}
 	if (wantMoveUp == true && wantMoveDown == false) {
-		currentPosition.y -= 3;
+		currentPosition.y -= 200 * dt;
 	}
 	if (wantMoveDown == true && wantMoveUp == false) {
-		currentPosition.y += 3;
+		currentPosition.y += 200 * dt;
 	}
 
 	return currentPosition;
 }
 
-fPoint j1Player::NormalMovement()
+fPoint j1Player::NormalMovement(float dt)
 {
 	if (wantMoveRight == true && wantMoveLeft == false) {
 		speed.x += currentAcceleration;
@@ -999,7 +1006,8 @@ fPoint j1Player::NormalMovement()
 
 	// If on air, apply gravity
 	if (airborne == true) {
-		Fall();
+		//Fall();
+		speed.y += gravity;
 	}
 
 	return speed;

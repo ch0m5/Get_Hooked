@@ -107,6 +107,14 @@
       <hurtSpeed x="2" y="2"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
+      <!-- Original values
+      <maxSpeed x="3" y="5"/>
+      <hurtSpeed x="2" y="2"/>
+      <accelerations x="0.25" gravity="0.2" slide="0.07"/>
+      <jump forceY="4"/>
+      -->
+      <jump forceY="4"/>
+      <accelerations x="0.25" gravity="0.2" slide="0.07"/> -->
       <airborne value="false"/>
       <looking right="true"/>
       <somersault used="false"/>
@@ -122,7 +130,7 @@
   </player>
 
   <scene>   <!-- map_name is a placeholder -->
-    <cameraSpeed x="5" y="5"/>
+    <cameraSpeed x="300" y="300"/>
     <map_one name="level1.tmx">
       <playerStartPos x="0" y="0"/>
       <playerStartSpeed x="0" y="0"/>

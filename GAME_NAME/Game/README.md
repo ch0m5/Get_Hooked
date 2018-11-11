@@ -16,7 +16,7 @@ No previous installations is required to play the game, just download and execut
 ## Usage
 ### General Controls
 - ESC: Quit the game
-- F3: Enter Debug Mode
+- F8: Enter Debug Mode
 - Up/Down: Change master volume
 - Left/Right: Change music volume
 
