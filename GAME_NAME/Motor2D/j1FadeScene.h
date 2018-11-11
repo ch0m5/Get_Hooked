@@ -4,6 +4,8 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
+
+
 class j1FadeScene : public j1Module
 {
 public:
@@ -38,6 +40,7 @@ private:
 
 	j1Module* fade_out = nullptr;
 	j1Module* fade_in = nullptr;
+
 };
 
 #endif //__FACESCENE_H__

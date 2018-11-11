@@ -6,6 +6,7 @@
 #include "SDL/include/SDL_render.h"
 #include "SDL/include/SDL_timer.h"
 
+
 j1FadeScene::j1FadeScene()
 {
 	name.create("window");

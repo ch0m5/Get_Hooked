@@ -42,9 +42,10 @@ public:	// @Carles
 	void AudioInput();
 	bool active = true;
 
+	fPoint playerPos;
 private:
 	fPoint cameraSpeed;	// @Carles
-	fPoint playerPos;
+	
 
 	p2SString map;
 };

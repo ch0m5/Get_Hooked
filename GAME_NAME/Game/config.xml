@@ -124,7 +124,7 @@
   <scene>
     <cameraSpeed x="5" y="5"/>
     <map name="level1.tmx" active="1">
-      <playerStartPos x="0" y="0"/>
+      <playerStartPos x="128" y="464"/>
       <playerStartSpeed x="0" y="0"/>
     </map>
     <fadeTime value="1"/>
@@ -133,7 +133,7 @@
   <scene2>
     <cameraSpeed x="5" y="5"/>
     <map name="level2.tmx" active="0">
-      <playerStartPos x="0" y="0"/>
+      <playerStartPos x="224" y="160"/>
       <playerStartSpeed x="0" y="0"/>
     </map>
     <fadeTime value="1"/>

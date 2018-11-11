@@ -32,14 +32,16 @@ bool j1Scene2::Awake(pugi::xml_node& config)
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
 	map.create(config.child("map").attribute("name").as_string());
-
+	playerPos.x = config.child("map").child("PlayerStartPos").attribute("x").as_float();
+	playerPos.y = config.child("map").child("PlayerStartPos").attribute("y").as_float();
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene2::Start()
 {
-	if (App->scene->active == true) { active = false; }
+	if (App->scene->active == true) 
+		active = false;
 
 	if (active)
 	{
@@ -60,14 +62,17 @@ bool j1Scene2::PreUpdate()
 // Called each loop iteration
 bool j1Scene2::Update(float dt)
 {
-	AudioInput();
+		AudioInput();
 
-	if (App->player->debugMode == true)
-		CameraInput();
+		if (App->player->debugMode == true)
+			CameraInput();
 
-	//App->render->Blit(img, 0, 0);
-	App->map->Draw();
+		if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN)
+			ChangeScene();
 
+		//App->render->Blit(img, 0, 0);
+		App->map->Draw();
+	
 	return true;
 }
 
@@ -90,6 +95,7 @@ bool j1Scene2::CleanUp()
 	App->collision->CleanUp();
 	App->tex->CleanUp();
 	App->player->CleanUp();
+
 	return true;
 }
 
@@ -132,12 +138,13 @@ void j1Scene2::AudioInput()	// @Carles
 
 void j1Scene2::ChangeScene()
 {
-	App->scene2->active = false;
+	
 	App->scene->active = true;
+	App->scene2->active = false;
 	CleanUp();
 	App->fade->FadeToBlack(App->scene2, App->scene);
+	App->scene->Start();
 	App->player->Start();
 	App->render->camera = { 0,0 };
-	App->scene->Start();
-
+	
 }

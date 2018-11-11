@@ -12,6 +12,7 @@
 #include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
 #include "j1Collision.h"
+#include "j1Timer.h"
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -32,7 +33,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
 	map.create(config.child("map").attribute("name").as_string());
-
+	playerPos.x = config.child("map").child("PlayerStartPos").attribute("x").as_float();
+	playerPos.y = config.child("map").child("PlayerStartPos").attribute("y").as_float();
 	return ret;
 }
 
@@ -63,16 +65,18 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	AudioInput();
+	
+		AudioInput();
 
-	if (App->player->debugMode == true)
-		CameraInput();
+		if (App->player->debugMode == true)
+			CameraInput();
 
-	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
-		ChangeScene();
+		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
+			ChangeScene();
 
-	//App->render->Blit(img, 0, 0);
-	App->map->Draw();
+		//App->render->Blit(img, 0, 0);
+		App->map->Draw();
+	
 
 	return true;
 }
@@ -139,12 +143,13 @@ void j1Scene::AudioInput()	// @Carles
 
 void j1Scene::ChangeScene()
 {
+
 	App->scene2->active = true;
 	App->scene->active = false;
 	CleanUp();
 	App->fade->FadeToBlack(App->scene, App->scene2);
+	App->scene2->Start();
 	App->player->Start();
 	App->render->camera = { 0,0 };
-	App->scene2->Start();
-
+	
 }
