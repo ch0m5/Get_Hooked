@@ -13,6 +13,8 @@ enum collider_type {	// @Carles, collider types
 	COLLIDER_PLAYER_ATTACK,
 	COLLIDER_ENEMY,
 	COLLIDER_ENEMY_ATTACK,
+	COLLIDER_END,
+	COLLIDER_HAZARD,
 
 	COLLIDER_MAX
 };

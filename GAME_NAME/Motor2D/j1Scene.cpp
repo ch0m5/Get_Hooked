@@ -31,13 +31,15 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	title.create(config.child("title").child_value());	// @Carles
 	App->win->SetTitle(title.GetString());
 
+	current.create(config.child("map_one").attribute("name").as_string());
+
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load("testmap.tmx");	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
+	App->map->Load(current.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
 	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
 	App->audio->SetMusicVolume();
 
@@ -48,6 +50,11 @@ bool j1Scene::Start()
 bool j1Scene::PreUpdate()
 {
 	return true;
+}
+
+p2SString j1Scene::GetCurrent()
+{
+	return current;
 }
 
 // Called each loop iteration

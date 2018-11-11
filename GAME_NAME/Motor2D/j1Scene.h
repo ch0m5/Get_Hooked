@@ -32,6 +32,9 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Returns current level identifier
+	p2SString GetCurrent();
+
 public:	// @Carles
 	// Inputs
 	void CameraInput();
@@ -44,6 +47,7 @@ public:	// @Carles
 private:
 	p2SString title;	// @Carles
 	fPoint cameraSpeed;	// @Carles
+	p2SString current;
 };
 
 #endif // __j1SCENE_H__
