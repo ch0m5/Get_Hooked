@@ -33,7 +33,7 @@ public:
 	bool CleanUp();
 
 	// Returns current level identifier
-	p2SString GetCurrent();
+	p2SString GetCurrentMap();
 
 public:	// @Carles
 	// Inputs

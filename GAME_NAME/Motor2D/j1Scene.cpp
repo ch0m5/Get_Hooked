@@ -49,7 +49,7 @@ bool j1Scene::PreUpdate()
 	return true;
 }
 
-p2SString j1Scene::GetCurrent()
+p2SString j1Scene::GetCurrentMap()
 {
 	return currentMap;
 }
