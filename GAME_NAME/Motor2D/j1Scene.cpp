@@ -7,8 +7,11 @@
 #include "j1Render.h"
 #include "j1Window.h"
 #include "j1Map.h"
+#include "j1FadeScene.h"
 #include "j1Scene.h"
+#include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
+#include "j1Collision.h"
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -28,7 +31,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
-	currentMap.create(config.child("map_one").attribute("name").as_string());
+	map.create(config.child("map").attribute("name").as_string());
 
 	return ret;
 }
@@ -36,9 +39,16 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-	App->map->Load(currentMap.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
-	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
-	App->audio->SetMusicVolume();
+
+	if (App->scene2->active == true)
+		active = false; 
+
+	if (active)
+	{
+		App->map->Load(map.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
+		App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
+		App->audio->SetMusicVolume();
+	}
 
 	return true;
 }
@@ -49,10 +59,6 @@ bool j1Scene::PreUpdate()
 	return true;
 }
 
-p2SString j1Scene::GetCurrentMap()
-{
-	return currentMap;
-}
 
 // Called each loop iteration
 bool j1Scene::Update(float dt)
@@ -61,6 +67,9 @@ bool j1Scene::Update(float dt)
 
 	if (App->player->debugMode == true)
 		CameraInput();
+
+	if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
+		ChangeScene();
 
 	//App->render->Blit(img, 0, 0);
 	App->map->Draw();
@@ -83,6 +92,10 @@ bool j1Scene::PostUpdate()
 bool j1Scene::CleanUp()
 {
 	LOG("Freeing scene");
+	App->map->CleanUp();
+	App->collision->CleanUp();
+	App->tex->CleanUp();
+	App->player->CleanUp();
 
 	return true;
 }
@@ -122,4 +135,16 @@ void j1Scene::AudioInput()	// @Carles
 		App->audio->SetMusicVolume();
 		App->audio->SetSfxVolume();
 	}
+}
+
+void j1Scene::ChangeScene()
+{
+	App->scene2->active = true;
+	App->scene->active = false;
+	CleanUp();
+	App->fade->FadeToBlack(App->scene, App->scene2);
+	App->player->Start();
+	App->render->camera = { 0,0 };
+	App->scene2->Start();
+
 }

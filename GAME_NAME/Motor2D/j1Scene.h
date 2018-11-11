@@ -32,17 +32,21 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	// Returns current level identifier
-	p2SString GetCurrentMap();
+	// Changes to next scene
+	void ChangeScene();
+
 
 public:	// @Carles
 	// Inputs
 	void CameraInput();
 	void AudioInput();
+	bool active = true;
 
 private:
 	fPoint cameraSpeed;	// @Carles
-	p2SString currentMap;
+	fPoint playerPos;
+
+	p2SString map;
 };
 
 #endif // __j1SCENE_H__

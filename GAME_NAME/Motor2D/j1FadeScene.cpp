@@ -77,18 +77,18 @@ bool j1FadeScene::Update(float dt)
 }
 
 // Fade to black. At mid point change one scene for another
-bool j1FadeScene::FadeToBlack(/*Map* map_off, Map* map_on, */float time)	// Before: bool ModuleFadeToBlack::FadeToBlack(Module* module_off, Module* module_on, float time)
+bool j1FadeScene::FadeToBlack(j1Module* map_off, j1Module* map_on, float time)	// Before: bool ModuleFadeToBlack::FadeToBlack(Module* module_off, Module* module_on, float time)
 {
 	bool ret = false;
+
+	fade_out = map_off;
+	fade_in = map_on;
 
 	if (current_step == fade_step::none)
 	{
 		current_step = fade_step::fade_to_black;
 		start_time = SDL_GetTicks();
 		total_time = (Uint32)(time * 0.5f * 1000.0f);
-
-		//fade_out = map_off;
-		//fade_in = map_on;
 
 		ret = true;
 	}

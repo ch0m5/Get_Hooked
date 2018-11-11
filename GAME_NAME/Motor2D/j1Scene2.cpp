@@ -7,13 +7,14 @@
 #include "j1Render.h"
 #include "j1Window.h"
 #include "j1Map.h"
+#include "j1FadeScene.h"
 #include "j1Scene.h"
 #include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
 
 j1Scene2::j1Scene2() : j1Module()
 {
-	name.create("scene");
+	name.create("scene2");
 }
 
 // Destructor
@@ -29,7 +30,7 @@ bool j1Scene2::Awake(pugi::xml_node& config)
 	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
-	currentMap.create(config.child("map_two").attribute("name").as_string());
+	map.create(config.child("map").attribute("name").as_string());
 
 	return ret;
 }
@@ -37,9 +38,14 @@ bool j1Scene2::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene2::Start()
 {
-	App->map->Load(currentMap.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
-	App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
-	App->audio->SetMusicVolume();
+	if (App->scene->active == true) { active = false; }
+
+	if (active)
+	{
+		App->map->Load(map.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
+		App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
+		App->audio->SetMusicVolume();
+	}
 
 	return true;
 }
@@ -48,11 +54,6 @@ bool j1Scene2::Start()
 bool j1Scene2::PreUpdate()
 {
 	return true;
-}
-
-p2SString j1Scene2::GetCurrentMap()
-{
-	return currentMap;
 }
 
 // Called each loop iteration
@@ -123,4 +124,16 @@ void j1Scene2::AudioInput()	// @Carles
 		App->audio->SetMusicVolume();
 		App->audio->SetSfxVolume();
 	}
+}
+
+void j1Scene2::ChangeScene()
+{
+	App->scene2->active = true;
+	App->scene->active = false;
+	CleanUp();
+	App->fade->FadeToBlack(App->scene, App->scene2);
+	App->player->Start();
+	App->render->camera = { 0,0 };
+	App->scene2->Start();
+
 }

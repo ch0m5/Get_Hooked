@@ -58,10 +58,10 @@ bool j1Player::Start()
 	pugi::xml_document config_data;
 	pugi::xml_node root;
 
-	pugi::xml_parse_result result = map_data.load_file("maps/testmap.tmx");	// SamAlert: Hardcoded string should get value from a xml file
-	pugi::xml_parse_result result2 = config_data.load_file("config.xml");
+	//pugi::xml_parse_result result = map_data.load_file("maps/testmap.tmx");	// SamAlert: Hardcoded string should get value from a xml file
+	pugi::xml_parse_result result = config_data.load_file("config.xml");
 
-	if (result != NULL && result2 != NULL)
+	if (result != NULL)
 	{
 		root = map_data.first_child();
 
@@ -908,7 +908,7 @@ void j1Player::HurtEffects()
 
 void j1Player::DeadEffects() {
 	if (fading == false && deadTimer < SDL_GetTicks() - deathDelay) {
-		App->fade->FadeToBlack(fadeDelay);
+		App->fade->FadeToBlack(App->scene, App->scene, fadeDelay);
 		fading = true;
 	}
 	else if (fading == true && deadTimer < SDL_GetTicks() - deathDelay - fadeDelay * 1000 / 2) {
