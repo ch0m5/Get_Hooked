@@ -1,18 +1,18 @@
-#ifndef __j1SCENE_H__
-#define __j1SCENE_H__
+#ifndef __j1SCENE2_H__
+#define __j1SCENE2_H__
 
 #include "j1Module.h"
 
 struct SDL_Texture;
 
-class j1Scene : public j1Module
+class j1Scene2 : public j1Module	//IMPROVE: Scene should be a single level-changing module
 {
 public:
 
-	j1Scene();
+	j1Scene2();
 
 	// Destructor
-	virtual ~j1Scene();
+	virtual ~j1Scene2();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node&);
@@ -23,11 +23,8 @@ public:
 	// Called before all Updates
 	bool PreUpdate();
 
-	// Called each frame (logic)
-	bool UpdateTick(float dt);
-
-	// Called each loop iteration (graphic)
-	bool Update();
+	// Called each loop iteration
+	bool Update(float dt);
 
 	// Called before all Updates
 	bool PostUpdate();
@@ -37,20 +34,21 @@ public:
 
 	// Changes to next scene
 	void ChangeScene();
-
+	
 
 public:	// @Carles
 	// Inputs
-	void CameraInput(float dt);
+	void CameraInput();
 	void AudioInput();
-	bool active = true;
 
+	bool active = false;
 	fPoint playerPos;
 private:
 	fPoint cameraSpeed;	// @Carles
-	
+
 
 	p2SString map;
+	
 };
 
 #endif // __j1SCENE_H__

@@ -12,19 +12,18 @@
 #include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
 #include "j1Collision.h"
-#include "j1Timer.h"
 
-j1Scene::j1Scene() : j1Module()
+j1Scene2::j1Scene2() : j1Module()
 {
-	name.create("scene");
+	name.create("scene2");
 }
 
 // Destructor
-j1Scene::~j1Scene()
+j1Scene2::~j1Scene2()
 {}
 
 // Called before render is available
-bool j1Scene::Awake(pugi::xml_node& config)
+bool j1Scene2::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Scene");
 	bool ret = true;
@@ -39,11 +38,10 @@ bool j1Scene::Awake(pugi::xml_node& config)
 }
 
 // Called before the first frame
-bool j1Scene::Start()
+bool j1Scene2::Start()
 {
-
-	if (App->scene2->active == true)
-		active = false; 
+	if (App->scene->active == true) 
+		active = false;
 
 	if (active)
 	{
@@ -56,48 +54,41 @@ bool j1Scene::Start()
 }
 
 // Called each loop iteration
-bool j1Scene::PreUpdate()
+bool j1Scene2::PreUpdate()
 {
-	return true;
-}
-
-
-// Called each frame (logic)
-bool j1Scene::UpdateTick(float dt)
-{
-	AudioInput();
-
-	if (App->player->debugMode == true) {
-		CameraInput(dt);
-
-		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
-			ChangeScene();
-	}
-		
-	return true;
-}
-
-// Called each loop iteration (graphic)
-bool j1Scene::Update()
-{
-	App->map->Draw();
-
 	return true;
 }
 
 // Called each loop iteration
-bool j1Scene::PostUpdate()
+bool j1Scene2::Update(float dt)
+{
+		AudioInput();
+
+		if (App->player->debugMode == true)
+			CameraInput();
+
+		if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN)
+			ChangeScene();
+
+		//App->render->Blit(img, 0, 0);
+		App->map->Draw();
+	
+	return true;
+}
+
+// Called each loop iteration
+bool j1Scene2::PostUpdate()
 {
 	bool ret = true;
 
-	if(App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
 	return ret;
 }
 
 // Called before quitting
-bool j1Scene::CleanUp()
+bool j1Scene2::CleanUp()
 {
 	LOG("Freeing scene");
 	App->map->CleanUp();
@@ -108,24 +99,24 @@ bool j1Scene::CleanUp()
 	return true;
 }
 
-void j1Scene::CameraInput(float dt)	// @Carles
+void j1Scene2::CameraInput()	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_IDLE) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-			App->render->camera.y += ceil(cameraSpeed.y * dt);
+			App->render->camera.y += cameraSpeed.y;
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-			App->render->camera.y -= ceil(cameraSpeed.y * dt);
+			App->render->camera.y -= cameraSpeed.y;
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-			App->render->camera.x += ceil(cameraSpeed.x * dt);
+			App->render->camera.x += cameraSpeed.x;
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-			App->render->camera.x -= ceil(cameraSpeed.x * dt);
+			App->render->camera.x -= cameraSpeed.x;
 	}
 }
 
-void j1Scene::AudioInput()	// @Carles
+void j1Scene2::AudioInput()	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && App->audio->masterVolume < 100)
@@ -145,13 +136,15 @@ void j1Scene::AudioInput()	// @Carles
 	}
 }
 
-void j1Scene::ChangeScene()
+void j1Scene2::ChangeScene()
 {
-	App->scene2->active = true;
-	App->scene->active = false;
+	
+	App->scene->active = true;
+	App->scene2->active = false;
 	CleanUp();
-	App->fade->FadeToBlack(App->scene, App->scene2);
+	App->fade->FadeToBlack(App->scene2, App->scene);
+	App->scene->Start();
 	App->player->Start();
-	App->scene2->Start();
 	App->render->camera = { 0,0 };
+	
 }

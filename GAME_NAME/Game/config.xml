@@ -129,17 +129,22 @@
     </stats>
   </player>
 
-  <scene>   <!-- map_name is a placeholder -->
+  <scene>
     <cameraSpeed x="300" y="300"/>
-    <map_one name="level1.tmx">
-      <playerStartPos x="0" y="0"/>
+    <map name="level1.tmx" active="1">
+      <playerStartPos x="128" y="464"/>
       <playerStartSpeed x="0" y="0"/>
-    </map_one>
-    <map_two name="maps/level2.tmx">
-      <playerStartPos x="0" y="0"/>
-      <playerStartSpeed x="0" y="0"/>
-    </map_two>
+    </map>
     <fadeTime value="1"/>
-  </scene>
+  </scene>  
+
+  <scene2>
+    <cameraSpeed x="5" y="5"/>
+    <map name="level2.tmx" active="0">
+      <playerStartPos x="224" y="160"/>
+      <playerStartSpeed x="0" y="0"/>
+    </map>
+    <fadeTime value="1"/>
+  </scene2>
 
 </config>

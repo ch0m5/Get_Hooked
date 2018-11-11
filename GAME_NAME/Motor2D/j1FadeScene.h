@@ -4,6 +4,8 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
+
+
 class j1FadeScene : public j1Module
 {
 public:
@@ -21,7 +23,7 @@ public:
 	// Called each loop iteration (graphic)
 	bool Update();
 
-	bool FadeToBlack(/*Map* map_off, Map* map_on, */float time = 2.0f);
+	bool FadeToBlack(j1Module* map_off, j1Module* map_on, float time = 2.0f);
 
 private:
 
@@ -36,8 +38,9 @@ private:
 	Uint32 total_time = 0;
 	SDL_Rect screen;
 
-	//Module* fade_out = nullptr;
-	//Module* fade_in = nullptr;
+	j1Module* fade_out = nullptr;
+	j1Module* fade_in = nullptr;
+
 };
 
 #endif //__FACESCENE_H__

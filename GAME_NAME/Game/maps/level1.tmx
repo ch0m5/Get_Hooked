@@ -10051,6 +10051,5 @@
   <object id="52" name="0" x="2528" y="368" width="64" height="16"/>
   <object id="55" name="0" x="2624" y="336" width="64" height="16"/>
   <object id="56" name="0" x="2720" y="368" width="64" height="16"/>
-  <object id="57" name="start" x="55" y="483" width="38" height="30"/>
  </objectgroup>
 </map>

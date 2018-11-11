@@ -11,6 +11,7 @@
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
+#include "j1Scene2.h"
 #include "p2Animation.h"
 
 j1Player::j1Player()
@@ -54,41 +55,21 @@ bool j1Player::Start()
 {
 	bool ret = true;
 
-	pugi::xml_document map_data;
-	pugi::xml_document config_data;
-	pugi::xml_node root;
-
-	pugi::xml_parse_result result = map_data.load_file("maps/testmap.tmx");	// SamAlert: Hardcoded string should get value from a xml file
-	pugi::xml_parse_result result2 = config_data.load_file("config.xml");
-
-	if (result != NULL && result2 != NULL)
-	{
-		root = map_data.first_child();
-
-		//respawnPosition.x = currentPosition.x = root.child("objectgroup").child("object").attribute("x").as_float();	// Put player on map initial position
-		//respawnPosition.y = currentPosition.y = root.child("objectgroup").child("object").attribute("y").as_float();
-
-		for (pugi::xml_node node = root; root.next_sibling() != NULL; node = node.next_sibling())
-		{
-			if (node.attribute("name").as_string() == "start")
-			{
-				respawnPosition.x = node.attribute("x").as_float();
-				respawnPosition.y = node.attribute("y").as_float();
-			}
-		}
-
-		config_data.reset();
-		map_data.reset();
-	}
-	else if (result == NULL)
-		LOG("Map info not loaded. pugi error: %s", result.description());
-	else
-		LOG("conifg info not loaded. pugi error: %s", result.description());
-
 	life = maxLife;
 	currentAcceleration = normalAcceleration;
 	currentHitboxOffset = idleSprite.colliderOffset;
 	state = player_state::IDLE;
+
+	if (App->scene->active)
+	{
+		respawnPosition = App->scene->playerPos;
+		currentPosition = respawnPosition;
+	}
+	else if (App->scene2->active)
+	{
+		respawnPosition = App->scene2->playerPos;
+		currentPosition = respawnPosition;
+	}
 
 	graphics = App->tex->Load(characterSheet.GetString());
 	
@@ -150,6 +131,7 @@ bool j1Player::CleanUp()
 	LOG("Unloading player");
 
 	App->tex->UnLoad(graphics);
+	currentPosition = respawnPosition;
 	hitbox = nullptr;	// @Carles, Deassign collider from player for later CleanUp in j1Collision
 	graphics = nullptr;
 
@@ -434,6 +416,39 @@ player_state j1Player::Hurt()
 //Check debug input
 void j1Player::DebugInput()
 {
+	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)	//CHANGE/FIX: Should be in scene?
+	{
+		if (App->scene2->active)
+			App->scene2->ChangeScene();
+
+		else if (App->scene->active)
+		{
+			App->scene->CleanUp();
+			App->fade->FadeToBlack(App->scene, App->scene);
+			App->scene->Start();
+			App->player->Start();
+		}
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)	//CHANGE/FIX: Should be in scene?
+	{
+		if (App->scene2->active)
+		{
+			App->scene2->CleanUp();
+			App->fade->FadeToBlack(App->scene2, App->scene2);
+			App->scene2->Start();
+			App->player->Start();
+		}
+
+		else if (App->scene->active)
+		{
+			App->scene->CleanUp();
+			App->fade->FadeToBlack(App->scene, App->scene);
+			App->scene->Start();
+			App->player->Start();
+		}
+	}
+
 	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == false) {	// Free camera
 		freeCamera = true;
 	}
@@ -915,7 +930,7 @@ void j1Player::HurtEffects()
 
 void j1Player::DeadEffects() {
 	if (fading == false && deadTimer < SDL_GetTicks() - deathDelay) {
-		App->fade->FadeToBlack(fadeDelay);
+		App->fade->FadeToBlack(App->scene, App->scene, fadeDelay);
 		fading = true;
 	}
 	else if (fading == true && deadTimer < SDL_GetTicks() - deathDelay - fadeDelay * 1000 / 2) {
@@ -923,6 +938,7 @@ void j1Player::DeadEffects() {
 		playedHurtSfx = false;
 		dead = false;
 		fading = false;
+		currentPosition = respawnPosition;
 		App->LoadGame();	// SamAlert: For now it loads the last save when it's fully faded to black, decide what happens
 	}
 	else {

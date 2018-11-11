@@ -9,8 +9,9 @@
 	</audio>
 	<map />
 	<scene />
+	<scene2 />
 	<player>
-		<position x="150" y="554" />
+		<position x="0" y="523" />
 		<speed x="0" y="0" />
 		<life value="3" />
 		<acceleration type="0.25" />
@@ -28,6 +29,6 @@
 	<collision />
 	<window />
 	<renderer>
-		<camera x="50" y="-708" />
+		<camera x="350" y="-650" />
 	</renderer>
 </game_state>
