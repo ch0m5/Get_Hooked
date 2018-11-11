@@ -41,7 +41,7 @@ public:	// @Carles
 	void CameraInput();
 	void AudioInput();
 
-	bool active = false;
+	bool active;
 private:
 	fPoint cameraSpeed;	// @Carles
 	fPoint playerPos;
