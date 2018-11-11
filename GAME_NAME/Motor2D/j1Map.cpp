@@ -97,6 +97,15 @@ bool j1Map::CleanUp()
 	data.tilesets.clear();
 
 	// Remove all layers
+	p2List_item<MapLayer*>* item2;
+	item2 = data.layers.start;
+
+	while (item2 != NULL)
+	{
+		RELEASE(item2->data);
+		item2 = item2->next;
+	}
+	data.layers.clear();
 
 	// Clean up the pugui tree
 	map_file.reset();

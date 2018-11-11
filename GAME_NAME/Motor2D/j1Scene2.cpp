@@ -11,6 +11,7 @@
 #include "j1Scene.h"
 #include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
+#include "j1Collision.h"
 
 j1Scene2::j1Scene2() : j1Module()
 {
@@ -85,7 +86,10 @@ bool j1Scene2::PostUpdate()
 bool j1Scene2::CleanUp()
 {
 	LOG("Freeing scene");
-
+	App->map->CleanUp();
+	App->collision->CleanUp();
+	App->tex->CleanUp();
+	App->player->CleanUp();
 	return true;
 }
 
@@ -128,12 +132,12 @@ void j1Scene2::AudioInput()	// @Carles
 
 void j1Scene2::ChangeScene()
 {
-	App->scene2->active = true;
-	App->scene->active = false;
+	App->scene2->active = false;
+	App->scene->active = true;
 	CleanUp();
-	App->fade->FadeToBlack(App->scene, App->scene2);
+	App->fade->FadeToBlack(App->scene2, App->scene);
 	App->player->Start();
 	App->render->camera = { 0,0 };
-	App->scene2->Start();
+	App->scene->Start();
 
 }
