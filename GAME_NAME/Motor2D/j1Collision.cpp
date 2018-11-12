@@ -108,17 +108,7 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 	{
 		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{
-			//CHANGE/FIX: Use AddCollider function. DO NOT CREATE DYNAMIC MEMORY HERE! colliders.add() ALREADY CREATES DYNAMIC MEMORY!
-			/*Collider* col = new Collider();
-			col->rect.x = object.attribute("x").as_uint();
-			col->rect.y = object.attribute("y").as_uint();
-			col->rect.w = object.attribute("width").as_uint();
-			col->rect.h = object.attribute("height").as_uint();
-			col->type = (collider_type)object.attribute("name").as_uint();
-
-			colliders.add(col);*/
-
-			// @Carles Potentially Improved Code(?)
+			// @Carles
 			SDL_Rect tmpRect = { object.attribute("x").as_uint(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
 			AddCollider(tmpRect, (collider_type)object.attribute("name").as_uint(), nullptr);
 		}

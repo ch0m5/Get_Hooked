@@ -123,7 +123,6 @@ private:	// @Carles
 public:
 	//Collider
 	Collider* hitbox = nullptr;
-	player_state state;	// CHANGE/FIX: Should be private?
 	bool debugMode;		// Flag that marks if debug functionalities are available
 
 private:
@@ -134,9 +133,10 @@ private:
 	ushort maxLife;
 
 	fPoint currentPosition;
-	fPoint lastGroundPosition;		//CHANGE/FIX: Should be on xml save/load/config??
-	fPoint respawnPosition;			//CHANGE/FIX: Should be on xml save/load/config??
+	fPoint lastGroundPosition;
+	fPoint respawnPosition;
 
+	player_state state;
 	SDL_Rect currentHitboxOffset;
 
 	fPoint speed;
@@ -151,12 +151,12 @@ private:
 
 	// Character status flags and directly related data
 	bool wantMoveUp;	// Player input
-	bool wantMoveRight;	//CHANGE/FIX: Make struct
+	bool wantMoveRight;	//IMPROVE: Make struct
 	bool wantMoveLeft;
 	bool wantMoveDown;
 	
 	bool movingUp;		// Player current movement
-	bool movingRight;	//CHANGE/FIX: Make struct
+	bool movingRight;	//IMPROVE: Make struct
 	bool movingLeft;
 	bool movingDown;
 
