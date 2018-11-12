@@ -11,17 +11,19 @@
 	<scene />
 	<scene2 />
 	<player>
-		<position x="0" y="523" />
+		<position x="128" y="523" />
+		<lastGround x="128" y="523" />
+		<respawn x="128" y="464" />
 		<speed x="0" y="0" />
 		<life value="3" />
-		<acceleration type="0.25" />
+		<acceleration type="700" />
 		<state current="0" />
 		<airborne value="false" />
 		<looking right="true" />
 		<somersault used="false" />
 		<dead value="false" />
 		<deadTimer miliseconds="0" />
-		<reset value="true" />
+		<reset value="false" />
 		<runSfxTimer miliseconds="0" />
 		<slideSfx played="false" />
 		<hurtSfx played="false" />
@@ -29,6 +31,6 @@
 	<collision />
 	<window />
 	<renderer>
-		<camera x="350" y="-650" />
+		<camera x="94" y="-681" />
 	</renderer>
 </game_state>

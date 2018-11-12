@@ -34,7 +34,7 @@ struct Collider
 	bool to_delete = false;
 	collider_type type;
 	j1Module* callback = nullptr;
-	bool airborne;	// CHECK_ERIC
+	bool airborne;	// CHANGE/FIX: We might need this for the enemies but who knows
 
 	Collider() :
 		rect({ 0,0 }),

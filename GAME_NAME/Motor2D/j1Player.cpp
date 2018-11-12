@@ -62,25 +62,23 @@ bool j1Player::Start()
 
 	if (App->scene->active)
 	{
-		respawnPosition = App->scene->playerPos;
-		currentPosition = respawnPosition;
+		currentPosition = lastGroundPosition = respawnPosition = App->scene->playerPos;
 	}
 	else if (App->scene2->active)
 	{
-		respawnPosition = App->scene2->playerPos;
-		currentPosition = respawnPosition;
+		currentPosition = lastGroundPosition = respawnPosition = App->scene2->playerPos;
 	}
 
 	graphics = App->tex->Load(characterSheet.GetString());
 	
-	hitbox = App->collision->AddCollider({ (int)currentPosition.x + currentHitboxOffset.x, (int)currentPosition.y + currentHitboxOffset.y, currentHitboxOffset.x, currentHitboxOffset.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
-	prevHitboxPosition = hitbox->rect;
+	hitbox = App->collision->AddCollider({ (int)currentPosition.x + currentHitboxOffset.x, (int)currentPosition.y + currentHitboxOffset.y, currentHitboxOffset.x, currentHitboxOffset.y }, COLLIDER_PLAYER, this);
+	currentHitboxOffset = hitbox->rect;
 
 	return ret;
 }
 
 // Called each loop iteration
-bool j1Player::PreUpdate()	// IMPROVE: Player input here?
+bool j1Player::PreUpdate()
 {
 	bool ret = true;
 
@@ -174,7 +172,7 @@ collision_type j1Player::WallCollision(Collider* c1, Collider* c2)
 			}
 			c1->rect.y--;
 			speed.y = 0.0f;
-			ret = collision_type::ON_TOP;
+			ret = collision_type::ON_TOP;	//IMPROVE: On high framerates, player doesn't go down immediately after colliding, which it should
 		}
 
 		currentPosition.y = c1->rect.y - currentHitboxOffset.y;
@@ -192,7 +190,9 @@ collision_type j1Player::WallCollision(Collider* c1, Collider* c2)
 			while (c1->CheckCollision(c2->rect) == true) {
 				c1->rect.x++;
 			}
-			c1->rect.x--;
+			//c1->rect.x--;	//IMPROVE: Really wierd bug: uncommenting this and therefore readjusting the hitbox after a collision so it's jsut touching the wall
+			//makes the input GetKey() scan the linked right movement key ALWAYS as IDLE until not longer in contact with the wall
+
 			speed.x = 0.0f;
 			ret = collision_type::ON_LEFT;
 		}
@@ -208,6 +208,11 @@ bool j1Player::Load(pugi::xml_node& data)
 {
 	currentPosition.x = data.child("position").attribute("x").as_float();
 	currentPosition.y = data.child("position").attribute("y").as_float();
+	lastGroundPosition.x = data.child("lastGround").attribute("x").as_float();
+	lastGroundPosition.y = data.child("lastGround").attribute("y").as_float();
+	respawnPosition.x = data.child("respawn").attribute("x").as_float();
+	respawnPosition.y = data.child("respawn").attribute("y").as_float();
+
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
 	life = (ushort)data.child("life").attribute("value").as_uint();
@@ -218,7 +223,7 @@ bool j1Player::Load(pugi::xml_node& data)
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
 	dead = data.child("dead").attribute("value").as_bool();
 	deadTimer = data.child("deadTimer").attribute("miliseconds").as_uint();
-	playerReset = data.child("reset").attribute("value").as_bool();
+	mustReset = data.child("reset").attribute("value").as_bool();
 
 	runSfxTimer = data.child("runSfxTimer").attribute("miliseconds").as_uint();
 	playedSlideSfx = data.child("slideSfx").attribute("played").as_bool();
@@ -235,6 +240,14 @@ bool j1Player::Save(pugi::xml_node& data) const
 	tmpNode = data.append_child("position");
 	tmpNode.append_attribute("x") = currentPosition.x;
 	tmpNode.append_attribute("y") = currentPosition.y;
+
+	tmpNode = data.append_child("lastGround");
+	tmpNode.append_attribute("x") = lastGroundPosition.x;
+	tmpNode.append_attribute("y") = lastGroundPosition.y;
+
+	tmpNode = data.append_child("respawn");
+	tmpNode.append_attribute("x") = respawnPosition.x;
+	tmpNode.append_attribute("y") = respawnPosition.y;
 
 	tmpNode = data.append_child("speed");
 	tmpNode.append_attribute("x") = speed.x;
@@ -265,7 +278,7 @@ bool j1Player::Save(pugi::xml_node& data) const
 	tmpNode.append_attribute("miliseconds") = deadTimer;
 
 	tmpNode = data.append_child("reset");
-	tmpNode.append_attribute("value") = playerReset;
+	tmpNode.append_attribute("value") = mustReset;
 
 	tmpNode = data.append_child("runSfxTimer");
 	tmpNode.append_attribute("miliseconds") = runSfxTimer;
@@ -297,12 +310,9 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 	// Character status flags and directly related data
 	airborne = config.child("airborne").attribute("value").as_bool();
 	lookingRight = config.child("looking").attribute("right").as_bool();
-	somersaultUsed = config.child("somersault").attribute("used").as_bool();
-	dead = config.child("dead").attribute("value").as_bool();
+	somersaultUsed = config.child("somersault").attribute("used").as_bool();;
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
-	fading = config.child("fading").attribute("value").as_bool();
 	fadeDelay = config.child("fadeDelay").attribute("seconds").as_float();
-	playerReset = config.child("reset").attribute("value").as_bool();
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
 	freeCamera = config.child("freeCamera").attribute("value").as_bool();
@@ -407,9 +417,20 @@ player_state j1Player::Hurt()
 		deadTimer = SDL_GetTicks();
 	}
 	
-	playerReset = false;
+	mustReset = true;
 	playedHurtSfx = false;
 	return player_state::HURT;
+}
+
+//Restart all player values that need so when skipping steps on the workflow
+void j1Player::PlayerReset()
+{
+	jumpAnim.Reset();
+	somersaultUsed = false;
+
+	currentAcceleration = normalAcceleration;
+	playedSlideSfx = false;
+	slideAnim.Reset();
 }
 
 //Check debug input
@@ -451,7 +472,7 @@ void j1Player::DebugInput()
 	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == false) {	// Free camera
 		freeCamera = true;
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == true) {	//CHANGE/FIX: Add to README
+	else if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == true) {
 		freeCamera = false;
 	}
 
@@ -463,7 +484,7 @@ void j1Player::DebugInput()
 		App->LoadGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && state != player_state::HURT && godMode == false) {	// Hurt player	//CHANGE/FIX: CHANGE README (WAS F4)
+	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && state != player_state::HURT && godMode == false) {	// Hurt player
 		state = Hurt();
 	}
 
@@ -478,7 +499,7 @@ void j1Player::DebugInput()
 		godMode = true;
 		speed = { 0, 0 };
 		state = player_state::FALLING;
-		playerReset = false;
+		mustReset = true;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
 		godMode = false;
@@ -518,7 +539,7 @@ void j1Player::PlayerInput()
 	else if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		wantMoveRight = true;
 	}
-	
+
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_IDLE) {		// Move up input
 		wantMoveUp = false;
 	}
@@ -533,7 +554,7 @@ void j1Player::PlayerInput()
 		wantMoveDown = true;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	// CHANGE/FIX: Change README
+	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input
 		debugMode = true;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
@@ -578,6 +599,10 @@ void j1Player::PlayerMovement() {
 void j1Player::PlayerState() {	// For each state, check possible new states based on other parameters
 	if (godMode == true) {
 		airborne = true;
+
+		if (currentPosition.y > 800) {		//CHANGE/FIX: Hardcoded fallen pit
+			currentPosition = lastGroundPosition;
+		}
 	}
 	else {
 		if (App->collision->CheckGroundCollision(hitbox) == false)
@@ -585,7 +610,7 @@ void j1Player::PlayerState() {	// For each state, check possible new states base
 
 		switch (state) {
 		case player_state::IDLE:
-			state = IdleMoveCheck();	//CHECK_ERIC: All are missing a condition: if not touching the ground, state change to falling and maybe something else (ariborne = true)
+			state = IdleMoveCheck();
 			break;
 		case player_state::CROUCHING:
 			state = CrouchingMoveCheck();
@@ -716,16 +741,11 @@ player_state j1Player::FallingMoveCheck()
 		}		
 	}
 	if (currentPosition.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
-		if (godMode == false) {
-			dead = true;
-			deadTimer = SDL_GetTicks();
-			playerReset = false;
-			playedHurtSfx = false;
-			ret = player_state::HURT;
-		}
-		else {
-			currentPosition = lastGroundPosition;
-		}
+		dead = true;
+		deadTimer = SDL_GetTicks();
+		mustReset = true;
+		playedHurtSfx = false;
+		ret = player_state::HURT;
 	}
 
 	return ret;
@@ -792,15 +812,11 @@ player_state j1Player::HurtMoveCheck()
 		}
 	}
 	if (currentPosition.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
-		if (godMode == false && dead == false) {
-			dead = true;
-			deadTimer = SDL_GetTicks();
-			playerReset = false;
-			playedHurtSfx = false;
-		}
-		else if (godMode == true) {
-			currentPosition = lastGroundPosition;
-		}
+		dead = true;
+		deadTimer = SDL_GetTicks();
+		mustReset = true;
+		playedHurtSfx = false;
+		ret = player_state::HURT;
 	}
 
 	return ret;
@@ -809,24 +825,13 @@ player_state j1Player::HurtMoveCheck()
 // Add state effects like movement restrictions, animation and sounds
 void j1Player::PlayerEffects()
 {
-	if (state != player_state::SLIDING && state != player_state::HURT) {		//CHANGE/FIX: Make function
-		if (wantMoveRight == true && wantMoveLeft == false) {
-			lookingRight = true;
-		}
-		else if (wantMoveLeft == true && wantMoveRight == false) {
-			lookingRight = false;
-		}
+	if (state != player_state::SLIDING && state != player_state::HURT) {
+		lookingRight = CheckPlayerOrientation(lookingRight);
 	}
 
-	if (playerReset == false) {	//CHANGE/FIX: Make function
-		jumpAnim.Reset();
-		somersaultUsed = false;
-
-		currentAcceleration = normalAcceleration;
-		playedSlideSfx = false;
-		slideAnim.Reset();
-
-		playerReset = true;
+	if (mustReset) {
+		PlayerReset();
+		mustReset = false;
 	}
 
 	if (airborne == false) {
@@ -856,6 +861,20 @@ void j1Player::PlayerEffects()
 		HurtEffects();
 		break;
 	}
+}
+
+bool j1Player::CheckPlayerOrientation(bool orientation)
+{
+	bool ret = orientation;
+
+	if (wantMoveRight == true && wantMoveLeft == false) {
+		orientation = true;
+	}
+	else if (wantMoveLeft == true && wantMoveRight == false) {
+		orientation = false;
+	}
+
+	return orientation;
 }
 
 void j1Player::IdleEffects()
@@ -1054,8 +1073,6 @@ fPoint j1Player::LimitSpeed(float dt)
 
 void j1Player::UpdateHitbox()
 {
-	prevHitboxPosition = hitbox->rect;
-
 	switch (state) {
 	case player_state::IDLE:
 		currentHitboxOffset = ReshapeCollider(idleSprite);

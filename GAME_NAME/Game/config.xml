@@ -116,11 +116,8 @@
       <airborne value="false"/>
       <looking right="true"/>
       <somersault used="false"/>
-      <dead value="false"/>
       <deathDelay miliseconds="1000"/>
-      <fading value="false"/>
       <fadeDelay seconds="1"/>
-      <reset value="true"/>
       <debugMode value="true" />
       <godMode value="false"/>
       <freeCamera value="false"/>

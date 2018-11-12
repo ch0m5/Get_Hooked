@@ -79,7 +79,7 @@ public:
 	}
 
 	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }	// @Carles
-	virtual void OnAir(bool airborne) {}	//CHECK_ERIC
+	virtual void OnAir(bool airborne) {}	//CHANGE/FIX: We might need this for the enemies but who knows
 
 public:
 

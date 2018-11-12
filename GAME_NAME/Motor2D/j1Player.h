@@ -52,10 +52,6 @@ public:
 	collision_type OnCollision(Collider* c1, Collider* c2);	// @Carles
 	collision_type WallCollision(Collider* c1, Collider* c2);
 
-	void OnAir(bool airborne) {		//CHECK_ERIC
-		this->airborne = airborne;
-	}
-
 	// Save and Load
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
@@ -84,6 +80,7 @@ private:	// @Carles
 	void Land();			// Stop Y speed
 	void StandUp();			// Return to normal acceleration and reset slide values
 	player_state Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
+	void PlayerReset();
 	//void Hook();
 
 	// Debug update
@@ -107,6 +104,7 @@ private:	// @Carles
 	player_state HurtMoveCheck();
 	
 	// Apply effects of each state
+	bool CheckPlayerOrientation(bool orientation);
 	void IdleEffects();
 	void CrouchingEffects();
 	void RunningEffects();
@@ -139,7 +137,6 @@ private:
 	fPoint lastGroundPosition;		//CHANGE/FIX: Should be on xml save/load/config??
 	fPoint respawnPosition;			//CHANGE/FIX: Should be on xml save/load/config??
 
-	SDL_Rect prevHitboxPosition;		//CHANGE/FIX: Should be on save/load (config not needed)
 	SDL_Rect currentHitboxOffset;
 
 	fPoint speed;
@@ -163,21 +160,20 @@ private:
 	bool movingLeft;
 	bool movingDown;
 
-	bool airborne;		//CHECK_ERIC
+	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
 	bool lookingRight;		// Flag for blit flipping and hurt speed x direction
 	bool somersaultUsed;	// Flag for somersault usage
 
-	bool dead;
+	bool dead = false;
 	uint deadTimer = 0;	// Timer used for player death
 	ushort deathDelay;		// Time delay between death and start FadeToBlack
 
-	bool fading;		// Flag used to mark fade starting
+	bool fading = false;	// Flag used to mark fade starting
 	float fadeDelay;		// FadeToBlack duration
 
-	bool playerReset;	// Flag used to restart animations on player hurt
-	bool playerRespawn; // Flag used to restart position and animations of player after death
-	bool godMode;		// Flag used to mark player invencibility
-	bool freeCamera;	// Flag used to mark free camera movement
+	bool mustReset = false;		// Flag used to restart animations when needed (skipping workflow steps)
+	bool godMode;				// Flag used to mark player invencibility
+	bool freeCamera;			// Flag used to mark free camera movement
 
 	// Character Sprite Sheet
 	SDL_Texture* graphics = nullptr;
