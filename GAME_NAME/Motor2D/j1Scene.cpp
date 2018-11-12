@@ -41,9 +41,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool j1Scene::Start()
 {
-
 	if (App->scene2->active == true)
-		active = false; 
+		active = false;
 
 	if (active)
 	{
@@ -73,13 +72,17 @@ bool j1Scene::UpdateTick(float dt)
 		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
 			ChangeScene();
 	}
-		
+
 	return true;
 }
 
 // Called each loop iteration (graphic)
 bool j1Scene::Update()
 {
+	if (App->player->freeCamera == false) {
+		LimitCameraPos(App->player->GetPosition());	// Limit camera position
+	}
+
 	App->map->Draw();
 
 	return true;
@@ -154,4 +157,23 @@ void j1Scene::ChangeScene()
 	App->player->Start();
 	App->scene2->Start();
 	App->render->camera = { 0,0 };
+}
+
+SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)
+{
+	if (App->render->camera.x < (int)-(playerPos.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits & magic numbers
+		App->render->camera.x = (int)-(playerPos.x * App->win->GetScale() - 350);
+	}
+	else if (App->render->camera.x > (int)-(playerPos.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.x = (int)-(playerPos.x * App->win->GetScale() - 500);
+	}
+
+	if (App->render->camera.y < (int)-(playerPos.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
+		App->render->camera.y = (int)-(playerPos.y * App->win->GetScale() - 300);
+	}
+	else if (App->render->camera.y > (int)-(playerPos.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.y = (int)-(playerPos.y * App->win->GetScale() - 400);
+	}
+
+	return App->render->camera;
 }

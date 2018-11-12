@@ -1,7 +1,7 @@
 <!-- Config file for the game -->
 
 <config>
-  <app fpsCap="60">
+  <app fpsCap="30">
     <name>Get Hooked v0.1</name>
     <organization>UPC</organization>
     <save>save_game.xml</save>
@@ -82,7 +82,7 @@
           <offset x="14" y="6" w="22" h="31"/>
         </jump>
         <somersault column="0" row="8" frames="4" animSpeed ="0.12" loop="true">
-          <offset x="14" y="6" w="22" h="31"/>
+          <offset x="14" y="8" w="22" h="23"/>
         </somersault>
         <fall column="4" row="7" frames="2" animSpeed ="0.12" loop="true">
           <offset x="14" y="6" w="22" h="31"/>
@@ -103,18 +103,16 @@
     <stats>
       <life value="3"/>
       <speed x="0" y="0"/>
-      <maxSpeed x="3" y="5"/>
-      <hurtSpeed x="2" y="2"/>
-      <accelerations x="0.25" gravity="0.2" slide="0.07"/>
-      <jump forceY="4"/>
-      <!-- Original values
+      <maxSpeed x="150" y="240"/>
+      <hurtSpeed x="110" y="110"/>
+      <accelerations x="700" gravity="0" slide="200"/>
+      <jump forceY="220"/>
+      <!-- Original values (before dt)
       <maxSpeed x="3" y="5"/>
       <hurtSpeed x="2" y="2"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
       -->
-      <jump forceY="4"/>
-      <accelerations x="0.25" gravity="0.2" slide="0.07"/> -->
       <airborne value="false"/>
       <looking right="true"/>
       <somersault used="false"/>

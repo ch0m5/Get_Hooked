@@ -59,20 +59,30 @@ bool j1Scene2::PreUpdate()
 	return true;
 }
 
-// Called each loop iteration
-bool j1Scene2::Update(float dt)
+// Called each frame (logic)
+bool j1Scene2::UpdateTick(float dt)
 {
-		AudioInput();
+	AudioInput();
 
-		if (App->player->debugMode == true)
-			CameraInput();
+	if (App->player->debugMode == true) {
+		CameraInput(dt);
 
-		/*if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)	//CHANGE/FIX: ???
+		/*if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)	//CHANGE/FIX: ChangeScene() doesn't work both sides, only 1 to 2
 			ChangeScene();*/
+	}
 
-		//App->render->Blit(img, 0, 0);
-		App->map->Draw();
-	
+	return true;
+}
+
+// Called each loop iteration (graphic)
+bool j1Scene2::Update()
+{
+	if (App->player->freeCamera == false) {
+		LimitCameraPos(App->player->GetPosition());	// Limit camera position
+	}
+
+	App->map->Draw();
+
 	return true;
 }
 
@@ -99,20 +109,20 @@ bool j1Scene2::CleanUp()
 	return true;
 }
 
-void j1Scene2::CameraInput()	// @Carles
+void j1Scene2::CameraInput(float dt)	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_IDLE) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-			App->render->camera.y += cameraSpeed.y;
+			App->render->camera.y += ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-			App->render->camera.y -= cameraSpeed.y;
+			App->render->camera.y -= ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-			App->render->camera.x += cameraSpeed.x;
+			App->render->camera.x += ceil(cameraSpeed.x * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-			App->render->camera.x -= cameraSpeed.x;
+			App->render->camera.x -= ceil(cameraSpeed.x * dt);
 	}
 }
 
@@ -147,4 +157,23 @@ void j1Scene2::ChangeScene()
 	App->player->Start();
 	App->render->camera = { 0,0 };
 	
+}
+
+SDL_Rect j1Scene2::LimitCameraPos(fPoint playerPos)
+{
+	if (App->render->camera.x < (int)-(playerPos.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits & magic numbers
+		App->render->camera.x = (int)-(playerPos.x * App->win->GetScale() - 350);
+	}
+	else if (App->render->camera.x > (int)-(playerPos.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.x = (int)-(playerPos.x * App->win->GetScale() - 500);
+	}
+
+	if (App->render->camera.y < (int)-(playerPos.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
+		App->render->camera.y = (int)-(playerPos.y * App->win->GetScale() - 300);
+	}
+	else if (App->render->camera.y > (int)-(playerPos.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
+		App->render->camera.y = (int)-(playerPos.y * App->win->GetScale() - 400);
+	}
+
+	return App->render->camera;
 }

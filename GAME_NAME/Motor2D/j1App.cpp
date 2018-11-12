@@ -412,7 +412,7 @@ bool j1App::SavegameNow() const
 	return ret;
 }
 
-void j1App::FramerateLogic() {
+void j1App::FramerateLogic() {	//CHANGE/FIX: NEEDS vsync FUNCTIONALITY
 	if (secTimer.Read() > 1000) {
 		secTimer.Start();
 		prevFPS = currFPS;

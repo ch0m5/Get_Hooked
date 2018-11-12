@@ -5,7 +5,7 @@
 
 struct SDL_Texture;
 
-class j1Scene : public j1Module
+class j1Scene : public j1Module	//CHANGE/FIX: Remake maps 1 and 2, implement correspondant debug functionalities correctly, and if enough time make maps work on the same scene
 {
 public:
 
@@ -41,6 +41,7 @@ public:
 
 public:	// @Carles
 	// Inputs
+	SDL_Rect LimitCameraPos(fPoint playerPos);
 	void CameraInput(float dt);
 	void AudioInput();
 	bool active = true;

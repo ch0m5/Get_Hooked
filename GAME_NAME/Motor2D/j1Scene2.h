@@ -23,8 +23,11 @@ public:
 	// Called before all Updates
 	bool PreUpdate();
 
-	// Called each loop iteration
-	bool Update(float dt);
+	// Called each frame (logic)
+	bool UpdateTick(float dt);
+
+	// Called each loop iteration (graphic)
+	bool Update();
 
 	// Called before all Updates
 	bool PostUpdate();
@@ -38,10 +41,11 @@ public:
 
 public:	// @Carles
 	// Inputs
-	void CameraInput();
+	SDL_Rect LimitCameraPos(fPoint playerPos);
+	void CameraInput(float dt);
 	void AudioInput();
-
 	bool active = false;
+
 	fPoint playerPos;
 private:
 	fPoint cameraSpeed;	// @Carles

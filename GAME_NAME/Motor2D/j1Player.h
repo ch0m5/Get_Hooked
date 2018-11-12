@@ -79,7 +79,7 @@ private:	// @Carles
 	
 	// Player actions
 	player_state Jump();	// Add Y speed and jump state when requested
-	void Fall();			// Add acceleration to Y speed
+	void Fall(float dt);	// Add acceleration to Y speed
 	void LateralStop();		// Stop X speed
 	void Land();			// Stop Y speed
 	void StandUp();			// Return to normal acceleration and reset slide values
@@ -117,10 +117,9 @@ private:	// @Carles
 	void DeadEffects();
 
 	// Movement and final changes
-	SDL_Rect LimitCameraPos();	// If required, limit camera to player position
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
-	fPoint LimitSpeed();
+	fPoint LimitSpeed(float dt);
 	SDL_Rect ReshapeCollider(player_sprite sprite);
 
 public:

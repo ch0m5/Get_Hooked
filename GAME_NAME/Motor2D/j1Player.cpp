@@ -76,21 +76,11 @@ bool j1Player::Start()
 	hitbox = App->collision->AddCollider({ (int)currentPosition.x + currentHitboxOffset.x, (int)currentPosition.y + currentHitboxOffset.y, currentHitboxOffset.x, currentHitboxOffset.y }, COLLIDER_PLAYER, this);		//CHANGE/FIX: Different collider sizes and adjusted sizes extracted from xml
 	prevHitboxPosition = hitbox->rect;
 
-	LimitCameraPos();
-
 	return ret;
 }
 
 // Called each loop iteration
 bool j1Player::PreUpdate()	// IMPROVE: Player input here?
-{
-	bool ret = true;
-
-	return ret;
-}
-
-//input and logic
-bool j1Player::UpdateTick(float dt)
 {
 	bool ret = true;
 
@@ -100,18 +90,19 @@ bool j1Player::UpdateTick(float dt)
 
 	PlayerInput();		// Check player input
 	PlayerMovement();	// Check player current movement
+
+	return ret;
+}
+
+//input and logic
+bool j1Player::UpdateTick(float dt)
+{
+	bool ret = true;
+
 	PlayerState();		// Check player state
 	PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
 	MovePlayer(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();		// Transform player collider depending on new position and state
-
-	SDL_Rect playerRect = animPtr->GetCurrentFrame();
-	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);
-	}
-	else {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
-	}
 
 	return ret;
 }
@@ -119,6 +110,14 @@ bool j1Player::UpdateTick(float dt)
 bool j1Player::Update()
 {
 	bool ret = true;
+
+	SDL_Rect playerRect = animPtr->GetCurrentFrame();
+	if (lookingRight == true) {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);	//CHANGE/FIX: Not dt adapted, they blit in wierd rates(?)
+	}
+	else {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
+	}
 
 	return ret;
 }
@@ -365,9 +364,9 @@ player_state j1Player::Jump()
 }
 
 // Add acceleration to Y speed
-void j1Player::Fall()
+void j1Player::Fall(float dt)
 {
-	speed.y += gravity;
+	speed.y += gravity * dt;
 }
 
 // Stop X speed
@@ -980,15 +979,11 @@ void j1Player::MovePlayer(float dt)
 	}
 
 	// Max Speeds
-	LimitSpeed();
+	LimitSpeed(dt);
 
 	// New position
-	currentPosition.x += speed.x;
-	currentPosition.y += speed.y;
-
-	// Move camera with player within set limits	//CHANGE/FIX: MAKE FUNCTION
-	if (freeCamera == false)
-		LimitCameraPos();
+	currentPosition.x += speed.x * dt;
+	currentPosition.y += speed.y * dt;
 
 	animRect.x = (int)currentPosition.x;
 	animRect.y = (int)currentPosition.y;
@@ -1015,20 +1010,20 @@ fPoint j1Player::GodModeMovement(float dt)
 fPoint j1Player::NormalMovement(float dt)
 {
 	if (wantMoveRight == true && wantMoveLeft == false) {
-		speed.x += currentAcceleration;
+		speed.x += currentAcceleration * dt;
 	}
 	else if (wantMoveLeft == true && wantMoveRight == false) {
-		speed.x -= currentAcceleration;
+		speed.x -= currentAcceleration * dt;
 	}
 	else if (airborne == false) {	// Natural deacceleration when on ground
 		if (movingRight == true) {
-			speed.x -= currentAcceleration;
+			speed.x -= currentAcceleration * dt;
 
 			if (speed.x < 0.0f)
 				speed.x = 0.0f;
 		}
 		else if (movingLeft == true) {
-			speed.x += currentAcceleration;
+			speed.x += currentAcceleration * dt;
 
 			if (speed.x > 0.0f)
 				speed.x = 0.0f;
@@ -1037,14 +1032,13 @@ fPoint j1Player::NormalMovement(float dt)
 
 	// If on air, apply gravity
 	if (airborne == true) {
-		//Fall();
-		speed.y += gravity;
+		Fall(dt);
 	}
 
 	return speed;
 }
 
-fPoint j1Player::LimitSpeed()
+fPoint j1Player::LimitSpeed(float dt)
 {
 	if (speed.x > 0)
 		speed.x = MIN(speed.x, maxSpeed.x);
@@ -1057,25 +1051,6 @@ fPoint j1Player::LimitSpeed()
 		speed.y = MAX(speed.y, -maxSpeed.y);
 
 	return speed;
-}
-
-SDL_Rect j1Player::LimitCameraPos()
-{
-	if (App->render->camera.x < (int)-(currentPosition.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits
-		App->render->camera.x = (int)-(currentPosition.x * App->win->GetScale() - 350);
-	}
-	else if (App->render->camera.x > (int)-(currentPosition.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right
-		App->render->camera.x = (int)-(currentPosition.x * App->win->GetScale() - 500);
-	}
-
-	if (App->render->camera.y < (int)-(currentPosition.y * App->win->GetScale() - 300)/* && mapRightLimit is not crossed*/) {	//left
-		App->render->camera.y = (int)-(currentPosition.y * App->win->GetScale() - 300);
-	}
-	else if (App->render->camera.y > (int)-(currentPosition.y * App->win->GetScale() - 400)/* && mapLeftLimit is not crossed*/) {	//right
-		App->render->camera.y = (int)-(currentPosition.y * App->win->GetScale() - 400);
-	}
-
-	return App->render->camera;
 }
 
 void j1Player::UpdateHitbox()
