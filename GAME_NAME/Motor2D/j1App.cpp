@@ -245,7 +245,9 @@ bool j1App::DoUpdate()
 		}
 
 		ret = item->data->UpdateTick(dt);
-		ret = item->data->Update();
+
+		if (ret)
+			ret = item->data->Update();
 	}
 
 	return ret;

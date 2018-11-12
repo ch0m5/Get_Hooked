@@ -997,7 +997,7 @@ void j1Player::MovePlayer(float dt)
 	}
 
 	// Max Speeds
-	LimitSpeed(dt);
+	LimitSpeed();
 
 	// New position
 	currentPosition.x += speed.x * dt;
@@ -1056,7 +1056,7 @@ fPoint j1Player::NormalMovement(float dt)
 	return speed;
 }
 
-fPoint j1Player::LimitSpeed(float dt)
+fPoint j1Player::LimitSpeed()
 {
 	if (speed.x > 0)
 		speed.x = MIN(speed.x, maxSpeed.x);

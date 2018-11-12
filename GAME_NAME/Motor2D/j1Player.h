@@ -117,7 +117,7 @@ private:	// @Carles
 	// Movement and final changes
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
-	fPoint LimitSpeed(float dt);
+	fPoint LimitSpeed();
 	SDL_Rect ReshapeCollider(player_sprite sprite);
 
 public:
