@@ -1,7 +1,7 @@
 <!-- Config file for the game -->
 
 <config>
-  <app fpsCap="30">
+  <app mustCap="true" fpsCap="30">
     <name>Get Hooked v0.1</name>
     <organization>UPC</organization>
     <save>save_game.xml</save>
@@ -9,7 +9,7 @@
   </app>
 	
   <renderer>
-    <vsync value="true"/>
+    <vsync value="false"/>
   </renderer>
 
   <collision>

@@ -33,12 +33,14 @@ No previous installations is required to play the game, just download and execut
 ### Debug Mode
 - F1: Start from the first level
 - F2: Start from beginning of current level
+- F3: Advance to next level
 - F4: Free camera movement
 - F5: Save current state
 - F6: Load previously saved state
 - F7: Recieve instant damage (Unless on godmode)
 - F9: Debug view (Colliders/Logic)
 - F10: Godmode (No damage, no collisions, and free movment)
+- F11: Activate/Deactivate FPS cap (30)
 - 1/2/3/4/5: Change game scale to number chosen
 
 ## Innovation

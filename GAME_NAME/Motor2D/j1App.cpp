@@ -100,6 +100,7 @@ bool j1App::Awake()
 		load_game.create(app_config.child("load").child_value());	// @Carles
 
 		fpsCap = app_config.attribute("fpsCap").as_uint();
+		mustCapFPS = app_config.attribute("mustCap").as_bool();
 	}
 
 	if(ret == true)
@@ -181,6 +182,9 @@ pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
 // ---------------------------------------------
 void j1App::PrepareUpdate()
 {
+	if (App->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
+		mustCapFPS = !mustCapFPS;
+
 	totalFrameCount++;
 	currFPS++;
 	dt = frameTimer.ReadSec();
@@ -430,24 +434,26 @@ void j1App::FramerateLogic() {	//CHANGE/FIX: NEEDS vsync FUNCTIONALITY
 		App->win->SetTitle(DefaultTitle().GetString());
 	}
 
-	int delayTime = (1000 / fpsCap) - lastFrameMs;
-	if (delayTime > 0) {
-		SDL_Delay(delayTime);
-		LOG("We waited for %u and got back in %f", delayTime, delayTimer.ReadMs());
+	if (mustCapFPS) {
+		int delayTime = (1000 / fpsCap) - lastFrameMs;
+		if (delayTime > 0) {
+			SDL_Delay(delayTime);
+			LOG("We waited for %u and got back in %f", delayTime, delayTimer.ReadMs());
+		}
 	}
 }
 
 p2SString j1App::DebugTitle()	// @Carles
 {
-	title.create("%s (Position: %dx%d / Speed:%dx%d / Av.FPS: %.2f / Last Frame Ms: %02u / Last sec frames: %i / Time since startup: %.3f / Frame Count: %lu)",
+	title.create("%s (FPS: %i / Av.FPS: %.2f / MsPF: %02u ms / fpsCap: %i / Vsync: %i / Play Time: %.3f / Position: %dx%d)",
 		name.GetString(),
-		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y,
-		(int)App->player->GetSpeed().x, (int)App->player->GetSpeed().y,
+		prevFPS,
 		avgFPS,
 		lastFrameMs,
-		prevFPS,
+		(int)mustCapFPS,
+		(int)App->render->Vsync,
 		gameTime,
-		totalFrameCount);
+		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y);
 
 	// Full debug
 	/*title.create("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d / Av.FPS:%.2f / Last Frame Ms:%02u / Last sec frames:%i / Time since startup:%.3f / Frame Count:%lu)",
@@ -468,7 +474,13 @@ p2SString j1App::DebugTitle()	// @Carles
 
 p2SString j1App::DefaultTitle()	// @Carles
 {
-	title.create("%s", name.GetString());
+	title.create("%s (FPS: %i / Av.FPS: %.2f / MsPF: %02u ms / fpsCap: %i / Vsync: %i)",
+		name.GetString(),
+		prevFPS,
+		avgFPS,
+		lastFrameMs,
+		(int)mustCapFPS,
+		(int)App->render->Vsync);
 
 	return title;
 }

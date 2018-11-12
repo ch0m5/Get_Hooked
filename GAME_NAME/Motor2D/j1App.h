@@ -117,6 +117,8 @@ private:
 	p2List<p2SString>	save_list;	// @Carles, list of save file names	//IMPROVE: Make the game work with a list of saved files
 	char				save_number;	// @Carles, save file list order counter
 
+	//Framerate
+	bool				mustCapFPS;
 	j1PerfTimer			perfTimer;
 	j1PerfTimer			delayTimer;
 	uint64				totalFrameCount = 0;

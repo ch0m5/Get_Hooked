@@ -883,7 +883,6 @@ void j1Player::JumpingEffects()
 {
 	if (somersaultUsed == true) {
 		animPtr = &somersaultAnim;
-		ReshapeCollider(somersaultSprite);
 	}
 	else {
 		animPtr = &jumpAnim;
