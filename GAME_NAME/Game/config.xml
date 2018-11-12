@@ -66,31 +66,31 @@
       <spriteSheet>character_sprite_sheet.png</spriteSheet>
       <spriteSize x="50" y="37"/>
       <first_sprite>
-        <idle column="0" row="0" frames="4" animSpeed ="0.12" loop="true">
+        <idle column="0" row="0" frames="4" animSpeed ="8" loop="true">
           <offset x="14" y="6" w="22" h="31"/>
         </idle>
-        <run column="0" row="4" frames="6" animSpeed ="0.12" loop="true">
+        <run column="0" row="4" frames="6" animSpeed ="8" loop="true">
           <offset x="14" y="6" w="22" h="31"/>
         </run>
-        <slide column="0" row="5" frames="5" animSpeed ="0.12" loop="false">
+        <slide column="0" row="5" frames="5" animSpeed ="8" loop="false">
           <offset x="11" y="20" w="27" h="17"/>
         </slide>
-        <crouch column="0" row="6" frames="4" animSpeed ="0.12" loop="true">
+        <crouch column="0" row="6" frames="4" animSpeed ="8" loop="true">
           <offset x="14" y="14" w="22" h="23"/>
         </crouch>
-        <jump column="0" row="7" frames="4" animSpeed ="0.24" loop="false">
+        <jump column="0" row="7" frames="4" animSpeed ="16" loop="false">
           <offset x="14" y="6" w="22" h="31"/>
         </jump>
-        <somersault column="0" row="8" frames="4" animSpeed ="0.12" loop="true">
+        <somersault column="0" row="8" frames="4" animSpeed ="8" loop="true">
           <offset x="14" y="8" w="22" h="23"/>
         </somersault>
-        <fall column="4" row="7" frames="2" animSpeed ="0.12" loop="true">
+        <fall column="4" row="7" frames="2" animSpeed ="8" loop="true">
           <offset x="14" y="6" w="22" h="31"/>
         </fall>
-        <hurt column="0" row="22" frames="3" animSpeed ="0.12" loop="true">
+        <hurt column="0" row="22" frames="3" animSpeed ="8" loop="true">
           <offset x="14" y="6" w="22" h="31"/>
         </hurt>
-        <dead column="0" row="23" frames="7" animSpeed ="0.12" loop="false">
+        <dead column="0" row="23" frames="7" animSpeed ="8" loop="false">
           <offset x="14" y="6" w="22" h="31"/>
         </dead>
       </first_sprite>

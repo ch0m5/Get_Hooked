@@ -104,20 +104,20 @@ bool j1Player::UpdateTick(float dt)
 	MovePlayer(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();		// Transform player collider depending on new position and state
 
+	SDL_Rect playerRect = animPtr->GetCurrentFrame(dt);
+	if (lookingRight == true) {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);
+	}
+	else {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
+	}
+
 	return ret;
 }
 
 bool j1Player::Update()
 {
 	bool ret = true;
-
-	SDL_Rect playerRect = animPtr->GetCurrentFrame();
-	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);	//CHANGE/FIX: Not dt adapted, they blit in wierd rates(?)
-	}
-	else {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
-	}
 
 	return ret;
 }
