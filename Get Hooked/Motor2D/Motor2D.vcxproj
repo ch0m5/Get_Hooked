@@ -76,7 +76,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="j1Collision.cpp" />
+    <ClCompile Include="j1EntityManager.cpp" />
     <ClCompile Include="j1FadeScene.cpp" />
     <ClCompile Include="j1Main.cpp" />
     <ClCompile Include="j1App.cpp" />
@@ -95,7 +98,10 @@
     <ClCompile Include="j1Scene2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="j1Collision.h" />
+    <ClInclude Include="j1EntityManager.h" />
     <ClInclude Include="j1FadeScene.h" />
     <ClInclude Include="j1PerfTimer.h" />
     <ClInclude Include="j1Scene2.h" />
@@ -133,6 +139,9 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Game\config.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\Game\entities.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="..\Game\save_game.xml">

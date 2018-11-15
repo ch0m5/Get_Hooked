@@ -21,7 +21,7 @@ public:
 	j1Module() : active(false)
 	{}
 
-	void Init()
+	virtual void Init()
 	{
 		active = true;
 	}

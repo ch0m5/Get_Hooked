@@ -11,7 +11,8 @@
 #include "j1Scene.h"
 #include "j1Scene2.h"
 #include "j1Map.h"
-#include "j1Player.h"		// @Carles
+#include "j1EntityManager.h"
+#include "j1Player.h"		// CHANGE/FIX: Should be here?
 #include "j1Collision.h"	// @Carles
 #include "j1FadeScene.h"	// @Carles
 #include "j1App.h"
@@ -31,7 +32,8 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	scene = new j1Scene();
 	scene2 = new j1Scene2();
 	map = new j1Map();
-	player = new j1Player();		// @Carles
+	entityManager = new j1EntityManager();
+	//player = new j1Player();		// @Carles
 	collision = new j1Collision();	// @Carles
 	fade = new j1FadeScene();
 
@@ -44,7 +46,8 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(map);
 	AddModule(scene);
 	AddModule(scene2);
-	AddModule(player);	// @Carles
+	AddModule(entityManager);
+	//AddModule(player);	// @Carles
 	AddModule(collision);	// @Carles
 	AddModule(fade);
 
@@ -429,7 +432,7 @@ void j1App::FramerateLogic() {
 	gameTime = gameTimer.ReadSec();
 	lastFrameMs = frameTimer.Read();
 
-	if (App->player->debugMode == true) {
+	if (App->entityManager->player->debugMode == true) {
 		App->win->SetTitle(DebugTitle().GetString());
 	}
 	else {
@@ -455,13 +458,13 @@ p2SString j1App::DebugTitle()	// @Carles
 		(int)mustCapFPS,
 		(int)App->render->Vsync,
 		gameTime,
-		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y);
+		(int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y);
 
 	// Full debug
 	/*title.create("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d / Av.FPS:%.2f / Last Frame Ms:%02u / Last sec frames:%i / Time since startup:%.3f / Frame Count:%lu)",
 		name.GetString(),
-		(int)App->player->GetPosition().x, (int)App->player->GetPosition().y,
-		(int)App->player->GetSpeed().x, (int)App->player->GetSpeed().y,
+		(int)App->entityManager->playerGetPosition().x, (int)App->entityManager->playerGetPosition().y,
+		(int)App->entityManager->playerGetSpeed().x, (int)App->entityManager->playerGetSpeed().y,
 		App->map->data.width, App->map->data.height,
 		App->map->data.tile_width, App->map->data.tile_height,
 		App->map->data.tilesets.count(),

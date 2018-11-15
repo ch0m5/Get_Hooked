@@ -4,6 +4,8 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
+class Entity;
+
 enum collider_type {	// @Carles, collider types
 	COLLIDER_NONE = -1,
 	COLLIDER_WALL,
@@ -33,7 +35,7 @@ struct Collider
 	SDL_Rect rect;
 	bool to_delete = false;
 	collider_type type;
-	j1Module* callback = nullptr;
+	Entity* callback = nullptr;
 	bool airborne;	// CHANGE/FIX: We might need this for the enemies but who knows
 
 	Collider() :
@@ -42,7 +44,7 @@ struct Collider
 		callback(nullptr)
 	{}
 
-	Collider(SDL_Rect rectangle, collider_type type, j1Module* callback = nullptr) :
+	Collider(SDL_Rect rectangle, collider_type type, Entity* callback = nullptr) :
 		rect(rectangle),
 		type(type),
 		callback(callback)
@@ -80,7 +82,7 @@ public:
 	bool Load(pugi::xml_document& map_file);
 	//bool Save(pugi::xml_node&) const;
 
-	Collider* AddCollider(SDL_Rect rect, collider_type type, j1Module* callback);	//@Carles
+	Collider* AddCollider(SDL_Rect rect, collider_type type, Entity* callback);	//@Carles
 	void DebugDraw();
 
 public:	// @Carles

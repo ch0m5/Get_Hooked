@@ -1,20 +1,23 @@
 #include "p2Defs.h"
 #include "p2Log.h"
+#include "p2Animation.h"
 #include "j1App.h"
 #include "j1Input.h"
 #include "j1Textures.h"
 #include "j1Render.h"
 #include "j1Audio.h"
-#include "j1Player.h"
 #include "j1Collision.h"
 #include "j1FadeScene.h"
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
 #include "j1Scene2.h"
-#include "p2Animation.h"
 
-j1Player::j1Player()
+#include "j1EntityManager.h"
+#include "Entity.h"
+#include "j1Player.h"
+
+j1Player::j1Player() : Entity(entity_type::PLAYER)
 {
 	name.create("player");
 }
@@ -446,7 +449,7 @@ void j1Player::DebugInput()
 			App->scene->CleanUp();
 			App->fade->FadeToBlack(App->scene, App->scene);
 			App->scene->Start();
-			App->player->Start();
+			App->entityManager->player->Start();
 		}
 	}
 
@@ -457,7 +460,7 @@ void j1Player::DebugInput()
 			App->scene2->CleanUp();
 			App->fade->FadeToBlack(App->scene2, App->scene2);
 			App->scene2->Start();
-			App->player->Start();
+			App->entityManager->player->Start();
 		}
 
 		else if (App->scene->active)
@@ -465,7 +468,7 @@ void j1Player::DebugInput()
 			App->scene->CleanUp();
 			App->fade->FadeToBlack(App->scene, App->scene);
 			App->scene->Start();
-			App->player->Start();
+			App->entityManager->player->Start();
 		}
 	}
 
@@ -475,12 +478,11 @@ void j1Player::DebugInput()
 	else if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == true) {
 		freeCamera = false;
 	}
-
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->player->IsDead() == false) {	// Save game
+	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Save game
 		App->SaveGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->player->IsDead() == false) {	// Load game
+	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Load game
 		App->LoadGame();
 	}
 
@@ -956,13 +958,13 @@ void j1Player::DeadEffects() {
 		dead = false;
 		fading = false;
 		currentPosition = respawnPosition;
-
+		
 		if (App->scene2->active)
 		{
 			App->scene2->CleanUp();
 			App->fade->FadeToBlack(App->scene2, App->scene2);
 			App->scene2->Start();
-			App->player->Start();
+			App->entityManager->player->Start();
 		}
 
 		else if (App->scene->active)
@@ -970,7 +972,7 @@ void j1Player::DeadEffects() {
 			App->scene->CleanUp();
 			App->fade->FadeToBlack(App->scene, App->scene);
 			App->scene->Start();
-			App->player->Start();
+			App->entityManager->player->Start();
 		}
 	}
 	else {

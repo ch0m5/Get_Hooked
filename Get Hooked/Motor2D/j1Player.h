@@ -1,9 +1,8 @@
 #ifndef __j1PLAYER_H__
 #define __j1PLAYER_H__	// @CarlesHoms
 
-#include "j1Module.h"
+#include "Entity.h"
 #include "p2Animation.h"
-#include "p2Point.h"
 
 struct SDL_Texture;
 
@@ -26,7 +25,7 @@ enum class player_state {	// @Carles, enum that groups all possible player state
 	//HOOK
 };
 
-class j1Player : public j1Module
+class j1Player : public Entity
 {
 public:
 

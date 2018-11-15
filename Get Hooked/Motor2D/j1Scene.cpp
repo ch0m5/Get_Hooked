@@ -13,6 +13,7 @@
 #include "j1Player.h"	// @Carles
 #include "j1Collision.h"
 #include "j1Timer.h"
+#include "j1EntityManager.h"
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -66,7 +67,7 @@ bool j1Scene::UpdateTick(float dt)
 {
 	AudioInput();
 
-	if (App->player->debugMode == true) {
+	if (App->entityManager->player->debugMode == true) {
 		CameraInput(dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
@@ -79,8 +80,8 @@ bool j1Scene::UpdateTick(float dt)
 // Called each loop iteration (graphic)
 bool j1Scene::Update()
 {
-	if (App->player->freeCamera == false) {
-		LimitCameraPos(App->player->GetPosition());	// Limit camera position
+	if (App->entityManager->player->freeCamera == false) {
+		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
 
 	App->map->Draw();
@@ -106,7 +107,7 @@ bool j1Scene::CleanUp()
 	App->map->CleanUp();
 	App->collision->CleanUp();
 	App->tex->CleanUp();
-	App->player->CleanUp();
+	App->entityManager->player->CleanUp();
 
 	return true;
 }
@@ -154,7 +155,7 @@ void j1Scene::ChangeScene()
 	App->scene->active = false;
 	CleanUp();
 	App->fade->FadeToBlack(App->scene, App->scene2);
-	App->player->Start();
+	App->entityManager->player->Start();
 	App->scene2->Start();
 	App->render->camera = { 0,0 };
 }

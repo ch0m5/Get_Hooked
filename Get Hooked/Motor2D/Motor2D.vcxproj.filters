@@ -34,9 +34,6 @@
     <ClCompile Include="j1Map.cpp">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="j1Player.cpp">
-      <Filter>Desenvolupament  ========\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="j1Collision.cpp">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClCompile>
@@ -51,6 +48,18 @@
     </ClCompile>
     <ClCompile Include="j1Scene2.cpp">
       <Filter>Desenvolupament  ========\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Desenvolupament  ========\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="j1EntityManager.cpp">
+      <Filter>Desenvolupament  ========\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="j1Player.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +114,6 @@
     <ClInclude Include="j1Map.h">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="j1Player.h">
-      <Filter>Desenvolupament  ========\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="p2Animation.h">
       <Filter>Programacio 2 ===========</Filter>
     </ClInclude>
@@ -125,6 +131,18 @@
     </ClInclude>
     <ClInclude Include="j1Scene2.h">
       <Filter>Desenvolupament  ========\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Desenvolupament  ========\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="j1EntityManager.h">
+      <Filter>Desenvolupament  ========\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="j1Player.h">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +176,12 @@
     <Filter Include="Desenvolupament  ========\Tools\Timers">
       <UniqueIdentifier>{a3f71b58-2439-41f2-a0c7-5032a528420f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Desenvolupament  ========\Entities">
+      <UniqueIdentifier>{78947161-7b28-4d60-9489-dc9d48f72812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Desenvolupament  ========\Entities\Types">
+      <UniqueIdentifier>{b99d838e-2087-4ded-a734-75bfd517d44e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\maps\testmap.tmx">
@@ -188,6 +212,9 @@
     </Xml>
     <Xml Include="..\Game\config.xml">
       <Filter>Desenvolupament  ========\XML Files</Filter>
+    </Xml>
+    <Xml Include="..\Game\entities.xml">
+      <Filter>Desenvolupament  ========\Entities</Filter>
     </Xml>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #define __P2ANIMATION_H__	// @Carles
 
 #include "p2Defs.h"
+#include "p2Point.h"
 #include "SDL\include\SDL_rect.h"
 
 #define MAX_FRAMES 50
@@ -57,11 +58,11 @@ public:
 		loops = 0;
 	}
 	// @Carles: Allocates an animation from a row of frames by knowing the position of the first frame and other important data
-	void AllocAnimation(iPoint spritePos, iPoint spriteSize, float speed, uint frames, bool loop) {
+	void AllocAnimation(iPoint spritePos, iPoint spriteSize, float speed, uint numFrames, bool loop) {
 
 		int xCounter = 0;
 
-		for (uint i = frames; i > 0; i--) {
+		for (uint i = numFrames; i > 0; i--) {
 			PushBack({ spritePos.x + spriteSize.x * xCounter++, spritePos.y, spriteSize.x, spriteSize.y });
 		}
 		

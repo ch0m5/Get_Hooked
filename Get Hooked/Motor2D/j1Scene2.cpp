@@ -12,6 +12,7 @@
 #include "j1Scene2.h"
 #include "j1Player.h"	// @Carles
 #include "j1Collision.h"
+#include "j1EntityManager.h"
 
 j1Scene2::j1Scene2() : j1Module()
 {
@@ -64,7 +65,7 @@ bool j1Scene2::UpdateTick(float dt)
 {
 	AudioInput();
 
-	if (App->player->debugMode == true) {
+	if (App->entityManager->player->debugMode == true) {
 		CameraInput(dt);
 
 		/*if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)	//CHANGE/FIX: ChangeScene() doesn't work both sides, only 1 to 2
@@ -77,8 +78,8 @@ bool j1Scene2::UpdateTick(float dt)
 // Called each loop iteration (graphic)
 bool j1Scene2::Update()
 {
-	if (App->player->freeCamera == false) {
-		LimitCameraPos(App->player->GetPosition());	// Limit camera position
+	if (App->entityManager->player->freeCamera == false) {
+		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
 
 	App->map->Draw();
@@ -104,7 +105,7 @@ bool j1Scene2::CleanUp()
 	App->map->CleanUp();
 	App->collision->CleanUp();
 	App->tex->CleanUp();
-	App->player->CleanUp();
+	App->entityManager->player->CleanUp();
 
 	return true;
 }
@@ -154,7 +155,7 @@ void j1Scene2::ChangeScene()
 	CleanUp();
 	App->fade->FadeToBlack(App->scene2, App->scene);
 	App->scene->Start();
-	App->player->Start();
+	App->entityManager->player->Start();
 	App->render->camera = { 0,0 };
 	
 }

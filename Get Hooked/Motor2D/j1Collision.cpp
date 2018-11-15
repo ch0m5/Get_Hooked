@@ -5,6 +5,7 @@
 #include "j1Render.h"
 #include "j1Collision.h"
 #include "j1Player.h"
+#include "Entity.h"
 
 j1Collision::j1Collision()
 {
@@ -173,7 +174,7 @@ void j1Collision::DebugDraw()
 	}
 }
 
-Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, j1Module* callback)	//@Carles
+Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, Entity* callback)	//@Carles
 {
 	Collider tmpCollider;
 	Collider* tmpPtr;
