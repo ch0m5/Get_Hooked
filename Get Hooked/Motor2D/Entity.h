@@ -6,6 +6,7 @@
 enum class state;
 enum class collision_type;
 struct Collider;
+struct SDL_Texture;
 
 //Components
 struct movement_flags {
@@ -94,7 +95,8 @@ public:
 protected:
 	//Entity
 	virtual void CheckInput() {};
-	virtual void Draw() {};
+	virtual void Draw(SDL_Rect* animRect) const;
+	virtual void ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node&);	// Import sprite data from config.xml
 
 	//Dynamic Entity
 	virtual void CheckMovement();	// Check player current movement
@@ -111,9 +113,13 @@ public:
 protected:
 	//Entity
 	fPoint position;
-	movement_flags movement;
-	Animation* animPtr = nullptr;
 	SDL_Rect posRect;
+	movement_flags movement;
+
+	p2SString textureName;
+	SDL_Texture* graphics = nullptr;
+	iPoint spriteSize;
+	Animation* animPtr = nullptr;
 	SDL_Rect animRect;
 
 	//Dynamic Entity

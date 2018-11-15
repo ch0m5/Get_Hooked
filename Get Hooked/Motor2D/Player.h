@@ -1,10 +1,7 @@
-#ifndef __Player_H__
-#define __Player_H__	// @CarlesHoms
+#ifndef __PLAYER_H__
+#define __PLAYER_H__	// @CarlesHoms
 
 #include "Entity.h"
-#include "p2Animation.h"
-
-struct SDL_Texture;
 
 //Components
 struct movement_input {
@@ -62,7 +59,6 @@ public:
 
 private:	// @Carles
 	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
-	void ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node&);	// Import sprite data from config.xml
 	void ImportAllSprites(pugi::xml_node&);													// Import all sprite data using the above function for each animation
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
@@ -144,11 +140,6 @@ private:
 	bool godMode;				// Flag used to mark player invencibility
 	bool freeCamera;			// Flag used to mark free camera movement
 
-	// Character Sprite Sheet
-	SDL_Texture* graphics = nullptr;
-	p2SString characterSheet;
-	iPoint spriteSize;
-
 	//Character sprites
 	sprite_data idleSprite;
 
@@ -170,7 +161,7 @@ private:
 	bool playedHurtSfx;		// Flag to mark hurt sfx played
 };
 
-#endif //__Player_H__
+#endif //__PLAYER_H__
 
 // All posible character animations for future use
 	//Animation idle;

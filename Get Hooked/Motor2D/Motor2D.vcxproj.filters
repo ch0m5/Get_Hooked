@@ -55,11 +55,14 @@
     <ClCompile Include="j1EntityManager.cpp">
       <Filter>Desenvolupament  ========\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    <ClCompile Include="Bat.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,11 +141,14 @@
     <ClInclude Include="j1EntityManager.h">
       <Filter>Desenvolupament  ========\Entities</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    <ClInclude Include="Bat.h">
+      <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,9 @@
     </Filter>
     <Filter Include="Desenvolupament  ========\Entities\Types">
       <UniqueIdentifier>{b99d838e-2087-4ded-a734-75bfd517d44e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Desenvolupament  ========\Entities\Types\Enemies">
+      <UniqueIdentifier>{b1a43df9-6c1d-45e5-9e79-2309ba6910fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

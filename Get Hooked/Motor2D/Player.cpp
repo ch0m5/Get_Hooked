@@ -37,7 +37,7 @@ bool Player::Awake(pugi::xml_node& config)
 	ImportAllStates(config.child("stats"));	// Import all state data from config.xml
 
 	// Sprites
-	characterSheet.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
+	textureName.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
 	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
 
 	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
@@ -73,7 +73,7 @@ bool Player::Start()
 		position = lastGroundPosition = respawnPosition = App->scene2->playerPos;
 	}
 
-	graphics = App->tex->Load(characterSheet.GetString());
+	graphics = App->tex->Load(textureName.GetString());
 	
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
 	hitboxOffset = hitbox->rect;
@@ -115,12 +115,7 @@ bool Player::Update()
 {
 	bool ret = true;
 
-	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &animRect, SDL_FLIP_NONE);
-	}
-	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, &animRect, SDL_FLIP_HORIZONTAL);
-	}
+	Draw(&animRect);
 
 	return ret;
 }
@@ -321,21 +316,6 @@ void Player::ImportAllStates(pugi::xml_node& config)
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
 	freeCamera = config.child("freeCamera").attribute("value").as_bool();
-}
-
-// Imports from the xml file all data of the first sprite of each animation and other important data like animation speed, frames and if it loops
-void Player::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node& first_sprite)
-{
-	sprite->sheetPosition.x = first_sprite.child(spriteName).attribute("column").as_int();
-	sprite->sheetPosition.y = first_sprite.child(spriteName).attribute("row").as_int();
-	sprite->numFrames = first_sprite.child(spriteName).attribute("frames").as_uint();
-	sprite->anim.speed = first_sprite.child(spriteName).attribute("animSpeed").as_float();
-	sprite->anim.loop = first_sprite.child(spriteName).attribute("loop").as_bool();
-
-	sprite->colliderOffset.x = first_sprite.child(spriteName).child("offset").attribute("x").as_int();
-	sprite->colliderOffset.y = first_sprite.child(spriteName).child("offset").attribute("y").as_int();
-	sprite->colliderOffset.w = first_sprite.child(spriteName).child("offset").attribute("w").as_int();
-	sprite->colliderOffset.h = first_sprite.child(spriteName).child("offset").attribute("h").as_int();
 }
 
 // Import all sprite data using the above function for each animation
