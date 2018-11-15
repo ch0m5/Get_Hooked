@@ -3,13 +3,13 @@
 #include "j1App.h"
 #include "j1EntityManager.h"
 #include "Entity.h"
-#include "j1Player.h"
+#include "Player.h"
 
 // Constructor
 j1EntityManager::j1EntityManager()
 {
 	name.create("entities");
-	player = (j1Player*)CreateEntity(entity_type::PLAYER);
+	player = (Player*)CreateEntity(entity_type::PLAYER);
 }
 
 // Destructor
@@ -211,7 +211,7 @@ Entity* j1EntityManager::CreateEntity(entity_type type)
 	//	ret = new NPC();
 	//	break;¡
 	case entity_type::PLAYER:
-		ret = new j1Player();
+		ret = new Player();
 		break;
 	//case entity_type::PLAYER_ATTACK:
 	//	ret = new PlayerAttack();

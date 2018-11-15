@@ -10,7 +10,7 @@
 #include "j1FadeScene.h"
 #include "j1Scene.h"
 #include "j1Scene2.h"
-#include "j1Player.h"	// @Carles
+#include "Player.h"	// @Carles
 #include "j1Collision.h"
 #include "j1Timer.h"
 #include "j1EntityManager.h"

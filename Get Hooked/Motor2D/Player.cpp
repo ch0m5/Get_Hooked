@@ -15,18 +15,18 @@
 
 #include "j1EntityManager.h"
 #include "Entity.h"
-#include "j1Player.h"
+#include "Player.h"
 
-j1Player::j1Player() : Entity(entity_type::PLAYER)
+Player::Player() : Entity(entity_type::PLAYER)
 {
 	name.create("player");
 }
 
-j1Player::~j1Player()
+Player::~Player()
 {}
 
 // Called before render is available
-bool j1Player::Awake(pugi::xml_node& config)
+bool Player::Awake(pugi::xml_node& config)
 {
 	LOG("Loading Player Data");
 	bool ret = true;
@@ -54,7 +54,7 @@ bool j1Player::Awake(pugi::xml_node& config)
 }
 
 // Called before the first frame
-bool j1Player::Start()
+bool Player::Start()
 {
 	bool ret = true;
 
@@ -82,7 +82,7 @@ bool j1Player::Start()
 }
 
 // Called each loop iteration
-bool j1Player::PreUpdate()
+bool Player::PreUpdate()
 {
 	bool ret = true;
 
@@ -97,7 +97,7 @@ bool j1Player::PreUpdate()
 }
 
 //input and logic
-bool j1Player::UpdateTick(float dt)
+bool Player::UpdateTick(float dt)
 {
 	bool ret = true;
 
@@ -111,7 +111,7 @@ bool j1Player::UpdateTick(float dt)
 	return ret;
 }
 
-bool j1Player::Update()
+bool Player::Update()
 {
 	bool ret = true;
 
@@ -126,7 +126,7 @@ bool j1Player::Update()
 }
 
 // Called before quitting
-bool j1Player::CleanUp()
+bool Player::CleanUp()
 {
 	bool ret = true;
 	
@@ -141,7 +141,7 @@ bool j1Player::CleanUp()
 }
 
 // Called when colliding
-collision_type j1Player::OnCollision(Collider* c1, Collider* c2)
+collision_type Player::OnCollision(Collider* c1, Collider* c2)
 {
 	collision_type ret = collision_type::NONE;
 
@@ -154,7 +154,7 @@ collision_type j1Player::OnCollision(Collider* c1, Collider* c2)
 	return ret;
 }
 
-collision_type j1Player::WallCollision(Collider* c1, Collider* c2)
+collision_type Player::WallCollision(Collider* c1, Collider* c2)
 {
 	collision_type ret = collision_type::UNDEFINED;
 
@@ -209,7 +209,7 @@ collision_type j1Player::WallCollision(Collider* c1, Collider* c2)
 }
 
 // Load Game State
-bool j1Player::Load(pugi::xml_node& data)
+bool Player::Load(pugi::xml_node& data)
 {
 	position.x = data.child("position").attribute("x").as_float();
 	position.y = data.child("position").attribute("y").as_float();
@@ -238,7 +238,7 @@ bool j1Player::Load(pugi::xml_node& data)
 }
 
 // Save Game State
-bool j1Player::Save(pugi::xml_node& data) const
+bool Player::Save(pugi::xml_node& data) const
 {
 	pugi::xml_node tmpNode;
 
@@ -300,7 +300,7 @@ bool j1Player::Save(pugi::xml_node& data) const
 //------------------------------------------------
 
 // Import all state data from config.xml
-void j1Player::ImportAllStates(pugi::xml_node& config)
+void Player::ImportAllStates(pugi::xml_node& config)
 {
 	// Character stats
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
@@ -324,7 +324,7 @@ void j1Player::ImportAllStates(pugi::xml_node& config)
 }
 
 // Imports from the xml file all data of the first sprite of each animation and other important data like animation speed, frames and if it loops
-void j1Player::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node& first_sprite)
+void Player::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node& first_sprite)
 {
 	sprite->sheetPosition.x = first_sprite.child(spriteName).attribute("column").as_int();
 	sprite->sheetPosition.y = first_sprite.child(spriteName).attribute("row").as_int();
@@ -339,7 +339,7 @@ void j1Player::ImportSpriteData(const char* spriteName, sprite_data* sprite, pug
 }
 
 // Import all sprite data using the above function for each animation
-void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
+void Player::ImportAllSprites(pugi::xml_node& first_sprite)
 {
 	ImportSpriteData("idle", &idleSprite, first_sprite);
 	ImportSpriteData("run", &runSprite, first_sprite);
@@ -353,7 +353,7 @@ void j1Player::ImportAllSprites(pugi::xml_node& first_sprite)
 }
 
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
-void j1Player::AllocAllAnimations()
+void Player::AllocAllAnimations()
 {
 	idleSprite.anim.AllocAnimation({ idleSprite.sheetPosition.x * spriteSize.x, idleSprite.sheetPosition.y * spriteSize.y }, spriteSize, idleSprite.numFrames);
 	runSprite.anim.AllocAnimation({ runSprite.sheetPosition.x * spriteSize.x, runSprite.sheetPosition.y * spriteSize.y }, spriteSize, runSprite.numFrames);
@@ -370,7 +370,7 @@ void j1Player::AllocAllAnimations()
 
 // Player actions
 // Add Y speed when jump requested
-void j1Player::Jump()	
+void Player::Jump()	
 {
 	speed.y = -acceleration.y;
 	airborne = true;
@@ -378,33 +378,33 @@ void j1Player::Jump()
 }
 
 // Add acceleration to Y speed
-void j1Player::Fall(float dt)
+void Player::Fall(float dt)
 {
 	speed.y += gravity * dt;
 }
 
 // Stop X speed
-void j1Player::LateralStop()
+void Player::LateralStop()
 {
 	speed.x = 0.0f;
 }
 
 // Stop Y speed
-void j1Player::Land()
+void Player::Land()
 {
 	speed.y = 0.0f;
 	somersaultUsed = false;
 	jumpSprite.anim.Reset();
 }
 
-void j1Player::StandUp() {
+void Player::StandUp() {
 	acceleration.x = normalAcceleration;
 	playedSlideSfx = false;
 	slideSprite.anim.Reset();
 }
 
 // Stop and move slightly up and opposite of current direction, player state changes to AIRBORNE
-void j1Player::Hurt()
+void Player::Hurt()
 {
 	if (lookingRight == true) {
 		speed.x = -hurtSpeed.x;
@@ -426,7 +426,7 @@ void j1Player::Hurt()
 }
 
 //Restart all player values that need so when skipping steps on the workflow
-void j1Player::PlayerReset()
+void Player::PlayerReset()
 {
 	jumpSprite.anim.Reset();
 	somersaultUsed = false;
@@ -437,7 +437,7 @@ void j1Player::PlayerReset()
 }
 
 //Check debug input
-void j1Player::DebugInput()
+void Player::DebugInput()
 {
 	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)	//CHANGE/FIX: Should be in scene?
 	{
@@ -527,7 +527,7 @@ void j1Player::DebugInput()
 }
 
 //Check player input
-void j1Player::CheckInput()
+void Player::CheckInput()
 {
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_IDLE) {		// Move left input
 		input.wantMoveLeft = false;
@@ -570,7 +570,7 @@ void j1Player::CheckInput()
 }
 
 //// Check player current movement	//CHANGE/FIX: ERASE?
-//void j1Player::CheckMovement() {
+//void Player::CheckMovement() {
 //	if (speed.x > 0.0f) {
 //		movement.movingRight = true;
 //		movement.movingLeft = false;
@@ -599,7 +599,7 @@ void j1Player::CheckInput()
 //}
 
 // Check player state
-void j1Player::CheckState() {	// For each state, check possible new states based on other parameters
+void Player::CheckState() {	// For each state, check possible new states based on other parameters
 	if (godMode == true) {
 		airborne = true;
 
@@ -637,7 +637,7 @@ void j1Player::CheckState() {	// For each state, check possible new states based
 	}
 }
 
-state j1Player::IdleMoveCheck()
+state Player::IdleMoveCheck()
 {
 	state ret = state::IDLE;
 
@@ -658,7 +658,7 @@ state j1Player::IdleMoveCheck()
 	return ret;
 }
 
-state j1Player::CrouchingMoveCheck()
+state Player::CrouchingMoveCheck()
 {
 	state ret = state::CROUCHING;
 
@@ -680,7 +680,7 @@ state j1Player::CrouchingMoveCheck()
 	return ret;
 }
 
-state j1Player::RunningMoveCheck()
+state Player::RunningMoveCheck()
 {
 	state ret = state::RUNNING;
 
@@ -703,7 +703,7 @@ state j1Player::RunningMoveCheck()
 	return ret;
 }
 
-state j1Player::JumpingMoveCheck()
+state Player::JumpingMoveCheck()
 {
 	state ret = state::JUMPING;
 
@@ -720,7 +720,7 @@ state j1Player::JumpingMoveCheck()
 	return ret;
 }
 
-state j1Player::FallingMoveCheck()
+state Player::FallingMoveCheck()
 {
 	state ret = state::FALLING;
 
@@ -759,7 +759,7 @@ state j1Player::FallingMoveCheck()
 	return ret;
 }
 
-state j1Player::SlidingMoveCheck()
+state Player::SlidingMoveCheck()
 {
 	state ret = state::SLIDING;
 
@@ -796,7 +796,7 @@ state j1Player::SlidingMoveCheck()
 	return ret;
 }
 
-state j1Player::HurtMoveCheck()
+state Player::HurtMoveCheck()
 {
 	state ret = state::HURT;
 
@@ -832,7 +832,7 @@ state j1Player::HurtMoveCheck()
 }
 
 // Add state effects like movement restrictions, animation and sounds
-void j1Player::ApplyState()
+void Player::ApplyState()
 {
 	if (status != state::SLIDING && status != state::HURT) {
 		lookingRight = CheckPlayerOrientation(lookingRight);
@@ -872,7 +872,7 @@ void j1Player::ApplyState()
 	}
 }
 
-bool j1Player::CheckPlayerOrientation(bool orientation)
+bool Player::CheckPlayerOrientation(bool orientation)
 {
 	bool ret = orientation;
 
@@ -886,19 +886,19 @@ bool j1Player::CheckPlayerOrientation(bool orientation)
 	return orientation;
 }
 
-void j1Player::IdleEffects()
+void Player::IdleEffects()
 {
 	animPtr = &idleSprite.anim;
 }
 
-void j1Player::CrouchingEffects()
+void Player::CrouchingEffects()
 {
 	input.wantMoveRight = false;
 	input.wantMoveLeft = false;
 	animPtr = &crouchSprite.anim;
 }
 
-void j1Player::RunningEffects()
+void Player::RunningEffects()
 {
 	if (runSfxTimer < SDL_GetTicks() - runSfxDelay) {	// IMPROVE: Gets out of tempo after a few plays.
 		App->audio->PlayFx(App->audio->runSfx.id, 0);
@@ -907,7 +907,7 @@ void j1Player::RunningEffects()
 	animPtr = &runSprite.anim;
 }
 
-void j1Player::JumpingEffects()
+void Player::JumpingEffects()
 {
 	if (somersaultUsed == true) {
 		animPtr = &somersaultSprite.anim;
@@ -917,12 +917,12 @@ void j1Player::JumpingEffects()
 	}
 }
 
-void j1Player::FallingEffects()
+void Player::FallingEffects()
 {
 	animPtr = &fallSprite.anim;
 }
 
-void j1Player::SlidingEffects()
+void Player::SlidingEffects()
 {
 	input.wantMoveRight = false;
 	input.wantMoveLeft = false;
@@ -935,7 +935,7 @@ void j1Player::SlidingEffects()
 	animPtr = &slideSprite.anim;
 }
 
-void j1Player::HurtEffects()
+void Player::HurtEffects()
 {
 	input.wantMoveUp = false;
 	input.wantMoveDown = false;
@@ -954,7 +954,7 @@ void j1Player::HurtEffects()
 	}
 }
 
-void j1Player::DeadEffects() {
+void Player::DeadEffects() {
 	if (fading == false && deadTimer < SDL_GetTicks() - deathDelay) {
 		App->fade->FadeToBlack(App->scene, App->scene, fadeDelay);
 		fading = true;
@@ -996,7 +996,7 @@ void j1Player::DeadEffects() {
 }
 
 // Move player position and decide/calculate other movement related factors
-void j1Player::Move(float dt)
+void Player::Move(float dt)
 {
 	if (godMode == true) {
 		GodModeMovement(dt);
@@ -1016,7 +1016,7 @@ void j1Player::Move(float dt)
 	posRect.y = (int)position.y;
 }
 
-fPoint j1Player::GodModeMovement(float dt)
+fPoint Player::GodModeMovement(float dt)
 {
 	if (input.wantMoveRight == true && input.wantMoveLeft == false) {
 		position.x += 200 * dt;
@@ -1034,7 +1034,7 @@ fPoint j1Player::GodModeMovement(float dt)
 	return position;
 }
 
-fPoint j1Player::NormalMovement(float dt)
+fPoint Player::NormalMovement(float dt)
 {
 	if (input.wantMoveRight == true && input.wantMoveLeft == false) {
 		speed.x += acceleration.x * dt;
@@ -1065,7 +1065,7 @@ fPoint j1Player::NormalMovement(float dt)
 	return speed;
 }
 
-fPoint j1Player::LimitSpeed()
+fPoint Player::LimitSpeed()
 {
 	if (speed.x > 0)
 		speed.x = MIN(speed.x, maxSpeed.x);
@@ -1080,7 +1080,7 @@ fPoint j1Player::LimitSpeed()
 	return speed;
 }
 
-void j1Player::UpdateHitbox()
+void Player::UpdateHitbox()
 {
 	switch (status) {
 	case state::IDLE:
@@ -1112,7 +1112,7 @@ void j1Player::UpdateHitbox()
 	}
 }
 
-SDL_Rect j1Player::ReshapeCollider(sprite_data sprite)
+SDL_Rect Player::ReshapeCollider(sprite_data sprite)
 {
 	hitbox->rect.x = (int)position.x + sprite.colliderOffset.x;
 	hitbox->rect.y = (int)position.y + sprite.colliderOffset.y;

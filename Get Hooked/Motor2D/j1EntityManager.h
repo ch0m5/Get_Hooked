@@ -5,7 +5,7 @@
 #include "p2List.h"
 
 class Entity;
-class j1Player;
+class Player;
 enum class entity_type;
 
 class j1EntityManager : public j1Module
@@ -49,7 +49,7 @@ private:
 	
 public:
 	p2List<Entity*> entities;
-	j1Player* player;
+	Player* player;
 
 private:
 	ushort logicPerSecond;	// Number of times logic is checked each second

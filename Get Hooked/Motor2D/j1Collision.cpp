@@ -4,7 +4,7 @@
 #include "j1Input.h"
 #include "j1Render.h"
 #include "j1Collision.h"
-#include "j1Player.h"
+#include "Player.h"
 #include "Entity.h"
 
 j1Collision::j1Collision()

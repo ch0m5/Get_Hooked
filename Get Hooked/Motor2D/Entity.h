@@ -53,7 +53,7 @@ public:
 	// Called each loop iteration
 	virtual bool PreUpdate() { return true; }
 
-	// Called between a certain number of frames
+	// Called between a certain number of frames or times per second
 	virtual bool UpdateLogic(float dt) { return true; }
 
 	// Called each frame (framerate dependant)

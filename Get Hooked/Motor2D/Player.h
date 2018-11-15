@@ -1,5 +1,5 @@
-#ifndef __j1PLAYER_H__
-#define __j1PLAYER_H__	// @CarlesHoms
+#ifndef __Player_H__
+#define __Player_H__	// @CarlesHoms
 
 #include "Entity.h"
 #include "p2Animation.h"
@@ -25,13 +25,13 @@ enum class state {	// @Carles, enum that groups all possible player states that 
 	//HOOK
 };
 
-class j1Player : public Entity
+class Player : public Entity
 {
 public:
 
-	j1Player();
+	Player();
 
-	virtual ~j1Player();
+	virtual ~Player();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node&);
@@ -170,7 +170,7 @@ private:
 	bool playedHurtSfx;		// Flag to mark hurt sfx played
 };
 
-#endif //__j1PLAYER_H__
+#endif //__Player_H__
 
 // All posible character animations for future use
 	//Animation idle;

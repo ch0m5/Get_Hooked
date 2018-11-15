@@ -12,7 +12,7 @@
 #include "j1Scene2.h"
 #include "j1Map.h"
 #include "j1EntityManager.h"
-#include "j1Player.h"		// CHANGE/FIX: Should be here?
+#include "Player.h"		// CHANGE/FIX: Should be here?
 #include "j1Collision.h"	// @Carles
 #include "j1FadeScene.h"	// @Carles
 #include "j1App.h"
