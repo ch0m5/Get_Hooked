@@ -87,9 +87,9 @@ bool j1EntityManager::PreUpdate()
 // Called each frame (logic)
 bool j1EntityManager::UpdateTick(float dt)
 {
-	accumulatedTime += dt * 1000;
+	accumulatedTime += dt;
 
-	float DelayTime = 1000 / App->GetFrameCap();
+	float DelayTime = 0; //1000 / App->GetFrameCap();	//CHANGE/FIX: dt is not used
 
 	if (accumulatedTime >= DelayTime)
 		mustCheckLogic = true;
