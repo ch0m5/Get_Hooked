@@ -8,7 +8,8 @@
 // Constructor
 j1EntityManager::j1EntityManager()
 {
-	name.create("entityManager");
+	name.create("entities");
+	player = (j1Player*)CreateEntity(entity_type::PLAYER);
 }
 
 // Destructor
@@ -28,17 +29,25 @@ j1EntityManager::~j1EntityManager()
 // Called before render is available
 bool j1EntityManager::Awake(pugi::xml_node& config)
 {
-	player = (j1Player*)App->entityManager->CreateEntity(entity_type::PLAYER);
+	pugi::xml_document	entities_file;
+	pugi::xml_node		entities_node;
 
-	bool ret = true;
+	bool ret = false;
 
-	p2List_item<Entity*>* item;
-	item = entities.start;
+	entities_node = LoadEntitiesXML(entities_file);
 
-	while (item != NULL && ret == true)
+	if (entities_node.empty() == false)
 	{
-		ret = item->data->Awake(config.child(item->data->name.GetString()));
-		item = item->next;
+		ret = true;
+
+		p2List_item<Entity*>* item;
+		item = entities.start;
+
+		while (item != NULL && ret == true)
+		{
+			ret = item->data->Awake(entities_node.child(item->data->name.GetString()));
+			item = item->next;
+		}
 	}
 
 	return ret;
@@ -50,12 +59,10 @@ bool j1EntityManager::Start()
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	item = entities.start;
 
-	while (item != NULL && ret == true)
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
 		ret = item->data->Start();
-		item = item->next;
 	}
 
 	return ret;
@@ -65,8 +72,8 @@ bool j1EntityManager::Start()
 bool j1EntityManager::PreUpdate()
 {
 	bool ret = true;
+
 	p2List_item<Entity*>* item;
-	item = entities.start;
 	Entity* tmpEntity = NULL;
 
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
@@ -80,24 +87,20 @@ bool j1EntityManager::PreUpdate()
 // Called each frame (logic)
 bool j1EntityManager::UpdateTick(float dt)
 {
-	accumulatedTime += dt;
+	accumulatedTime += dt * 1000;
 
-	if (accumulatedTime >= MsToUpdate)
+	float DelayTime = 1000 / App->GetFrameCap();
+
+	if (accumulatedTime >= DelayTime)
 		mustCheckLogic = true;
 
 	UpdateEntities(dt, mustCheckLogic);
 
 	if (mustCheckLogic == true) {
-		accumulatedTime = accumulatedTime - MsToUpdate;
+		accumulatedTime = accumulatedTime - DelayTime;
 		mustCheckLogic = false;
 	}
 
-	return true;
-}
-
-// Called each loop iteration (graphic)
-bool j1EntityManager::Update()
-{
 	return true;
 }
 
@@ -106,22 +109,14 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	Entity* tmpEntity = nullptr;
-
 	for (item = entities.start; item != nullptr && ret == true; item = item->next)
 	{
-		tmpEntity = item->data;
-
-		/*if (tmpEntity->active == false) {
-			continue;
-		}*/
-
 		if (mustCheckLogic) {
-			ret = tmpEntity->UpdateTick(dt);
+			ret = item->data->UpdateTick(dt);
 		}
 
 		if (ret)
-			ret = tmpEntity->Update();
+			ret = item->data->Update();
 	}
 
 	return ret;
@@ -131,10 +126,8 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 bool j1EntityManager::PostUpdate()
 {
 	bool ret = true;
-	p2List_item<Entity*>* item;
-	item = entities.start;
-	Entity* tmpEntity = NULL;
 
+	p2List_item<Entity*>* item;
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
 		ret = item->data->PostUpdate();
@@ -146,7 +139,15 @@ bool j1EntityManager::PostUpdate()
 // Called before quitting
 bool j1EntityManager::CleanUp()
 {
-	return true;
+	bool ret = true;
+
+	p2List_item<Entity*>* item;
+	for (item = entities.end; item != NULL && ret == true; item = item->prev)
+	{
+		ret = item->data->CleanUp();
+	}
+
+	return ret;
 }
 
 // Save and Load
@@ -154,14 +155,12 @@ bool j1EntityManager::Load(pugi::xml_node& managerNode)
 {
 	bool ret = true;
 
-	p2List_item<Entity*>* item = entities.start;
-
-	while (item != NULL && ret == true)
+	p2List_item<Entity*>* item;
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
 		ret = item->data->Load(managerNode.child(item->data->name.GetString()));
-		item = item->next;
 	}
-	
+
 	return true;
 }
 
@@ -169,27 +168,25 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 {
 	bool ret = true;
 
-	p2List_item<Entity*>* item = entities.start;
-
-	while (item != NULL && ret == true)
+	p2List_item<Entity*>* item;
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
 		ret = item->data->Save(managerNode.append_child(item->data->name.GetString()));
-		item = item->next;
 	}
 
 	return true;
 }
 
-pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
+pugi::xml_node j1EntityManager::LoadEntitiesXML(pugi::xml_document& entities_file) const
 {
 	pugi::xml_node ret;
 
-	pugi::xml_parse_result result = config_file.load_file("config.xml");
+	pugi::xml_parse_result result = entities_file.load_file("entities.xml");
 
 	if (result == NULL)
-		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
+		LOG("Could not load map xml file entities.xml. pugi error: %s", result.description());
 	else
-		ret = config_file.child("config");
+		ret = entities_file.child("entities");
 
 	return ret;
 }

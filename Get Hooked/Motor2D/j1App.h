@@ -17,7 +17,6 @@ class j1Scene;
 class j1Scene2;
 class j1Map;
 class j1EntityManager;
-//class j1Player;		// @Carles
 class j1Collision;	// @Carles
 class j1FadeScene;	// @Carles
 
@@ -86,6 +85,11 @@ private:
 	p2SString DebugTitle();
 
 public:
+	uint16 GetFrameCap() const {
+		return fpsCap;
+	}
+
+public:
 
 	// Modules
 	j1Window*			win;
@@ -97,7 +101,6 @@ public:
 	j1Scene2*			scene2;
 	j1Map*				map;
 	j1EntityManager*	entityManager;
-	//j1Player*			player;		// @Carles
 	j1Collision*		collision;	// @Carles
 	j1FadeScene*		fade;		// @Carles
 

@@ -33,7 +33,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	scene2 = new j1Scene2();
 	map = new j1Map();
 	entityManager = new j1EntityManager();
-	//player = new j1Player();		// @Carles
 	collision = new j1Collision();	// @Carles
 	fade = new j1FadeScene();
 
@@ -47,7 +46,6 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(scene);
 	AddModule(scene2);
 	AddModule(entityManager);
-	//AddModule(player);	// @Carles
 	AddModule(collision);	// @Carles
 	AddModule(fade);
 

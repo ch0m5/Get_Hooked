@@ -10,7 +10,7 @@
 	<map />
 	<scene />
 	<scene2 />
-  <entityManager>
+  <entities>
     <player>
       <position x="128" y="523" />
       <lastGround x="128" y="523" />
@@ -29,7 +29,7 @@
       <slideSfx played="false" />
       <hurtSfx played="false" />
     </player>
-  </entityManager>
+  </entities>
   <collision />
 	<window />
 	<renderer>

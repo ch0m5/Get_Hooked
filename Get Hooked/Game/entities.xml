@@ -1,147 +1,69 @@
-<!-- Config file for the game -->
+<!-- Properties of the game's entities -->
 
-<config>
-  <app mustCap="true" fpsCap="30">
-    <name>Get Hooked v0.1</name>
-    <organization>UPC</organization>
-    <save>save_game.xml</save>
-    <load>save_game.xml</load>
-  </app>
-	
-  <renderer>
-    <vsync value="false"/>
-  </renderer>
-
-  <collision>
-    <mustDebugDraw value="false" />
-    <matrix>
-      <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
-      <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
-      <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
-      <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true" end="true" hazard="true"/>
-      <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false" end="false" hazard="false"/>
-      <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false" end="false" hazard="true"/>
-      <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false" end="false" hazard="false"/>
-    </matrix>
-  </collision>
-  
-  <window>
-    <resolution width="1024" height="768" scale="2"/>
-    <fullscreen value="false"/>
-    <borderless value="false"/>
-    <resizable value="false"/>
-    <fullscreen_window value="false"/>
-  </window>
-
-  <file_system>
-    <path>data.zip</path>
-  </file_system>
-
-  <audio volume="100">
-    <music volume="80">
-      <folder>audio/music/</folder>
-      <maps>
-        <track1>Mystic_Force.ogg</track1>
-        <track2>Spellbound.ogg</track2>
-      </maps>
-    </music>
-    <sfx volume="100">
-      <folder>audio/fx/</folder>
-      <player>
-        <run>run.wav</run>
-        <jump>jump.wav</jump>
-        <slide>slide.wav</slide>
-        <hurt>hurt.wav</hurt>
-      </player>
-    </sfx>
-  </audio>
-  
-  <map>
-    <folder>maps/</folder>
-  </map>
-
-  <entityManager>
-    <player>
-      <folder>textures/</folder>
-      <sprites>
-        <spriteSheet>character_sprite_sheet.png</spriteSheet>
-        <spriteSize x="50" y="37"/>
-        <first_sprite>
-          <idle column="0" row="0" frames="4" animSpeed ="8" loop="true">
-            <offset x="14" y="6" w="22" h="31"/>
-          </idle>
-          <run column="0" row="4" frames="6" animSpeed ="8" loop="true">
-            <offset x="14" y="6" w="22" h="31"/>
-          </run>
-          <slide column="0" row="5" frames="5" animSpeed ="8" loop="false">
-            <offset x="11" y="20" w="27" h="17"/>
-          </slide>
-          <crouch column="0" row="6" frames="4" animSpeed ="8" loop="true">
-            <offset x="14" y="14" w="22" h="23"/>
-          </crouch>
-          <jump column="0" row="7" frames="4" animSpeed ="16" loop="false">
-            <offset x="14" y="6" w="22" h="31"/>
-          </jump>
-          <somersault column="0" row="8" frames="4" animSpeed ="8" loop="true">
-            <offset x="14" y="8" w="22" h="23"/>
-          </somersault>
-          <fall column="4" row="7" frames="2" animSpeed ="8" loop="true">
-            <offset x="14" y="6" w="22" h="31"/>
-          </fall>
-          <hurt column="0" row="22" frames="3" animSpeed ="8" loop="true">
-            <offset x="14" y="6" w="22" h="31"/>
-          </hurt>
-          <dead column="0" row="23" frames="7" animSpeed ="8" loop="false">
-            <offset x="14" y="6" w="22" h="31"/>
-          </dead>
-        </first_sprite>
-      </sprites>
-      <audio>
-        <runSfxDelay miliseconds="350"/>
-        <slideSfx played="false" />
-        <hurtSfx played="false" />
-      </audio>
-      <stats>
-        <life value="3"/>
-        <speed x="0" y="0"/>
-        <maxSpeed x="150" y="240"/>
-        <hurtSpeed x="110" y="110"/>
-        <accelerations x="700" gravity="560" slide="200"/>
-        <jump forceY="220"/>
-        <!-- Original values (before dt)
+<entities>
+  <player>
+    <folder>textures/</folder>
+    <sprites>
+      <spriteSheet>character_sprite_sheet.png</spriteSheet>
+      <spriteSize x="50" y="37"/>
+      <first_sprite>
+        <idle column="0" row="0" frames="4" animSpeed ="8" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </idle>
+        <run column="0" row="4" frames="6" animSpeed ="8" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </run>
+        <slide column="0" row="5" frames="5" animSpeed ="8" loop="false">
+          <offset x="11" y="20" w="27" h="17"/>
+        </slide>
+        <crouch column="0" row="6" frames="4" animSpeed ="8" loop="true">
+          <offset x="14" y="14" w="22" h="23"/>
+        </crouch>
+        <jump column="0" row="7" frames="4" animSpeed ="16" loop="false">
+          <offset x="14" y="6" w="22" h="31"/>
+        </jump>
+        <somersault column="0" row="8" frames="4" animSpeed ="8" loop="true">
+          <offset x="14" y="8" w="22" h="23"/>
+        </somersault>
+        <fall column="4" row="7" frames="2" animSpeed ="8" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </fall>
+        <hurt column="0" row="22" frames="3" animSpeed ="8" loop="true">
+          <offset x="14" y="6" w="22" h="31"/>
+        </hurt>
+        <dead column="0" row="23" frames="7" animSpeed ="8" loop="false">
+          <offset x="14" y="6" w="22" h="31"/>
+        </dead>
+      </first_sprite>
+    </sprites>
+    <audio>
+      <runSfxDelay miliseconds="350"/>
+      <slideSfx played="false" />
+      <hurtSfx played="false" />
+    </audio>
+    <stats>
+      <life value="3"/>
+      <speed x="0" y="0"/>
+      <maxSpeed x="150" y="240"/>
+      <hurtSpeed x="110" y="110"/>
+      <accelerations x="700" gravity="560" slide="200"/>
+      <jump forceY="220"/>
+      <!-- Original values (before dt)
       <maxSpeed x="3" y="5"/>
       <hurtSpeed x="2" y="2"/>
       <accelerations x="0.25" gravity="0.2" slide="0.07"/>
       <jump forceY="4"/>
       -->
-        <airborne value="false"/>
-        <looking right="true"/>
-        <somersault used="false"/>
-        <deathDelay miliseconds="1000"/>
-        <fadeDelay seconds="1"/>
-        <debugMode value="true" />
-        <godMode value="false"/>
-        <freeCamera value="false"/>
-      </stats>
-    </player>
-  </entityManager>
-
-  <scene>
-    <cameraSpeed x="300" y="300"/>
-    <map name="level1.tmx" active="1">
-      <playerStartPos x="128" y="464"/>
-      <playerStartSpeed x="0" y="0"/>
-    </map>
-    <fadeTime value="1"/>
-  </scene>  
-
-  <scene2>
-    <cameraSpeed x="5" y="5"/>
-    <map name="level2.tmx" active="0">
-      <playerStartPos x="224" y="160"/>
-      <playerStartSpeed x="0" y="0"/>
-    </map>
-    <fadeTime value="1"/>
-  </scene2>
-
-</config>
+      <airborne value="false"/>
+      <looking right="true"/>
+      <somersault used="false"/>
+      <deathDelay miliseconds="1000"/>
+      <fadeDelay seconds="1"/>
+      <debugMode value="true" />
+      <godMode value="false"/>
+      <freeCamera value="false"/>
+    </stats>
+  </player>
+  
+  
+</entities>

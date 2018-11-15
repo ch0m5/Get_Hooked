@@ -29,9 +29,6 @@ public:
 	// Called each frame (logic)
 	bool UpdateTick(float dt);
 
-	// Called each loop iteration (graphic)
-	bool Update();
-
 	// Called each loop iteration
 	bool PostUpdate();
 
@@ -45,16 +42,17 @@ public:
 public:
 	Entity* CreateEntity(entity_type type);
 	void DestroyEntity(Entity* entity);
-	bool UpdateEntities(float dt, bool mustCheckLogic);
-	pugi::xml_node LoadConfig(pugi::xml_document&) const;
 
+private:
+	bool UpdateEntities(float dt, bool mustCheckLogic);
+	pugi::xml_node LoadEntitiesXML(pugi::xml_document&) const;
+	
 public:
 	p2List<Entity*> entities;
 	j1Player* player;
 
 private:
 	float accumulatedTime;
-	float MsToUpdate;
 	bool mustCheckLogic = false;
 
 };
