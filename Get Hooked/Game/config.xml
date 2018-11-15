@@ -61,7 +61,7 @@
   </map>
 
   <entities>
-    
+    <logic cooldown="5" />
   </entities>
 
   <scene>

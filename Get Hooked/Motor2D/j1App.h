@@ -88,6 +88,12 @@ public:
 	uint16 GetFrameCap() const {
 		return fpsCap;
 	}
+	uint32 GetCurrentFPS() const {
+		return currFPS;
+	}
+	bool FramerateCapped() const {
+		return mustCapFPS;
+	}
 
 public:
 

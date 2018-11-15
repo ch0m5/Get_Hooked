@@ -12,8 +12,8 @@ No previous installations is required to play the game, just download and execut
 ### General Controls
 * ESC: Quit the game
 * F8: Enter Debug Mode
-* Up/Down: Change master volume
-* Left/Right: Change music volume
+* Shift + Up/Down: Change master volume
+* Shift + Left/Right: Change music volume
 
 ### Player 1 Controls
 * Keyboard:
@@ -26,6 +26,7 @@ No previous installations is required to play the game, just download and execut
 ### Player 2 (Considering implementation!)
 
 ### Debug Mode
+* Arrow Keys: Manual Camera Movement
 * F1: Start from the first level
 * F2: Start from beginning of current level
 * F3: Advance to next level
@@ -34,16 +35,17 @@ No previous installations is required to play the game, just download and execut
 * F6: Load previously saved state
 * F7: Recieve instant damage (Unless on godmode)
 * F9: Debug view (Colliders/Logic)
-* F10: Godmode (No damage, no collisions, and free movment)
+* F10: Godmode (No damage, no collisions, and free movement)
 * F11: Activate/Deactivate FPS cap (30)
 * 1/2/3/4/5: Change game scale to number chosen
 
 ## Innovation
 * Player accelerates and deaccelerates when moving on ground, but not while being airborne
+* Player collider changes shape and position depending on his current animation
 * Player can crouch to evade things that could hit his head area
 * Player slides with a different deacceleration when trying to crouch while moving
 * Player can jump in the air once making a somersault
-* Original Debug Functionalities
+* Some Original Debug Functionalities
 
 ## Contributing
 1. Fork it!
@@ -64,6 +66,25 @@ feature'`
 
 ![Team Photo](https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png)
 *Samuel & Carles from Scotland Fury*
+
+##Tasklist
+* Carles Homs
+	* Audio Module and Logic
+	* Collisions Module and Logic
+	* Input Interpretation
+	* Debug Functionalities (Except Map ones)
+	* FadeModule
+	* XML Save, Load and Congif/Awake (Except for map data)
+	* Framerate Logic and Limitations
+	* Entitiy System
+	* Player Module and Logic
+	* Enemies Modules and Logic
+	* Brofiler
+
+* Samuel Kurt:
+	* Map Design and Implementation
+	* Scene Modules and Logic
+	* FadeModule Logic
 
 ## Disclosure
 We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.

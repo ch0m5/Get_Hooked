@@ -80,7 +80,7 @@ bool j1Scene::UpdateTick(float dt)
 // Called each loop iteration (graphic)
 bool j1Scene::Update()
 {
-	if (App->entityManager->player->freeCamera == false) {
+	if (App->entityManager->player->CameraFree() == false) {
 		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
 

@@ -29,6 +29,8 @@ j1EntityManager::~j1EntityManager()
 // Called before render is available
 bool j1EntityManager::Awake(pugi::xml_node& config)
 {
+	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
+
 	pugi::xml_document	entities_file;
 	pugi::xml_node		entities_node;
 
@@ -87,17 +89,22 @@ bool j1EntityManager::PreUpdate()
 // Called each frame (logic)
 bool j1EntityManager::UpdateTick(float dt)
 {
-	accumulatedTime += dt;
+	accumulatedTime += dt * 1000;
 
-	float DelayTime = 0; //1000 / App->GetFrameCap();	//CHANGE/FIX: dt is not used
+	float delayTime = 1000 / App->GetFrameCap();
 
-	if (accumulatedTime >= DelayTime)
+	/*if (App->FramerateCapped())
+		delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
+	else
+		delayTime = (1000 / App->GetCurrentFPS()) * (App->GetCurrentFPS() / logicPerSecond);*/
+
+	if (accumulatedTime >= delayTime)
 		mustCheckLogic = true;
 
 	UpdateEntities(dt, mustCheckLogic);
 
 	if (mustCheckLogic == true) {
-		accumulatedTime = accumulatedTime - DelayTime;
+		accumulatedTime = accumulatedTime - delayTime;
 		mustCheckLogic = false;
 	}
 
@@ -112,11 +119,14 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 	for (item = entities.start; item != nullptr && ret == true; item = item->next)
 	{
 		if (mustCheckLogic) {
-			ret = item->data->UpdateTick(dt);
+			ret = item->data->UpdateLogic(dt);	//Update logic in intervals
 		}
 
 		if (ret)
-			ret = item->data->Update();
+			ret = item->data->UpdateTick(dt);	//Update dependant of framerate
+
+		if (ret)
+			ret = item->data->Update();	//Update independant of framerate
 	}
 
 	return ret;

@@ -1,11 +1,26 @@
 #ifndef __j1ENTITY_H__
 #define __j1ENTITY_H__	// @CarlesHoms
 
-#include "p2Point.h"
+#include "p2Animation.h"
 
 enum class state;
-struct Collider;
 enum class collision_type;
+struct Collider;
+
+//Components
+struct movement_flags {
+	bool movingUp;
+	bool movingRight;
+	bool movingLeft;
+	bool movingDown;
+};
+
+struct sprite_data {	// @Carles, struct used to store xml data of the first sprite of an animation to then automatize the animation allocation process
+	iPoint sheetPosition;
+	SDL_Rect colliderOffset;
+	uint numFrames;
+	Animation anim;
+};
 
 enum class entity_type
 {
@@ -20,12 +35,6 @@ enum class entity_type
 
 	MAX_TYPES
 };
-
-//struct sprite_data {	//IMPROVE: Make into component?
-//	SDL_Rect sheetPosition;
-//	float animSpeed;
-//	uint numFrames;
-//};
 
 class Entity
 {
@@ -44,7 +53,10 @@ public:
 	// Called each loop iteration
 	virtual bool PreUpdate() { return true; }
 
-	// Called each frame (logic)
+	// Called between a certain number of frames
+	virtual bool UpdateLogic(float dt) { return true; }
+
+	// Called each frame (framerate dependant)
 	virtual bool UpdateTick(float dt) { return true; }
 
 	// Called each loop iteration (graphic)
@@ -62,46 +74,66 @@ public:
 
 public:
 	//Entity
-	virtual void Input() {};
-	virtual void Draw() {};
-	//virtual fPoint GetPosition() const;
+	virtual fPoint GetPosition() const;
 
-	////Dynamic Entity
-	//virtual fPoint GetSpeed() const;
-	//virtual fPoint GetAcceleration() const;
-	//virtual state GetState() const;
+	//Dynamic Entity
+	virtual fPoint GetSpeed() const;
+	virtual fPoint GetAcceleration() const;
+	virtual state GetState() const;
 
-	////Physical Entity
-	//virtual Collider* GetCollider();
+	//Physical Entity
+	virtual Collider* GetCollider();
 	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }
 
-	////Living Entity
-	//virtual uint GetLife() const;
-	//virtual void Kill();
-	//virtual void Hurt();
-	//virtual bool IsDead() const;
-	
+	//Living Entity
+	virtual uint GetLife() const;
+	virtual void Kill();
+	virtual void Hurt();
+	virtual bool IsDead() const;
+
+protected:
+	//Entity
+	virtual void CheckInput() {};
+	virtual void Draw() {};
+
+	//Dynamic Entity
+	virtual void CheckMovement();	// Check player current movement
+	virtual void CheckState() {};		// Check player state
+	virtual void ApplyState() {};		// Add state effects like movement restrictions, animation and sounds
+	virtual void Move(float dt) {};		// Move player position and decide/calculate other movement related factors
+	virtual void UpdateHitbox() {};		// Transform player collider depending on new position and state
+	virtual fPoint Entity::LimitSpeed();
+
 public:
 	p2SString name;
+	p2SString folder;
+
+protected:
+	//Entity
+	fPoint position;
+	movement_flags movement;
+	Animation* animPtr = nullptr;
+	SDL_Rect posRect;
+	SDL_Rect animRect;
+
+	//Dynamic Entity
+	fPoint speed;
+	fPoint maxSpeed;
+	fPoint acceleration;
+	state status;
+	bool lookingRight;	// Flag for blit flipping and hurt speed x direction
+
+	//Physical Entity
+	Collider* hitbox;
+	SDL_Rect hitboxOffset;
+
+	//Living Entity
+	int life;
+	uint maxLife;
+	bool dead;
 
 private:
-	//Entity
 	entity_type type;
-	fPoint position;
-	//sprite_data sprite;
-	//p2List<Animation> animations;
-
-	////Dynamic Entity
-	//fPoint speed;
-	//fPoint acceleration;
-	//state status;
-
-	////Physical Entity
-	//Collider hitbox;
-
-	////Living Entity
-	//int life;
-	//bool dead;
 };
 
 #endif //__j1ENTITY_H__

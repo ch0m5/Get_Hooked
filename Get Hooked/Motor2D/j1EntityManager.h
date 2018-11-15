@@ -52,6 +52,7 @@ public:
 	j1Player* player;
 
 private:
+	ushort logicPerSecond;	// Number of times logic is checked each second
 	float accumulatedTime;
 	bool mustCheckLogic = false;
 

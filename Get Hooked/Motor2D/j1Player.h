@@ -6,15 +6,15 @@
 
 struct SDL_Texture;
 
-struct player_sprite {	// @Carles, struct used to store xml data of the first sprite of an animation to then automatize the animation allocation process
-	iPoint position;
-	SDL_Rect colliderOffset;
-	float animSpeed;
-	uint frames;
-	bool loop;
+//Components
+struct movement_input {
+	bool wantMoveUp;
+	bool wantMoveRight;
+	bool wantMoveLeft;
+	bool wantMoveDown;
 };
 
-enum class player_state {	// @Carles, enum that groups all possible player states that will decide how the player behaves
+enum class state {	// @Carles, enum that groups all possible player states that will decide how the player behaves
 	IDLE,
 	CROUCHING,
 	RUNNING,
@@ -55,30 +55,24 @@ public:
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
 
-public:	// @Carles
-	bool IsDead() const {
-		return dead;
-	}
-	fPoint GetPosition() const {
-		return currentPosition;
-	}
-	fPoint GetSpeed() const {
-		return speed;
+public:
+	bool CameraFree() const {
+		return freeCamera;
 	}
 
 private:	// @Carles
 	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
-	void ImportSpriteData(const char* spriteName, player_sprite* sprite, pugi::xml_node&);	// Import sprite data from config.xml
+	void ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node&);	// Import sprite data from config.xml
 	void ImportAllSprites(pugi::xml_node&);													// Import all sprite data using the above function for each animation
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
 	// Player actions
-	player_state Jump();	// Add Y speed and jump state when requested
+	void Jump();			// Add Y speed and jump state when requested
 	void Fall(float dt);	// Add acceleration to Y speed
 	void LateralStop();		// Stop X speed
 	void Land();			// Stop Y speed
 	void StandUp();			// Return to normal acceleration and reset slide values
-	player_state Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
+	void Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
 	void PlayerReset();
 	//void Hook();
 
@@ -86,21 +80,21 @@ private:	// @Carles
 	void DebugInput();
 
 	// Player update
-	void PlayerInput();		// Check player input
-	void PlayerMovement();	// Check player current movement
-	void PlayerState();		// Check player state
-	void PlayerEffects();	// Add state effects like movement restrictions, animation and sounds
-	void MovePlayer(float dt);		// Move player position and decide/calculate other movement related factors
+	void CheckInput();		// Check player input
+	//void CheckMovement();	// Check player current movement
+	void CheckState();		// Check player state
+	void ApplyState();		// Add state effects like movement restrictions, animation and sounds
+	void Move(float dt);	// Move player position and decide/calculate other movement related factors
 	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 	// Check possible new states in each state and other changes in the player's status
-	player_state IdleMoveCheck();
-	player_state CrouchingMoveCheck();
-	player_state RunningMoveCheck();
-	player_state JumpingMoveCheck();
-	player_state FallingMoveCheck();
-	player_state SlidingMoveCheck();
-	player_state HurtMoveCheck();
+	state IdleMoveCheck();
+	state CrouchingMoveCheck();
+	state RunningMoveCheck();
+	state JumpingMoveCheck();
+	state FallingMoveCheck();
+	state SlidingMoveCheck();
+	state HurtMoveCheck();
 	
 	// Apply effects of each state
 	bool CheckPlayerOrientation(bool orientation);
@@ -117,7 +111,7 @@ private:	// @Carles
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
 	fPoint LimitSpeed();
-	SDL_Rect ReshapeCollider(player_sprite sprite);
+	SDL_Rect ReshapeCollider(sprite_data sprite);
 
 public:
 	//Collider
@@ -125,45 +119,22 @@ public:
 	bool debugMode;		// Flag that marks if debug functionalities are available
 
 private:
-	p2SString folder;
-
-	// Character stats
-	ushort life;
-	ushort maxLife;
-
-	fPoint currentPosition;
 	fPoint lastGroundPosition;
 	fPoint respawnPosition;
 
-	player_state state;
+	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/killed
 
-	fPoint speed;
-	fPoint maxSpeed;
-	fPoint hurtSpeed;			// Speed that the player adopts when getting hurt/killed
-	public:
-	float currentAcceleration;
 	float normalAcceleration;
 	float slideAcceleration;
-	float jumpVelocity;
 	float gravity;
 
 	// Character status flags and directly related data
-	bool wantMoveUp;	// Player input
-	bool wantMoveRight;	//IMPROVE: Make struct
-	bool wantMoveLeft;
-	bool wantMoveDown;
-	
-	bool movingUp;		// Player current movement
-	bool movingRight;	//IMPROVE: Make struct
-	bool movingLeft;
-	bool movingDown;
+	movement_input input;
 
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
-	bool lookingRight;		// Flag for blit flipping and hurt speed x direction
 	bool somersaultUsed;	// Flag for somersault usage
 
-	bool dead = false;
-	uint deadTimer = 0;	// Timer used for player death
+	uint deadTimer = 0;		// Timer used for player death
 	ushort deathDelay;		// Time delay between death and start FadeToBlack
 
 	bool fading = false;	// Flag used to mark fade starting
@@ -179,46 +150,24 @@ private:
 	iPoint spriteSize;
 
 	//Character sprites
-	player_sprite idleSprite;
+	sprite_data idleSprite;
 
-	player_sprite runSprite;
-	player_sprite slideSprite;
-	player_sprite crouchSprite;
+	sprite_data runSprite;
+	sprite_data slideSprite;
+	sprite_data crouchSprite;
 
-	player_sprite jumpSprite;
-	player_sprite somersaultSprite;
-	player_sprite fallSprite;
+	sprite_data jumpSprite;
+	sprite_data somersaultSprite;
+	sprite_data fallSprite;
 
-	player_sprite hurtSprite;
-	player_sprite deadSprite;
-
-	// Character animations
-	Animation idleAnim;
-
-	Animation runAnim;
-	Animation slideAnim;
-	Animation crouchAnim;
-
-	Animation jumpAnim;
-	Animation somersaultAnim;
-	Animation fallAnim;
-
-	Animation hurtAnim;
-	Animation deadAnim;
-
-	// Animation pointers
-	Animation* animPtr = nullptr;
+	sprite_data hurtSprite;
+	sprite_data deadSprite;
 
 	// Audio
 	uint runSfxTimer = 0;	// Timer to mark time between run sounds
 	int runSfxDelay;		// Time between run sounds
 	bool playedSlideSfx;	// Flag to mark slide sfx played
 	bool playedHurtSfx;		// Flag to mark hurt sfx played
-
-	// Player rectangles
-	SDL_Rect playerRect;		//SamAlert: For animation blit
-	SDL_Rect currentHitboxOffset;
-	SDL_Rect animRect;
 };
 
 #endif //__j1PLAYER_H__

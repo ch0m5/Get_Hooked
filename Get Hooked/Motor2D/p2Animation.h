@@ -3,9 +3,10 @@
 
 #include "p2Defs.h"
 #include "p2Point.h"
+#include "p2List.h"
 #include "SDL\include\SDL_rect.h"
 
-#define MAX_FRAMES 50
+#define MAX_FRAMES 50	//IMPROVE: Make list or apply growing methodology
 
 class Animation
 {
@@ -57,17 +58,14 @@ public:
 	{
 		loops = 0;
 	}
-	// @Carles: Allocates an animation from a row of frames by knowing the position of the first frame and other important data
-	void AllocAnimation(iPoint spritePos, iPoint spriteSize, float speed, uint numFrames, bool loop) {
+	// @Carles: Allocates an animation from a row of frames by knowing the position of the first frame and the number of frames
+	void AllocAnimation(iPoint spritePos, iPoint spriteSize, uint numFrames) {
 
 		int xCounter = 0;
 
 		for (uint i = numFrames; i > 0; i--) {
 			PushBack({ spritePos.x + spriteSize.x * xCounter++, spritePos.y, spriteSize.x, spriteSize.y });
 		}
-		
-		this->speed = speed;
-		this->loop = loop;
 	}
 };
 
