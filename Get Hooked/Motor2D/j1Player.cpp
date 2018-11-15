@@ -105,13 +105,7 @@ bool j1Player::UpdateTick(float dt)
 	MovePlayer(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();		// Transform player collider depending on new position and state
 
-	SDL_Rect playerRect = animPtr->GetCurrentFrame(dt);
-	if (lookingRight == true) {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_NONE);
-	}
-	else {
-		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &playerRect, SDL_FLIP_HORIZONTAL);
-	}
+	animRect = animPtr->GetCurrentFrame(dt);
 
 	return ret;
 }
@@ -119,6 +113,13 @@ bool j1Player::UpdateTick(float dt)
 bool j1Player::Update()
 {
 	bool ret = true;
+
+	if (lookingRight == true) {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &animRect, SDL_FLIP_NONE);
+	}
+	else {
+		App->render->Blit(graphics, (int)currentPosition.x, (int)currentPosition.y, &animRect, SDL_FLIP_HORIZONTAL);
+	}
 
 	return ret;
 }
@@ -1005,8 +1006,8 @@ void j1Player::MovePlayer(float dt)
 	currentPosition.x += speed.x * dt;
 	currentPosition.y += speed.y * dt;
 
-	animRect.x = (int)currentPosition.x;
-	animRect.y = (int)currentPosition.y;
+	playerRect.x = (int)currentPosition.x;
+	playerRect.y = (int)currentPosition.y;
 }
 
 fPoint j1Player::GodModeMovement(float dt)

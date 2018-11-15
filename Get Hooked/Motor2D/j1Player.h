@@ -136,7 +136,6 @@ private:
 	fPoint respawnPosition;
 
 	player_state state;
-	SDL_Rect currentHitboxOffset;
 
 	fPoint speed;
 	fPoint maxSpeed;
@@ -217,7 +216,9 @@ private:
 	bool playedHurtSfx;		// Flag to mark hurt sfx played
 
 	// Player rectangles
-	SDL_Rect animRect;		//SamAlert: For animation blit
+	SDL_Rect playerRect;		//SamAlert: For animation blit
+	SDL_Rect currentHitboxOffset;
+	SDL_Rect animRect;
 };
 
 #endif //__j1PLAYER_H__
