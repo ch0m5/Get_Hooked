@@ -61,6 +61,9 @@
     <ClCompile Include="Bat.cpp">
       <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="j1Window.h">
@@ -218,9 +221,6 @@
     </Xml>
     <Xml Include="..\Game\config.xml">
       <Filter>Desenvolupament  ========\XML Files</Filter>
-    </Xml>
-    <Xml Include="..\Game\entities.xml">
-      <Filter>Desenvolupament  ========\Entities</Filter>
     </Xml>
   </ItemGroup>
 </Project>

@@ -4,6 +4,11 @@
 #include "j1Render.h"
 #include "j1Collision.h"
 
+entity_type Entity::GetType() const
+{
+	return type;
+}
+
 fPoint Entity::GetPosition() const
 {
 	return position;

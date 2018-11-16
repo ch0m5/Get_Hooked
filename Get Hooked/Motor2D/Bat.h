@@ -10,32 +10,37 @@ public:
 
 	virtual ~Bat();
 
-	//// Called before render is available
-	//bool Awake(pugi::xml_node&);
+	// Called before render is available
+	bool Awake(pugi::xml_node&);
 
-	//// Called before the first frame
-	//bool Start();
+	// Called before the first frame
+	bool Start();
 
-	//// Called each loop iteration
-	//bool PreUpdate();
-	//bool UpdateTick(float dt);
-	//bool Update();
+	// Called each loop iteration
+	bool PreUpdate();
+	bool UpdateLogic(float dt);
+	bool UpdateTick(float dt);
+	bool Update();
 
-	//// Called before quitting
-	//bool CleanUp();
+	//virtual bool CleanUp() defined on Enemy.h
 
-	//// Called when colliding
-	//collision_type OnCollision(Collider* c1, Collider* c2);	// @Carles
-	//collision_type WallCollision(Collider* c1, Collider* c2);
-
-	//// Save and Load
-	//bool Load(pugi::xml_node&);
-	//bool Save(pugi::xml_node&) const;
+	// Save and Load
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&) const;
 
 private:	// @Carles
-	//void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
-	//void ImportAllSprites(pugi::xml_node&);		// Import all sprite data using the above function for each animation
-	//void AllocAllAnimations();					// Allocate all animations with previously recieved sprite data
+	void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
+	void ImportAllSprites(pugi::xml_node&);		// Import all sprite data using the above function for each animation
+	void AllocAllAnimations();					// Allocate all animations with previously recieved sprite data
+
+	//Entity
+	//void CheckInput();
+	
+	//Dynamic Entity
+	void CheckState();		// Check player state
+	void ApplyState();		// Add state effects like movement restrictions, animation and sounds
+	void Move(float dt);	// Move player position and decide/calculate other movement related factors
+	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 private:
 	fPoint spawnPosition;
@@ -48,7 +53,9 @@ private:
 	bool mustReset = false;		// Flag used to restart animations when needed (skipping workflow steps)
 
 	//Character sprites
+	sprite_data followSprite;
 	sprite_data idleSprite;
+	sprite_data deadSprite;
 };
 
 #endif //__ENEMY_H__

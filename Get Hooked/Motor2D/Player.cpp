@@ -6,7 +6,6 @@
 #include "j1Textures.h"
 #include "j1Render.h"
 #include "j1Audio.h"
-#include "j1Collision.h"
 #include "j1FadeScene.h"
 #include "j1Collision.h"
 #include "j1Window.h"
@@ -15,6 +14,7 @@
 
 #include "j1EntityManager.h"
 #include "Player.h"
+#include "Enemy.h"
 
 Player::Player() : Entity(entity_type::PLAYER)
 {
@@ -25,29 +25,29 @@ Player::~Player()
 {}
 
 // Called before render is available
-bool Player::Awake(pugi::xml_node& config)
+bool Player::Awake(pugi::xml_node& entities)
 {
 	LOG("Loading Player Data");
 	bool ret = true;
 
-	folder.create(config.child("folder").child_value());
+	folder.create(entities.child("folder").child_value());
 
 	// Character stats and flags
-	ImportAllStates(config.child("stats"));	// Import all state data from config.xml
+	ImportAllStates(entities.child("stats"));	// Import all state data from config.xml
 
 	// Sprites
-	textureName.create("%s%s", folder.GetString(), config.child("sprites").child("spriteSheet").child_value());
-	spriteSize = { config.child("sprites").child("spriteSize").attribute("x").as_int(), config.child("sprites").child("spriteSize").attribute("y").as_int() };
+	textureName.create("%s%s", folder.GetString(), entities.child("sprites").child("spriteSheet").child_value());
+	spriteSize = { entities.child("sprites").child("spriteSize").attribute("x").as_int(), entities.child("sprites").child("spriteSize").attribute("y").as_int() };
 
-	pugi::xml_node first_sprite = config.child("sprites").child("first_sprite");
+	pugi::xml_node first_sprite = entities.child("sprites").child("first_sprite");
 	ImportAllSprites(first_sprite);	// Import all sprite data
 
 	// Animations
 	AllocAllAnimations();	// Allocate all animations with previously recieved sprite data
 
-	runSfxDelay = config.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
-	playedSlideSfx = config.child("audio").child("slideSfx").attribute("played").as_bool();
-	playedHurtSfx = config.child("audio").child("hurtSfx").attribute("played").as_bool();
+	runSfxDelay = entities.child("audio").child("runSfxDelay").attribute("miliseconds").as_int();
+	playedSlideSfx = entities.child("audio").child("slideSfx").attribute("played").as_bool();
+	playedHurtSfx = entities.child("audio").child("hurtSfx").attribute("played").as_bool();
 
 	return ret;
 }
@@ -127,9 +127,9 @@ bool Player::CleanUp()
 	LOG("Unloading player");
 
 	App->tex->UnLoad(graphics);
+	graphics = nullptr;
 	position = respawnPosition;
 	hitbox = nullptr;	// @Carles, Deassign collider from player for later CleanUp in j1Collision
-	graphics = nullptr;
 
 	return ret;
 }
@@ -142,6 +142,15 @@ collision_type Player::OnCollision(Collider* c1, Collider* c2)
 	if (godMode == false) {
 		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_WALL) {
 			ret = WallCollision(c1, c2);
+		}
+		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY
+			|| c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY_ATTACK) {
+			
+			if (status != player_state::HURT) {
+				Hurt();
+				status = player_state::HURT;
+				ret = collision_type::UNDEFINED;
+			}
 		}
 	}
 
@@ -174,7 +183,7 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 			ret = collision_type::ON_TOP;
 		}
 
-		position.y = c1->rect.y - hitboxOffset.y;
+		position.y = (float)(c1->rect.y - hitboxOffset.y);
 	}
 	else {
 		if (c1->rect.x + c1->rect.w >= c2->rect.x && c1->rect.x < c2->rect.x && movement.movingRight == true) {	//Right
@@ -196,7 +205,7 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 			ret = collision_type::ON_LEFT;
 		}
 
-		position.x = c1->rect.x - hitboxOffset.x;
+		position.x = (float)(c1->rect.x - hitboxOffset.x);
 	}
 
 	return ret;
@@ -547,35 +556,6 @@ void Player::CheckInput()
 		App->win->scale = App->win->origScale;
 	}
 }
-
-//// Check player current movement	//CHANGE/FIX: ERASE?
-//void Player::CheckMovement() {
-//	if (speed.x > 0.0f) {
-//		movement.movingRight = true;
-//		movement.movingLeft = false;
-//	}
-//	else if (speed.x < 0.0f) {
-//		movement.movingLeft = true;
-//		movement.movingRight = false;
-//	}
-//	else if (speed.x == 0.0f) {
-//		movement.movingLeft = false;
-//		movement.movingRight = false;
-//	}
-//
-//	if (speed.y < 0.0f) {
-//		movement.movingUp = true;
-//		movement.movingDown = false;
-//	}
-//	else if (speed.y > 0.0f) {
-//		movement.movingDown = true;
-//		movement.movingUp = false;
-//	}
-//	else if (speed.y == 0.0f) {
-//		movement.movingUp = false;
-//		movement.movingDown = false;
-//	}
-//}
 
 // Check player state
 void Player::CheckState() {	// For each state, check possible new states based on other parameters

@@ -29,6 +29,7 @@
       <slideSfx played="false" />
       <hurtSfx played="false" />
     </player>
+    <!-- Enemies? -->
   </entities>
   <collision />
 	<window />

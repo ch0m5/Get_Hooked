@@ -114,16 +114,16 @@ void j1Scene2::CameraInput(float dt)	// @Carles
 {
 	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_IDLE) {
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-			App->render->camera.y += ceil(cameraSpeed.y * dt);
+			App->render->camera.y += (int)ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-			App->render->camera.y -= ceil(cameraSpeed.y * dt);
+			App->render->camera.y -= (int)ceil(cameraSpeed.y * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-			App->render->camera.x += ceil(cameraSpeed.x * dt);
+			App->render->camera.x += (int)ceil(cameraSpeed.x * dt);
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-			App->render->camera.x -= ceil(cameraSpeed.x * dt);
+			App->render->camera.x -= (int)ceil(cameraSpeed.x * dt);
 	}
 }
 

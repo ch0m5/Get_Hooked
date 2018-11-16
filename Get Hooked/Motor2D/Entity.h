@@ -82,6 +82,7 @@ public:
 
 public:
 	//Entity
+	virtual entity_type GetType() const;
 	virtual fPoint GetPosition() const;
 
 	//Dynamic Entity
@@ -112,7 +113,7 @@ protected:
 	virtual void Move(float dt) {};		// Move player position and decide/calculate other movement related factors
 	virtual void UpdateHitbox() {};		// Transform player collider depending on new position and state
 	virtual bool CheckOrientation(bool orientation);
-	virtual fPoint Entity::LimitSpeed();
+	virtual fPoint LimitSpeed();
 
 	//Physical Entity
 	SDL_Rect ReshapeCollider(sprite_data sprite);
@@ -120,6 +121,7 @@ protected:
 public:
 	p2SString name;
 	p2SString folder;
+	bool mustDestroy = false;
 
 protected:
 	//Entity
@@ -139,6 +141,7 @@ protected:
 	fPoint speed;
 	fPoint maxSpeed;
 	fPoint acceleration;
+	float gravity;
 	//state status;
 	bool lookingRight;	// Flag for blit flipping and hurt speed x direction
 

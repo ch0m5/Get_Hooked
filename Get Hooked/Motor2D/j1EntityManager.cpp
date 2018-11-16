@@ -10,7 +10,7 @@
 // Constructor
 j1EntityManager::j1EntityManager()
 {
-	name.create("entities");
+	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);
 }
 
@@ -31,14 +31,13 @@ j1EntityManager::~j1EntityManager()
 // Called before render is available
 bool j1EntityManager::Awake(pugi::xml_node& config)
 {
-	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
-
-	pugi::xml_document	entities_file;
-	pugi::xml_node		entities_node;
-
 	bool ret = false;
 
-	entities_node = LoadEntitiesXML(entities_file);
+	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
+
+	pugi::xml_node entities_node;
+
+	entities_node = config.child("entities");
 
 	if (entities_node.empty() == false)
 	{
@@ -93,7 +92,7 @@ bool j1EntityManager::UpdateTick(float dt)
 {
 	accumulatedTime += dt * 1000;
 
-	float delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
+	int delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
 
 	/*if (App->FramerateCapped())
 		delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
@@ -140,9 +139,18 @@ bool j1EntityManager::PostUpdate()
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	p2List_item<Entity*>* nextItem;
+
+	for (item = entities.start; item != NULL && ret == true; item = nextItem)
 	{
+		nextItem = item->next;
 		ret = item->data->PostUpdate();
+
+		//Destroy all enemis that are signaled to
+		if (item->data->GetType() == entity_type::ENEMY && item->data->mustDestroy) {
+			ret = item->data->CleanUp();
+			entities.del(item);
+		}
 	}
 
 	return ret;
@@ -158,6 +166,8 @@ bool j1EntityManager::CleanUp()
 	{
 		ret = item->data->CleanUp();
 	}
+
+	entities.clear();
 
 	return ret;
 }

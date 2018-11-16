@@ -53,7 +53,6 @@ private:
 public:
 	p2List<Entity*> entities;
 	Player* player;
-	p2List<Enemy*> enemies;
 
 private:
 	ushort logicPerSecond;	// Number of times logic is checked each second

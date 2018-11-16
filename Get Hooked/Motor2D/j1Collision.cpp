@@ -110,7 +110,7 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{
 			// @Carles
-			SDL_Rect tmpRect = { object.attribute("x").as_uint(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
+			SDL_Rect tmpRect = { object.attribute("x").as_int(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
 			AddCollider(tmpRect, (collider_type)object.attribute("name").as_uint(), nullptr);
 		}
 	}
@@ -199,7 +199,6 @@ bool j1Collision::CheckGroundCollision(Collider* hitbox) const
 	bool ret = false;
 
 	Collider tmpHitbox = *hitbox;
-	Collider* nextCollider;
 
 	tmpHitbox.rect.y++;
 

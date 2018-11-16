@@ -31,6 +31,7 @@ public:
 
 	// Called each loop iteration
 	bool PreUpdate();
+	//bool UpdateLogic(float dt);
 	bool UpdateTick(float dt);
 	bool Update();
 
@@ -48,6 +49,9 @@ public:
 public:
 	bool CameraFree() const {
 		return freeCamera;
+	}
+	bool IsGod() const {
+		return godMode;
 	}
 
 private:	// @Carles
@@ -113,7 +117,6 @@ private:
 
 	float normalAcceleration;
 	float slideAcceleration;
-	float gravity;
 
 	// Character status flags and directly related data
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
