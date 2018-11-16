@@ -80,6 +80,7 @@ feature'`
 	* Player Module and Logic
 	* Enemies Modules and Logic
 	* Brofiler
+	* Github Webpage and READMEs
 
 * Samuel Kurt:
 	* Map Design and Implementation

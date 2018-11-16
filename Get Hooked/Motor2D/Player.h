@@ -4,14 +4,7 @@
 #include "Entity.h"
 
 //Components
-struct movement_input {
-	bool wantMoveUp;
-	bool wantMoveRight;
-	bool wantMoveLeft;
-	bool wantMoveDown;
-};
-
-enum class state {	// @Carles, enum that groups all possible player states that will decide how the player behaves
+enum class player_state {	// @Carles, enum that groups all possible player states that will decide how the player behaves
 	IDLE,
 	CROUCHING,
 	RUNNING,
@@ -84,16 +77,15 @@ private:	// @Carles
 	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 	// Check possible new states in each state and other changes in the player's status
-	state IdleMoveCheck();
-	state CrouchingMoveCheck();
-	state RunningMoveCheck();
-	state JumpingMoveCheck();
-	state FallingMoveCheck();
-	state SlidingMoveCheck();
-	state HurtMoveCheck();
+	player_state IdleMoveCheck();
+	player_state CrouchingMoveCheck();
+	player_state RunningMoveCheck();
+	player_state JumpingMoveCheck();
+	player_state FallingMoveCheck();
+	player_state SlidingMoveCheck();
+	player_state HurtMoveCheck();
 	
 	// Apply effects of each state
-	bool CheckPlayerOrientation(bool orientation);
 	void IdleEffects();
 	void CrouchingEffects();
 	void RunningEffects();
@@ -107,14 +99,13 @@ private:	// @Carles
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
 	fPoint LimitSpeed();
-	SDL_Rect ReshapeCollider(sprite_data sprite);
 
 public:
-	//Collider
-	Collider* hitbox = nullptr;
 	bool debugMode;		// Flag that marks if debug functionalities are available
 
 private:
+	player_state status;
+
 	fPoint lastGroundPosition;
 	fPoint respawnPosition;
 
@@ -125,8 +116,6 @@ private:
 	float gravity;
 
 	// Character status flags and directly related data
-	movement_input input;
-
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
 	bool somersaultUsed;	// Flag for somersault usage
 

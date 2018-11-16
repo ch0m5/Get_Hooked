@@ -6,7 +6,9 @@
 
 class Entity;
 class Player;
+class Enemy;
 enum class entity_type;
+enum class enemy_type;
 
 class j1EntityManager : public j1Module
 {
@@ -40,7 +42,8 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 public:
-	Entity* CreateEntity(entity_type type);
+	Entity* CreateEntity(entity_type type, enemy_type enemy = (enemy_type)-1);
+	Enemy* CreateEnemy(enemy_type type);
 	void DestroyEntity(Entity* entity);
 
 private:
@@ -50,6 +53,7 @@ private:
 public:
 	p2List<Entity*> entities;
 	Player* player;
+	p2List<Enemy*> enemies;
 
 private:
 	ushort logicPerSecond;	// Number of times logic is checked each second

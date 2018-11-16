@@ -14,7 +14,6 @@
 #include "j1Scene2.h"
 
 #include "j1EntityManager.h"
-#include "Entity.h"
 #include "Player.h"
 
 Player::Player() : Entity(entity_type::PLAYER)
@@ -62,7 +61,7 @@ bool Player::Start()
 	life = maxLife;
 	acceleration.x = normalAcceleration;
 	hitboxOffset = idleSprite.colliderOffset;
-	status = state::IDLE;
+	status = player_state::IDLE;
 
 	if (App->scene->active)
 	{
@@ -170,9 +169,9 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 			while (c1->CheckCollision(c2->rect) == true) {
 				c1->rect.y++;
 			}
-			c1->rect.y--;
+			c1->rect.y--;		//IMPROVE: On high framerates, player doesn't go down immediately after colliding, which it should
 			speed.y = 0.0f;
-			ret = collision_type::ON_TOP;	//IMPROVE: On high framerates, player doesn't go down immediately after colliding, which it should
+			ret = collision_type::ON_TOP;
 		}
 
 		position.y = c1->rect.y - hitboxOffset.y;
@@ -217,7 +216,7 @@ bool Player::Load(pugi::xml_node& data)
 	speed.y = data.child("speed").attribute("y").as_float();
 	life = (ushort)data.child("life").attribute("value").as_uint();
 	acceleration.x = data.child("acceleration").attribute("type").as_float();
-	status = (state)data.child("state").attribute("current").as_uint();
+	status = (player_state)data.child("state").attribute("current").as_uint();
 	airborne = data.child("airborne").attribute("value").as_bool();
 	lookingRight = data.child("looking").attribute("right").as_bool();
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
@@ -466,9 +465,9 @@ void Player::DebugInput()
 		App->LoadGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && status != state::HURT && godMode == false) {	// Hurt player
+	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && status != player_state::HURT && godMode == false) {	// Hurt player
 		Hurt();
-		status = state::HURT;
+		status = player_state::HURT;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
@@ -481,7 +480,7 @@ void Player::DebugInput()
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// GodMode
 		godMode = true;
 		speed = { 0, 0 };
-		status = state::FALLING;
+		status = player_state::FALLING;
 		mustReset = true;
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
@@ -592,122 +591,122 @@ void Player::CheckState() {	// For each state, check possible new states based o
 			airborne = true;
 
 		switch (status) {
-		case state::IDLE:
+		case player_state::IDLE:
 			status = IdleMoveCheck();
 			break;
-		case state::CROUCHING:
+		case player_state::CROUCHING:
 			status = CrouchingMoveCheck();
 			break;
-		case state::RUNNING:
+		case player_state::RUNNING:
 			status = RunningMoveCheck();
 			break;
-		case state::JUMPING:
+		case player_state::JUMPING:
 			status = JumpingMoveCheck();
 			break;
-		case state::FALLING:
+		case player_state::FALLING:
 			status = FallingMoveCheck();
 			break;
-		case state::SLIDING:
+		case player_state::SLIDING:
 			status = SlidingMoveCheck();
 			break;
-		case state::HURT:
+		case player_state::HURT:
 			status = HurtMoveCheck();
 			break;
 		}
 	}
 }
 
-state Player::IdleMoveCheck()
+player_state Player::IdleMoveCheck()
 {
-	state ret = state::IDLE;
+	player_state ret = player_state::IDLE;
 
 	if (airborne == true) {
-		ret = state::FALLING;
+		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveRight == true && input.wantMoveLeft == false || input.wantMoveLeft == true && input.wantMoveRight == false) {
-		ret = state::RUNNING;
+		ret = player_state::RUNNING;
 	}
 	else if (input.wantMoveUp == true) {
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 	}
 	else if (input.wantMoveDown == true) {
-		ret = state::CROUCHING;
+		ret = player_state::CROUCHING;
 	}
 
 	return ret;
 }
 
-state Player::CrouchingMoveCheck()
+player_state Player::CrouchingMoveCheck()
 {
-	state ret = state::CROUCHING;
+	player_state ret = player_state::CROUCHING;
 
 	if (airborne == true) {
-		ret = state::FALLING;
+		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveDown == false) {
 		if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true)
-			ret = state::RUNNING;
+			ret = player_state::RUNNING;
 		else {
-			ret = state::IDLE;
+			ret = player_state::IDLE;
 		}
 	}
 	else if (input.wantMoveUp == true) {
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 	}
 
 	return ret;
 }
 
-state Player::RunningMoveCheck()
+player_state Player::RunningMoveCheck()
 {
-	state ret = state::RUNNING;
+	player_state ret = player_state::RUNNING;
 
 	if (airborne == true) {
-		ret = state::FALLING;
+		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveUp == true) {
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 	}
 	else if (input.wantMoveDown == true) {
-		ret = state::SLIDING;
+		ret = player_state::SLIDING;
 	}
 	else if (movement.movingLeft == false && movement.movingRight == false) {
 		if (input.wantMoveRight == false && input.wantMoveLeft == false || input.wantMoveRight == true && input.wantMoveLeft == true) {
-			ret = state::IDLE;
+			ret = player_state::IDLE;
 		}
 	}
 
 	return ret;
 }
 
-state Player::JumpingMoveCheck()
+player_state Player::JumpingMoveCheck()
 {
-	state ret = state::JUMPING;
+	player_state ret = player_state::JUMPING;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
 		somersaultSprite.anim.Reset();
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 		somersaultUsed = true;
 	}
 	else if (movement.movingDown == true) {
-		ret = state::FALLING;
+		ret = player_state::FALLING;
 	}
 
 	return ret;
 }
 
-state Player::FallingMoveCheck()
+player_state Player::FallingMoveCheck()
 {
-	state ret = state::FALLING;
+	player_state ret = player_state::FALLING;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
 		somersaultSprite.anim.Reset();
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 		somersaultUsed = true;
 	}
 	else if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
@@ -715,17 +714,17 @@ state Player::FallingMoveCheck()
 
 		if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true) {
 			if (input.wantMoveDown == true) {
-				ret = state::SLIDING;
+				ret = player_state::SLIDING;
 			}
 			else {
-				ret = state::RUNNING;
+				ret = player_state::RUNNING;
 			}
 		}
 		else if (input.wantMoveDown == true) {
-			ret = state::CROUCHING;
+			ret = player_state::CROUCHING;
 		}
 		else {
-			ret = state::IDLE;
+			ret = player_state::IDLE;
 		}		
 	}
 	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
@@ -733,52 +732,52 @@ state Player::FallingMoveCheck()
 		deadTimer = SDL_GetTicks();
 		mustReset = true;
 		playedHurtSfx = false;
-		ret = state::HURT;
+		ret = player_state::HURT;
 	}
 
 	return ret;
 }
 
-state Player::SlidingMoveCheck()
+player_state Player::SlidingMoveCheck()
 {
-	state ret = state::SLIDING;
+	player_state ret = player_state::SLIDING;
 
 	if (airborne == true) {
 		StandUp();
-		ret = state::FALLING;
+		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveUp == true) {
 		StandUp();
 		Jump();
-		ret = state::JUMPING;
+		ret = player_state::JUMPING;
 	}
 	else if (input.wantMoveDown == false) {
 		StandUp();
 
 		if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true) {
-			ret = state::RUNNING;
+			ret = player_state::RUNNING;
 		}
 		else {
-			ret = state::IDLE;
+			ret = player_state::IDLE;
 		}
 	}
 	else if (movement.movingLeft == false && movement.movingRight == false) {
 		StandUp();
 
 		if (input.wantMoveDown == true) {
-			ret = state::CROUCHING;
+			ret = player_state::CROUCHING;
 		}
 		else {
-			ret = state::IDLE;
+			ret = player_state::IDLE;
 		}
 	}
 
 	return ret;
 }
 
-state Player::HurtMoveCheck()
+player_state Player::HurtMoveCheck()
 {
-	state ret = state::HURT;
+	player_state ret = player_state::HURT;
 
 	if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
 		Land();
@@ -786,17 +785,17 @@ state Player::HurtMoveCheck()
 		if (dead == false) {
 			if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true) {
 				if (input.wantMoveDown == true) {
-					ret = state::SLIDING;
+					ret = player_state::SLIDING;
 				}
 				else {
-					ret = state::RUNNING;
+					ret = player_state::RUNNING;
 				}
 			}
 			else if (input.wantMoveDown == true) {
-				ret = state::CROUCHING;
+				ret = player_state::CROUCHING;
 			}
 			else {
-				ret = state::IDLE;
+				ret = player_state::IDLE;
 			}
 		}
 	}
@@ -805,7 +804,7 @@ state Player::HurtMoveCheck()
 		deadTimer = SDL_GetTicks();
 		mustReset = true;
 		playedHurtSfx = false;
-		ret = state::HURT;
+		ret = player_state::HURT;
 	}
 
 	return ret;
@@ -814,8 +813,8 @@ state Player::HurtMoveCheck()
 // Add state effects like movement restrictions, animation and sounds
 void Player::ApplyState()
 {
-	if (status != state::SLIDING && status != state::HURT) {
-		lookingRight = CheckPlayerOrientation(lookingRight);
+	if (status != player_state::SLIDING && status != player_state::HURT) {
+		lookingRight = CheckOrientation(lookingRight);
 	}
 
 	if (mustReset) {
@@ -828,42 +827,28 @@ void Player::ApplyState()
 	}
 
 	switch (status) {
-	case state::IDLE:
+	case player_state::IDLE:
 		IdleEffects();
 		break;
-	case state::CROUCHING:
+	case player_state::CROUCHING:
 		CrouchingEffects();
 		break;
-	case state::RUNNING:
+	case player_state::RUNNING:
 		RunningEffects();
 		break;
-	case state::JUMPING:
+	case player_state::JUMPING:
 		JumpingEffects();
 		break;
-	case state::FALLING:
+	case player_state::FALLING:
 		FallingEffects();
 		break;
-	case state::SLIDING:
+	case player_state::SLIDING:
 		SlidingEffects();
 		break;
-	case state::HURT:
+	case player_state::HURT:
 		HurtEffects();
 		break;
 	}
-}
-
-bool Player::CheckPlayerOrientation(bool orientation)
-{
-	bool ret = orientation;
-
-	if (input.wantMoveRight == true && input.wantMoveLeft == false) {
-		orientation = true;
-	}
-	else if (input.wantMoveLeft == true && input.wantMoveRight == false) {
-		orientation = false;
-	}
-
-	return orientation;
 }
 
 void Player::IdleEffects()
@@ -1063,40 +1048,31 @@ fPoint Player::LimitSpeed()
 void Player::UpdateHitbox()
 {
 	switch (status) {
-	case state::IDLE:
+	case player_state::IDLE:
 		hitboxOffset = ReshapeCollider(idleSprite);
 		break;
-	case state::CROUCHING:
+	case player_state::CROUCHING:
 		hitboxOffset = ReshapeCollider(crouchSprite);
 		break;
-	case state::RUNNING:
+	case player_state::RUNNING:
 		hitboxOffset = ReshapeCollider(runSprite);
 		break;
-	case state::JUMPING:
+	case player_state::JUMPING:
 		if (somersaultUsed == true)
 			hitboxOffset = ReshapeCollider(somersaultSprite);
 		else
 			hitboxOffset = ReshapeCollider(jumpSprite);
 		break;
-	case state::FALLING:
+	case player_state::FALLING:
 		hitboxOffset = ReshapeCollider(fallSprite);
 		break;
-	case state::SLIDING:
+	case player_state::SLIDING:
 		hitboxOffset = ReshapeCollider(slideSprite);
 		break;
-	case state::HURT:
+	case player_state::HURT:
 		hitboxOffset = ReshapeCollider(hurtSprite);
 		break;
 	default:
 		break;
 	}
-}
-
-SDL_Rect Player::ReshapeCollider(sprite_data sprite)
-{
-	hitbox->rect.x = (int)position.x + sprite.colliderOffset.x;
-	hitbox->rect.y = (int)position.y + sprite.colliderOffset.y;
-	hitbox->rect.w = sprite.colliderOffset.w;
-	hitbox->rect.h = sprite.colliderOffset.h;
-	return sprite.colliderOffset;
 }

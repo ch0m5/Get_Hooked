@@ -4,6 +4,8 @@
 #include "j1EntityManager.h"
 #include "Entity.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "Bat.h"
 
 // Constructor
 j1EntityManager::j1EntityManager()
@@ -201,7 +203,7 @@ pugi::xml_node j1EntityManager::LoadEntitiesXML(pugi::xml_document& entities_fil
 	return ret;
 }
 
-Entity* j1EntityManager::CreateEntity(entity_type type)
+Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
 {
 	static_assert((int)entity_type::MAX_TYPES == 7, "Entity enum is not accurate");
 
@@ -217,7 +219,7 @@ Entity* j1EntityManager::CreateEntity(entity_type type)
 	//	ret = new PlayerAttack();
 	//	break;
 	case entity_type::ENEMY:
-		//ret = new Enemy();
+		ret = CreateEnemy(enemy);
 		break;
 	//case entity_type::ENEMY_ATTACK:
 	//	ret = new Enemy_Attack();
@@ -234,6 +236,22 @@ Entity* j1EntityManager::CreateEntity(entity_type type)
 		entities.add(ret);
 
 	return ret;
+}
+
+Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
+{
+	//static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");
+
+	Enemy* ret = nullptr;
+	switch (enemy) {
+		case enemy_type::BAT:
+			ret = new Bat();
+			break;
+		default:
+			break;
+	}
+
+	return (Enemy*)ret;
 }
 
 void j1EntityManager::DestroyEntity(Entity* entity)

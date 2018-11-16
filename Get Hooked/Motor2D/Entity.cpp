@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "j1App.h"
 #include "j1Render.h"
+#include "j1Collision.h"
 
 fPoint Entity::GetPosition() const
 {
@@ -16,11 +17,6 @@ fPoint Entity::GetSpeed() const
 fPoint Entity::GetAcceleration() const
 {
 	return acceleration;
-}
-
-state Entity::GetState() const
-{
-	return status;
 }
 
 Collider* Entity::GetCollider()
@@ -77,6 +73,20 @@ void Entity::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi:
 	sprite->colliderOffset.h = first_sprite.child(spriteName).child("offset").attribute("h").as_int();
 }
 
+bool Entity::CheckOrientation(bool orientation)
+{
+	bool ret = orientation;
+
+	if (input.wantMoveRight == true && input.wantMoveLeft == false) {
+		orientation = true;
+	}
+	else if (input.wantMoveLeft == true && input.wantMoveRight == false) {
+		orientation = false;
+	}
+
+	return orientation;
+}
+
 fPoint Entity::LimitSpeed()
 {
 	if (speed.x > 0)
@@ -90,6 +100,16 @@ fPoint Entity::LimitSpeed()
 		speed.y = MAX(speed.y, -maxSpeed.y);
 
 	return speed;
+}
+
+SDL_Rect Entity::ReshapeCollider(sprite_data sprite)
+{
+	hitbox->rect.x = (int)position.x + sprite.colliderOffset.x;
+	hitbox->rect.y = (int)position.y + sprite.colliderOffset.y;
+	hitbox->rect.w = sprite.colliderOffset.w;
+	hitbox->rect.h = sprite.colliderOffset.h;
+
+	return sprite.colliderOffset;
 }
 
 void Entity::CheckMovement()
