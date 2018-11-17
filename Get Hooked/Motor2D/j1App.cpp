@@ -216,7 +216,7 @@ void j1App::FinishUpdate()
 // Call modules before each loop iteration
 bool j1App::PreUpdate()
 {
-	BROFILER_CATEGORY("App PreUpdate", Profiler::Color::LightYellow);
+	BROFILER_CATEGORY("App PreUpdate", Profiler::Color::GreenYellow);
 
 	bool ret = true;
 	p2List_item<j1Module*>* item;

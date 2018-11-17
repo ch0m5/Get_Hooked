@@ -59,7 +59,7 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 // Called each loop iteration
 bool j1Scene::PreUpdate()
 {
-	BROFILER_CATEGORY("Module Scene PreUpdate", Profiler::Color::LightYellow);
+	BROFILER_CATEGORY("Module Scene PreUpdate", Profiler::Color::DarkOrange);
 
 	return true;
 }
@@ -68,7 +68,7 @@ bool j1Scene::PreUpdate()
 // Called each frame (logic)
 bool j1Scene::UpdateTick(float dt)
 {
-	BROFILER_CATEGORY("Module Scene UpdateTick", Profiler::Color::Yellow);
+	BROFILER_CATEGORY("Module Scene UpdateTick", Profiler::Color::OrangeRed);
 
 	AudioInput();
 
@@ -85,7 +85,7 @@ bool j1Scene::UpdateTick(float dt)
 // Called each loop iteration (graphic)
 bool j1Scene::Update()
 {
-	BROFILER_CATEGORY("Module Scene Update", Profiler::Color::GreenYellow);
+	BROFILER_CATEGORY("Module Scene Update", Profiler::Color::Orange);
 
 	if (App->entityManager->player->CameraFree() == false) {
 		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
@@ -99,7 +99,7 @@ bool j1Scene::Update()
 // Called each loop iteration
 bool j1Scene::PostUpdate()
 {
-	BROFILER_CATEGORY("Module Scene PostUpdate", Profiler::Color::LightGoldenRodYellow);
+	BROFILER_CATEGORY("Module Scene PostUpdate", Profiler::Color::DarkOrange);
 
 	bool ret = true;
 

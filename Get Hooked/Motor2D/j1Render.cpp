@@ -65,17 +65,23 @@ bool j1Render::Start()
 // Called each loop iteration
 bool j1Render::PreUpdate()
 {
+	BROFILER_CATEGORY("Module Render PreUpdate", Profiler::Color::LightBlue);
+
 	SDL_RenderClear(renderer);
 	return true;
 }
 
 bool j1Render::Update()
 {
+	BROFILER_CATEGORY("Module Render Update", Profiler::Color::LightSkyBlue);
+
 	return true;
 }
 
 bool j1Render::PostUpdate()
 {
+	BROFILER_CATEGORY("Module Render PostUpdate", Profiler::Color::Cyan);
+
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
 	return true;
