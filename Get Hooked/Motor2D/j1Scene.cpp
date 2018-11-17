@@ -138,11 +138,11 @@ void j1Scene::AudioInput()	// @Carles
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && App->audio->masterVolume > 0)
 			App->audio->masterVolume--;
 
-		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && App->audio->musicVolume < 100)
-			App->audio->musicVolume++;
-
-		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && App->audio->musicVolume > 0)
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT && App->audio->musicVolume > 0)
 			App->audio->musicVolume--;
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT && App->audio->musicVolume < 100)
+			App->audio->musicVolume++;
 
 		App->audio->SetMusicVolume();
 		App->audio->SetSfxVolume();
