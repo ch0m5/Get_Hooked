@@ -181,12 +181,57 @@
           <maxSpeed x="100" y="100"/>
           <accelerations x="230" y="230" gravity="0"/>
           <canFly value="true"/>
+          <attack x="150" y="150" />
           <detection x="150" y="150"/>
           <airborne value="true"/>
           <looking right="false"/>
+          <attackDelay miliseconds="500"/>
+          <hurtDelay miliseconds="500"/>
           <deathDelay miliseconds="1000"/>
         </stats>
       </bat>
+      <slime>
+        <folder>textures/</folder>
+        <sprites>
+          <spriteSheet>slime_sprite_sheet.png</spriteSheet>
+          <spriteSize x="32" y="24"/>
+          <first_sprite>
+            <idle column="0" row="0" frames="4" animSpeed ="8" loop="true">
+              <offset x="2" y="10" w="28" h="14"/>
+            </idle>
+            <move column="0" row="1" frames="4" animSpeed ="8" loop="true">
+              <offset x="2" y="10" w="28" h="14"/>
+            </move>
+            <attack column="0" row="2" frames="5" animSpeed ="7" loop="false">
+              <offset x="2" y="4" w="28" h="20"/>
+            </attack>
+            <hurt column="0" row="3" frames="4" animSpeed ="8" loop="true">
+              <offset x="2" y="10" w="28" h="14"/>
+            </hurt>
+            <dead column="0" row="4" frames="4" animSpeed ="8" loop="false">
+              <offset x="2" y="10" w="28" h="14"/>
+            </dead>
+          </first_sprite>
+        </sprites>
+        <audio>
+          <!-- <runSfxDelay miliseconds="350"/> -->
+        </audio>
+        <stats>
+          <life value="1"/>
+          <speed x="0" y="0"/>
+          <maxSpeed x="50" y="240"/>
+          <accelerations x="150" y="0" gravity="560"/>
+          <canFly value="false"/>
+          <attack x="40" y="25" />
+          <detection x="150" y="150"/>
+          <airborne value="false"/>
+          <looking right="false"/>
+          <attackDelay miliseconds="1000"/>
+          <hurtDelay miliseconds="500"/>
+          <deathDelay miliseconds="1000"/>
+          <dash multiplier="2" />
+        </stats>
+      </slime>
     </entities>
   </entityManager>  
 </config>

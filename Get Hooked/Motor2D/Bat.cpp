@@ -25,31 +25,6 @@ Bat::Bat() : Enemy(enemy_type::BAT)
 Bat::~Bat()
 {}
 
-// Called before render is available
-bool Bat::Awake(pugi::xml_node& entities)
-{
-	bool ret = true;
-
-	LOG("Loading Enemy Data");
-
-	folder.create(entities.child("folder").child_value());
-
-	// Character stats and flags
-	ImportAllStates(entities.child("stats"));	// Import all state data from config.xml
-
-	// Sprites
-	textureName.create("%s%s", folder.GetString(), entities.child("sprites").child("spriteSheet").child_value());
-	spriteSize = { entities.child("sprites").child("spriteSize").attribute("x").as_int(), entities.child("sprites").child("spriteSize").attribute("y").as_int() };
-
-	pugi::xml_node first_sprite = entities.child("sprites").child("first_sprite");
-	ImportAllSprites(first_sprite);	// Import all sprite data
-
-	// Animations
-	AllocAllAnimations();	// Allocate all animations with previously recieved sprite data
-
-	return ret;
-}
-
 // Called before the first frame
 bool Bat::Start()
 {
@@ -63,74 +38,8 @@ bool Bat::Start()
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_ENEMY, this);
 	hitboxOffset = hitbox->rect;
 
-	position = spawnPosition;
-
 	return true;
 }
-
-// Called each loop iteration
-bool Bat::PreUpdate()
-{
-	bool ret = true;
-
-	CheckInput();		// Check player input
-	CheckMovement();	// Check player current movement
-
-	return ret;
-}
-
-// Called between a certain number of frames or times per second
-bool Bat::UpdateLogic(float dt)
-{
-	//TODO: Pathfinding
-
-	return true;
-}
-
-// Called each frame (framerate dependant)
-bool Bat::UpdateTick(float dt)
-{
-	bool ret = true;
-
-	CheckState();	// Check player state
-	ApplyState();	// Add state effects like movement restrictions, animation and sounds
-	Move(dt);		// Move player position and calculate other movement related factors
-	UpdateHitbox();	// Transform player collider depending on new position and state
-
-	animRect = animPtr->GetCurrentFrame(dt);
-
-	return ret;
-}
-
-// Called each loop iteration
-bool Bat::Update()
-{
-	bool ret = true;
-
-	Draw(&animRect);
-
-	return ret;
-}
-
-//// Import all state data from config.xml
-//void Bat::ImportAllStates(pugi::xml_node &config)
-//{
-//	// Character stats
-//	maxLife = (ushort)config.child("life").attribute("value").as_uint();
-//	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
-//	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-//	acceleration.x = config.child("accelerations").attribute("x").as_float();
-//	acceleration.y = config.child("accelerations").attribute("y").as_float();
-//	gravity = config.child("accelerations").attribute("gravity").as_float();
-//
-//	detectionRadius.x = config.child("detection").attribute("x").as_float();
-//	detectionRadius.y = config.child("detection").attribute("y").as_float();
-//
-//	// Character status flags and directly related data
-//	airborne = config.child("airborne").attribute("value").as_bool();
-//	lookingRight = config.child("looking").attribute("right").as_bool();
-//	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
-//}
 
 // Import all sprite data using the above function for each animation
 void Bat::ImportAllSprites(pugi::xml_node& first_sprite)
@@ -153,22 +62,19 @@ void Bat::CheckState()
 	if (!canFly && App->collision->CheckGroundCollision(hitbox) == false)
 		airborne = true;
 
-	if (dead)
-		status = enemy_state::HURT;
-	else
-	{
+	if (!dead) {
 		switch (status) {
 		case enemy_state::IDLE:
-			if(playerInRadius)
+			if(playerDetected)
 				status = enemy_state::FOLLOWING;
 			break;
 		case enemy_state::PATROLING:
-			if (playerInRadius)
+			if (playerDetected)
 				status = enemy_state::FOLLOWING;
 			break;
 		case enemy_state::FOLLOWING:
-			if (!playerInRadius)
-				status = enemy_state::PATROLING;
+			if (!playerDetected)
+				status = enemy_state::IDLE;
 			break;
 		case enemy_state::ATTACKING:
 			break;
@@ -264,8 +170,9 @@ void Bat::Move(float dt)
 	position.x += speed.x * dt;
 	position.y += speed.y * dt;
 
-	posRect.x = (int)position.x;
-	posRect.y = (int)position.y;
+	// Center position
+	centerPosition.x = position.x + animRect.w / 2;
+	centerPosition.y = position.y + animRect.h / 2;
 }
 
 void Bat::UpdateHitbox()

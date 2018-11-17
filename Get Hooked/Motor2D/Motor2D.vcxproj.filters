@@ -64,6 +64,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClCompile>
+    <ClCompile Include="Slime.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="j1Window.h">
@@ -148,6 +151,9 @@
       <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClInclude>
     <ClInclude Include="Bat.h">
+      <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="Slime.h">
       <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
     </ClInclude>
   </ItemGroup>

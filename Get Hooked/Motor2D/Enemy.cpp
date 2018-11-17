@@ -133,9 +133,13 @@ collision_type Enemy::OnCollision(Collider* c1, Collider* c2)
 		if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_PLAYER_ATTACK) {
 			//ret = PlayerAttackCollision(c1, c2);
 			Hurt();
+			status = enemy_state::HURT;
 			if (IsDead()) {
 				deadTimer = SDL_GetTicks();
 				dead = true;
+			}
+			else {
+				hurtTimer = SDL_GetTicks();
 			}
 		}
 	}
@@ -212,10 +216,14 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 
 	detectionRadius.x = config.child("detection").attribute("x").as_float();
 	detectionRadius.y = config.child("detection").attribute("y").as_float();
+	attackRange.x = config.child("attack").attribute("x").as_float();
+	attackRange.y = config.child("attack").attribute("y").as_float();
 
 	// Character status flags and directly related data
 	airborne = config.child("airborne").attribute("value").as_bool();
 	lookingRight = config.child("looking").attribute("right").as_bool();
+	attackDelay = config.child("attackDelay").attribute("miliseconds").as_uint();
+	hurtDelay = config.child("hurtDelay").attribute("miliseconds").as_uint();
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
 }
 
@@ -223,37 +231,39 @@ void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, righ
 {
 	//TODO: This should work with pathfinding
 	
-	fPoint playerPos = App->entityManager->player->GetPosition();
-	playerInRadius = InsideRadius(playerPos);
+	fPoint playerCenterPos = App->entityManager->player->GetCenterPosition();
+	playerDetected = InsideDetectionRadius(playerCenterPos);
 	
-	if (playerInRadius) {
-		if (playerPos.x > position.x) {		// Move left input
+	if (playerDetected) {
+		if (playerCenterPos.x > centerPosition.x) {		// Move left input
 			input.wantMoveRight = true;
 		}
 		else {
 			input.wantMoveRight = false;
 		}
 
-		if (playerPos.x < position.x) {		// Move right input
+		if (playerCenterPos.x < centerPosition.x) {		// Move right input
 			input.wantMoveLeft = true;
 		}
 		else {
 			input.wantMoveLeft = false;
 		}
 
-		if (playerPos.y > position.y) {		// Move down input
+		if (playerCenterPos.y > centerPosition.y) {		// Move down input
 			input.wantMoveUp = true;
 		}
 		else {
 			input.wantMoveUp = false;
 		}
 
-		if (playerPos.y < position.y) {		// Move up input
+		if (playerCenterPos.y < centerPosition.y) {		// Move up input
 			input.wantMoveDown = true;
 		}
 		else {
 			input.wantMoveDown = false;
 		}
+
+		wantToAttack = InAttackRange(playerCenterPos);
 	}
 	else {
 		input.wantMoveLeft = false;
@@ -263,8 +273,20 @@ void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, righ
 	}
 }
 
-bool Enemy::InsideRadius(fPoint playerPos)
+bool Enemy::InsideDetectionRadius(fPoint playerCenter)
 {
-	return !(playerPos.x > position.x + detectionRadius.x || playerPos.x < position.x - detectionRadius.x
-		|| playerPos.y > position.y + detectionRadius.y || playerPos.y < position.y - detectionRadius.y);
+	return !(playerCenter.x > centerPosition.x + detectionRadius.x || playerCenter.x < centerPosition.x - detectionRadius.x
+		|| playerCenter.y > centerPosition.y + detectionRadius.y || playerCenter.y < centerPosition.y - detectionRadius.y);
+}
+
+bool Enemy::InAttackRange(fPoint playerCenter)
+{
+	return !(playerCenter.x > centerPosition.x + attackRange.x || playerCenter.x < centerPosition.x - attackRange.x
+		|| playerCenter.y > centerPosition.y + attackRange.y || playerCenter.y < centerPosition.y - attackRange.y);
+}
+
+// Add acceleration to Y speed
+void Enemy::Fall(float dt)
+{
+	speed.y += gravity * dt;
 }

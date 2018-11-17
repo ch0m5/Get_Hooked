@@ -2,18 +2,21 @@
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "j1App.h"
+
 #include "j1EntityManager.h"
 #include "Entity.h"
 #include "Player.h"
+
 #include "Enemy.h"
 #include "Bat.h"
+#include "Slime.h"
 
 // Constructor
 j1EntityManager::j1EntityManager()
 {
 	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);
-	//enemy = (Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::BAT);	//TODO: Dynamic enemy addition w/ spawnPosition!
+	//(Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::SLIME);	//TODO: Dynamic enemy addition w/ spawnPosition!
 }
 
 // Destructor
@@ -275,12 +278,15 @@ Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
 
 Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
 {
-	//static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");
+	//static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");	//CHANGE/FIX: UNCOMMENT
 
 	Enemy* ret = nullptr;
 	switch (enemy) {
 		case enemy_type::BAT:
 			ret = new Bat();
+			break;
+		case enemy_type::SLIME:
+			ret = new Slime();
 			break;
 		default:
 			break;

@@ -6,6 +6,7 @@
 enum class enemy_type {
 	NONE = -1,
 	BAT,
+	SLIME,
 
 	MAX_TYPES
 };
@@ -65,7 +66,11 @@ protected:
 
 	//Entity
 	virtual void CheckInput();
-	virtual bool InsideRadius(fPoint playerPos);
+	virtual bool InsideDetectionRadius(fPoint playerPos);
+	virtual bool InAttackRange(fPoint playerPos);
+
+	// Add downwards acceleration to Y speed
+	virtual void Fall(float dt);
 
 protected:
 	bool canFly;
@@ -74,10 +79,18 @@ protected:
 	bool airborne;			// Flag to mark if enemy is on air (not colliding with anything)
 
 	fPoint detectionRadius;
-	bool playerInRadius = false;
+	fPoint attackRange;
+	bool playerDetected = false;
+	bool playerInRange = false;
+	bool wantToAttack = false;
 
-	uint deadTimer = 0;		// Timer used for death
-	ushort deathDelay;		// Time delay between death and despawn/elimination
+	uint attackTimer = 0;
+	uint hurtTimer = 0;
+	uint deadTimer = 0;
+
+	ushort attackDelay;	//Time to stay attacking
+	ushort hurtDelay;	//Time to stay hurt
+	ushort deathDelay;	//Time before despawn
 
 	bool mustReset = false;	// Flag used to restart animations when needed (skipping workflow steps)
 

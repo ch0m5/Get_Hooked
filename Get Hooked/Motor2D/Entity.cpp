@@ -20,6 +20,12 @@ fPoint Entity::GetPosition() const
 	return position;
 }
 
+fPoint Entity::GetCenterPosition() const
+{
+	return centerPosition;
+}
+
+
 fPoint Entity::GetSpeed() const
 {
 	return speed;

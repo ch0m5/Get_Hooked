@@ -90,6 +90,7 @@ public:
 	//Entity
 	virtual entity_type GetType() const;
 	virtual fPoint GetPosition() const;
+	virtual fPoint Entity::GetCenterPosition() const;
 
 	//Dynamic Entity
 	virtual fPoint GetSpeed() const;
@@ -133,7 +134,7 @@ public:
 protected:
 	//Entity
 	fPoint position;
-	SDL_Rect posRect;
+	fPoint centerPosition;
 	movement_input input;
 	movement_flags movement;
 

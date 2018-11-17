@@ -964,8 +964,9 @@ void Player::Move(float dt)
 	position.x += speed.x * dt;
 	position.y += speed.y * dt;
 
-	posRect.x = (int)position.x;
-	posRect.y = (int)position.y;
+	// Center position
+	centerPosition.x = position.x + animRect.w / 2;
+	centerPosition.y = position.y + animRect.h / 2;
 }
 
 fPoint Player::GodModeMovement(float dt)
