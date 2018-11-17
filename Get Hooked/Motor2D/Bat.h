@@ -25,11 +25,11 @@ public:
 	//virtual bool CleanUp() defined on Enemy.h
 
 	// Save and Load
-	bool Load(pugi::xml_node&);
-	bool Save(pugi::xml_node&) const;
+	//bool Load(pugi::xml_node&);
+	//bool Save(pugi::xml_node&) const;
 
 private:	// @Carles
-	void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
+	//void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
 	void ImportAllSprites(pugi::xml_node&);		// Import all sprite data using the above function for each animation
 	void AllocAllAnimations();					// Allocate all animations with previously recieved sprite data
 

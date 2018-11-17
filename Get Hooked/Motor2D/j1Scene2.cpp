@@ -39,7 +39,7 @@ bool j1Scene2::Awake(pugi::xml_node& config)
 }
 
 // Called before the first frame
-bool j1Scene2::Start()
+bool j1Scene2::Start()	//TODO: Create enemies in their respective positions using XML
 {
 	if (App->scene->active == true) 
 		active = false;

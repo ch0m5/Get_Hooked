@@ -187,6 +187,12 @@ Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, Entity* ca
 	return tmpPtr;
 }
 
+void j1Collision::DestroyCollider(Collider* collider)
+{
+	p2List_item<Collider> item = *collider;
+	colliders.del(&item);
+}
+
 // -----------------------------------------------------
 
 bool Collider::CheckCollision(const SDL_Rect& r) const

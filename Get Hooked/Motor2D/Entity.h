@@ -50,7 +50,13 @@ public:
 	//Constructor
 	Entity(entity_type type) : type(type) {}
 
-	virtual ~Entity() {}
+	virtual ~Entity();
+
+	// Called on entity creation
+	virtual void Init()
+	{
+		active = true;
+	}
 
 	// Called before render is available
 	virtual bool Awake(pugi::xml_node&) { return true; }
@@ -121,6 +127,7 @@ protected:
 public:
 	p2SString name;
 	p2SString folder;
+	bool active;
 	bool mustDestroy = false;
 
 protected:

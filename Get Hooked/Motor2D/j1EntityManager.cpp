@@ -12,6 +12,7 @@ j1EntityManager::j1EntityManager()
 {
 	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);
+	//enemy = (Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::BAT);	//TODO: Dynamic enemy addition w/ spawnPosition!
 }
 
 // Destructor
@@ -81,6 +82,10 @@ bool j1EntityManager::PreUpdate()
 
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
+		if (item->data->active == false) {
+			continue;
+		}
+
 		ret = item->data->PreUpdate();
 	}
 
@@ -119,6 +124,10 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 	p2List_item<Entity*>* item;
 	for (item = entities.start; item != nullptr && ret == true; item = item->next)
 	{
+		if (item->data->active == false) {
+			continue;
+		}
+
 		if (mustCheckLogic) {
 			ret = item->data->UpdateLogic(dt);	//Update logic in intervals
 		}
@@ -129,6 +138,19 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 		if (ret)
 			ret = item->data->Update();	//Update independant of framerate
 	}
+
+	return ret;
+}
+
+pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
+{
+	pugi::xml_node ret;
+	pugi::xml_parse_result result = config_file.load_file("config.xml");
+
+	if (result == NULL)
+		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
+	else
+		ret = config_file.child("config");
 
 	return ret;
 }
@@ -144,12 +166,18 @@ bool j1EntityManager::PostUpdate()
 	for (item = entities.start; item != NULL && ret == true; item = nextItem)
 	{
 		nextItem = item->next;
+
+		if (item->data->active == false) {
+			continue;
+		}
+
 		ret = item->data->PostUpdate();
 
-		//Destroy all enemis that are signaled to
-		if (item->data->GetType() == entity_type::ENEMY && item->data->mustDestroy) {
+		//Destroy all enemies that are signaled to
+		if (ret && item->data->GetType() == entity_type::ENEMY && item->data->mustDestroy) {
 			ret = item->data->CleanUp();
-			entities.del(item);
+			DestroyEntity(item->data);	//Are both needed?
+			entities.del(item);	//Are both needed?
 		}
 	}
 
@@ -199,20 +227,6 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 	return true;
 }
 
-pugi::xml_node j1EntityManager::LoadEntitiesXML(pugi::xml_document& entities_file) const
-{
-	pugi::xml_node ret;
-
-	pugi::xml_parse_result result = entities_file.load_file("entities.xml");
-
-	if (result == NULL)
-		LOG("Could not load map xml file entities.xml. pugi error: %s", result.description());
-	else
-		ret = entities_file.child("entities");
-
-	return ret;
-}
-
 Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
 {
 	static_assert((int)entity_type::MAX_TYPES == 7, "Entity enum is not accurate");
@@ -242,8 +256,10 @@ Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
 	//	break;
 	}
 
-	if (ret != nullptr)
+	if (ret != nullptr) {
 		entities.add(ret);
+		ret->Init();
+	}
 
 	return ret;
 }
@@ -260,6 +276,10 @@ Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
 		default:
 			break;
 	}
+	//CHANGE/FIX: Comment for testing, should be uncommented when running the game normally
+	pugi::xml_document config_file;
+	pugi::xml_node config = LoadConfig(config_file);
+	ret->Awake(config.child("EntityManager").child("entities").child(ret->name.GetString()));
 
 	return (Enemy*)ret;
 }

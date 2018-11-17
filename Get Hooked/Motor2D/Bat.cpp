@@ -59,8 +59,10 @@ bool Bat::Start()
 
 	graphics = App->tex->Load(textureName.GetString());
 
-	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
+	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_ENEMY, this);
 	hitboxOffset = hitbox->rect;
+
+	position = spawnPosition;
 
 	return true;
 }
@@ -109,34 +111,25 @@ bool Bat::Update()
 	return ret;
 }
 
-// Save and Load
-bool Bat::Load(pugi::xml_node &entities)
-{
-	//TODO: Load enemy data of current alive enemies (type, state, position, speed)
-	return true;
-}
-
-bool Bat::Save(pugi::xml_node &entities) const
-{
-	//TODO: Save enemy data of current alive enemies (type, state, position, speed)
-	return true;
-}
-
-// Import all state data from config.xml
-void Bat::ImportAllStates(pugi::xml_node &config)
-{
-	// Character stats
-	maxLife = (ushort)config.child("life").attribute("value").as_uint();
-	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
-	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-	acceleration.y = config.child("accelerations").attribute("y").as_float();
-	gravity = config.child("accelerations").attribute("gravity").as_float();
-
-	// Character status flags and directly related data
-	airborne = config.child("airborne").attribute("value").as_bool();
-	lookingRight = config.child("looking").attribute("right").as_bool();
-	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
-}
+//// Import all state data from config.xml
+//void Bat::ImportAllStates(pugi::xml_node &config)
+//{
+//	// Character stats
+//	maxLife = (ushort)config.child("life").attribute("value").as_uint();
+//	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
+//	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
+//	acceleration.x = config.child("accelerations").attribute("x").as_float();
+//	acceleration.y = config.child("accelerations").attribute("y").as_float();
+//	gravity = config.child("accelerations").attribute("gravity").as_float();
+//
+//	detectionRadius.x = config.child("detection").attribute("x").as_float();
+//	detectionRadius.y = config.child("detection").attribute("y").as_float();
+//
+//	// Character status flags and directly related data
+//	airborne = config.child("airborne").attribute("value").as_bool();
+//	lookingRight = config.child("looking").attribute("right").as_bool();
+//	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
+//}
 
 // Import all sprite data using the above function for each animation
 void Bat::ImportAllSprites(pugi::xml_node& first_sprite)
@@ -195,6 +188,7 @@ void Bat::ApplyState()
 		animPtr = &idleSprite.anim;
 		break;
 	case enemy_state::PATROLING:
+		animPtr = &idleSprite.anim;
 		break;
 	case enemy_state::FOLLOWING:
 		animPtr = &followSprite.anim;
@@ -238,6 +232,27 @@ void Bat::Move(float dt)
 
 			if (speed.x > 0.0f)
 				speed.x = 0.0f;
+		}
+	}
+
+	if (input.wantMoveUp == true && input.wantMoveDown == false) {
+		speed.y += acceleration.y * dt;
+	}
+	else if (input.wantMoveDown == true && input.wantMoveUp == false) {
+		speed.y -= acceleration.y * dt;
+	}
+	else {	// Natural deacceleration
+		if (movement.movingDown == true) {
+			speed.y -= acceleration.y * dt;
+
+			if (speed.y < 0.0f)
+				speed.y = 0.0f;
+		}
+		else if (movement.movingUp == true) {
+			speed.y += acceleration.y * dt;
+
+			if (speed.y > 0.0f)
+				speed.y = 0.0f;
 		}
 	}
 

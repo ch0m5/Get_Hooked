@@ -50,6 +50,11 @@ public:
 	// Called before quitting
 	virtual bool CleanUp();
 
+	// Save and Load
+	virtual bool Load(pugi::xml_node &entities);
+
+	virtual bool Save(pugi::xml_node &entities) const;
+
 	collision_type OnCollision(Collider*, Collider*);
 	collision_type WallCollision(Collider* c1, Collider* c2);
 
@@ -60,6 +65,7 @@ protected:
 
 	//Entity
 	virtual void CheckInput();
+	virtual bool InsideRadius(fPoint playerPos);
 
 protected:
 	bool canFly;

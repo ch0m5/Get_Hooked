@@ -91,9 +91,24 @@ bool Enemy::CleanUp()
 
 	App->tex->UnLoad(graphics);
 	graphics = nullptr;
-	hitbox = nullptr;	// @Carles, Deassign collider for later CleanUp in j1Collision
+
+	hitbox->to_delete = true;	// @Carles, mark collider for destruction
+	hitbox = nullptr;
 
 	return ret;
+}
+
+// Save and Load
+bool Enemy::Load(pugi::xml_node &entities)
+{
+	//TODO: Load enemy data of current alive enemies (enemyType, state, position, speed)
+	return true;
+}
+
+bool Enemy::Save(pugi::xml_node &entities) const
+{
+	//TODO: Save enemy data of current alive enemies (enemyType, state, position, speed)
+	return true;
 }
 
 // Called when colliding
@@ -101,11 +116,12 @@ collision_type Enemy::OnCollision(Collider* c1, Collider* c2)
 {
 	collision_type ret = collision_type::NONE;
 
+	if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_WALL) {
+		ret = WallCollision(c1, c2);
+	}
+
 	if (App->entityManager->player->IsGod() == false) {
-		if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_WALL) {
-			ret = WallCollision(c1, c2);
-		}
-		else if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_PLAYER_ATTACK) {
+		if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_PLAYER_ATTACK) {
 			//ret = PlayerAttackCollision(c1, c2);
 			Hurt();
 			if (IsDead()) {
@@ -180,11 +196,12 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
+	acceleration.x = config.child("accelerations").attribute("x").as_float();
 	acceleration.y = config.child("accelerations").attribute("y").as_float();
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	canFly = config.child("canFly").attribute("value").as_bool();
 
-	detectionRadius.y = config.child("detection").attribute("x").as_float();
+	detectionRadius.x = config.child("detection").attribute("x").as_float();
 	detectionRadius.y = config.child("detection").attribute("y").as_float();
 
 	// Character status flags and directly related data
@@ -196,40 +213,49 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, right now is top-left corner
 {
 	//TODO: This should work with pathfinding
+	
+	fPoint playerPos = App->entityManager->player->GetPosition();
+	playerInRadius = InsideRadius(playerPos);
+	
+	if (playerInRadius) {
+		if (playerPos.x > position.x) {		// Move left input
+			input.wantMoveRight = true;
+		}
+		else {
+			input.wantMoveRight = false;
+		}
 
-	bool inRadius = false;
+		if (playerPos.x < position.x) {		// Move right input
+			input.wantMoveLeft = true;
+		}
+		else {
+			input.wantMoveLeft = false;
+		}
 
-	if (App->entityManager->player->GetPosition().x >= position.x - detectionRadius.x) {	// Move left input
-		input.wantMoveLeft = true;
-		inRadius = true;
+		if (playerPos.y > position.y) {		// Move down input
+			input.wantMoveUp = true;
+		}
+		else {
+			input.wantMoveUp = false;
+		}
+
+		if (playerPos.y < position.y) {		// Move up input
+			input.wantMoveDown = true;
+		}
+		else {
+			input.wantMoveDown = false;
+		}
 	}
 	else {
 		input.wantMoveLeft = false;
-	}
-
-	if (App->entityManager->player->GetPosition().x < position.x + detectionRadius.x) {		// Move right input
-		input.wantMoveRight = true;
-		inRadius = true;
-	}
-	else {
 		input.wantMoveRight = false;
-	}
-
-	if (App->entityManager->player->GetPosition().y >= position.y - detectionRadius.y) {	// Move up input
-		input.wantMoveUp = true;
-		inRadius = true;
-	}
-	else {
+		input.wantMoveDown = false;
 		input.wantMoveUp = false;
 	}
+}
 
-	if (App->entityManager->player->GetPosition().y < position.y + detectionRadius.y) {		// Move down input
-		input.wantMoveDown = true;
-		inRadius = true;
-	}
-	else {
-		input.wantMoveDown = false;
-	}
-
-	playerInRadius = inRadius;
+bool Enemy::InsideRadius(fPoint playerPos)
+{
+	return !(playerPos.x > position.x + detectionRadius.x || playerPos.x < position.x - detectionRadius.x
+		|| playerPos.y > position.y + detectionRadius.y || playerPos.y < position.y - detectionRadius.y);
 }

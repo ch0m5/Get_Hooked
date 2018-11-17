@@ -83,6 +83,8 @@ public:
 	//bool Save(pugi::xml_node&) const;
 
 	Collider* AddCollider(SDL_Rect rect, collider_type type, Entity* callback);	//@Carles
+	void DestroyCollider(Collider* collider);
+
 	void DebugDraw();
 
 public:	// @Carles

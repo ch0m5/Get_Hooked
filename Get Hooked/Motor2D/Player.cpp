@@ -211,7 +211,7 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 	return ret;
 }
 
-// Load Game State
+// Load Game State	//CHANGE/FIX: Should be able to save and load from and to different scenes!
 bool Player::Load(pugi::xml_node& data)
 {
 	position.x = data.child("position").attribute("x").as_float();

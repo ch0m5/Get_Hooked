@@ -48,7 +48,9 @@ public:
 
 private:
 	bool UpdateEntities(float dt, bool mustCheckLogic);
-	pugi::xml_node LoadEntitiesXML(pugi::xml_document&) const;
+
+	// Load config file
+	pugi::xml_node LoadConfig(pugi::xml_document&) const;
 	
 public:
 	p2List<Entity*> entities;

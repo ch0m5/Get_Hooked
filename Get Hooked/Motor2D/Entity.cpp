@@ -4,6 +4,11 @@
 #include "j1Render.h"
 #include "j1Collision.h"
 
+Entity::~Entity()
+{
+	App->collision->DestroyCollider(hitbox);
+}
+
 entity_type Entity::GetType() const
 {
 	return type;
