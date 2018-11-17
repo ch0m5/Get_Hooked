@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "j1App.h"
@@ -75,6 +76,8 @@ bool j1EntityManager::Start()
 // Called each loop iteration
 bool j1EntityManager::PreUpdate()
 {
+	BROFILER_CATEGORY("Module EntityManager PreUpdate", Profiler::Color::ForestGreen);
+
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
@@ -95,6 +98,8 @@ bool j1EntityManager::PreUpdate()
 // Called each frame (logic)
 bool j1EntityManager::UpdateTick(float dt)
 {
+	BROFILER_CATEGORY("Module EntityManager UpdateTick", Profiler::Color::Green);
+
 	accumulatedTime += dt * 1000;
 
 	int delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
@@ -119,6 +124,8 @@ bool j1EntityManager::UpdateTick(float dt)
 
 bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 {
+	BROFILER_CATEGORY("Update Entities", Profiler::Color::LawnGreen);
+
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
@@ -142,22 +149,11 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 	return ret;
 }
 
-pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
-{
-	pugi::xml_node ret;
-	pugi::xml_parse_result result = config_file.load_file("config.xml");
-
-	if (result == NULL)
-		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
-	else
-		ret = config_file.child("config");
-
-	return ret;
-}
-
 // Called each loop iteration
 bool j1EntityManager::PostUpdate()
 {
+	BROFILER_CATEGORY("Module EntityManager PostUpdate", Profiler::Color::LightGreen);
+
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
@@ -196,6 +192,19 @@ bool j1EntityManager::CleanUp()
 	}
 
 	entities.clear();
+
+	return ret;
+}
+
+pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
+{
+	pugi::xml_node ret;
+	pugi::xml_parse_result result = config_file.load_file("config.xml");
+
+	if (result == NULL)
+		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
+	else
+		ret = config_file.child("config");
 
 	return ret;
 }

@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "j1EntityManager.h"
 #include "Entity.h"
 #include "j1App.h"

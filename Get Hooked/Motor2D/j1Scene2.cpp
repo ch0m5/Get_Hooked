@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "j1App.h"
@@ -57,12 +58,16 @@ bool j1Scene2::Start()	//TODO: Create enemies in their respective positions usin
 // Called each loop iteration
 bool j1Scene2::PreUpdate()
 {
+	BROFILER_CATEGORY("Module Scene2 PreUpdate", Profiler::Color::AliceBlue);
+
 	return true;
 }
 
 // Called each frame (logic)
 bool j1Scene2::UpdateTick(float dt)
 {
+	BROFILER_CATEGORY("Module Scene2 UpdateTick", Profiler::Color::Blue);
+
 	AudioInput();
 
 	if (App->entityManager->player->debugMode == true) {
@@ -78,6 +83,8 @@ bool j1Scene2::UpdateTick(float dt)
 // Called each loop iteration (graphic)
 bool j1Scene2::Update()
 {
+	BROFILER_CATEGORY("Module Scene2 Update", Profiler::Color::CadetBlue);
+
 	if (App->entityManager->player->CameraFree() == false) {
 		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
@@ -90,6 +97,8 @@ bool j1Scene2::Update()
 // Called each loop iteration
 bool j1Scene2::PostUpdate()
 {
+	BROFILER_CATEGORY("Module Scene2 PostUpdate", Profiler::Color::CornflowerBlue);
+
 	bool ret = true;
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)

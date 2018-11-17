@@ -1,5 +1,7 @@
 #include <iostream> 
 
+#include "Brofiler/Brofiler.h"
+
 #include "p2Defs.h"
 #include "p2Log.h"
 
@@ -12,7 +14,7 @@
 #include "j1Scene2.h"
 #include "j1Map.h"
 #include "j1EntityManager.h"
-#include "Player.h"		// CHANGE/FIX: Should be here?
+#include "Player.h"			// CHANGE/FIX: Should be here?
 #include "j1Collision.h"	// @Carles
 #include "j1FadeScene.h"	// @Carles
 #include "j1App.h"
@@ -46,7 +48,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(scene);
 	AddModule(scene2);
 	AddModule(entityManager);
-	AddModule(collision);	// @Carles
+	AddModule(collision);
 	AddModule(fade);
 
 	// Render last to swap buffer
@@ -183,6 +185,8 @@ pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
 // ---------------------------------------------
 void j1App::PrepareUpdate()
 {
+	BROFILER_CATEGORY("App PrepareUpdate", Profiler::Color::SlateGray);
+
 	if (App->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
 		mustCapFPS = !mustCapFPS;
 
@@ -198,6 +202,8 @@ void j1App::PrepareUpdate()
 // ---------------------------------------------
 void j1App::FinishUpdate()
 {
+	BROFILER_CATEGORY("App FinishUpdate", Profiler::Color::Gray);
+
 	if(want_to_save == true)
 		SavegameNow();
 
@@ -210,6 +216,8 @@ void j1App::FinishUpdate()
 // Call modules before each loop iteration
 bool j1App::PreUpdate()
 {
+	BROFILER_CATEGORY("App PreUpdate", Profiler::Color::LightYellow);
+
 	bool ret = true;
 	p2List_item<j1Module*>* item;
 	item = modules.start;
@@ -232,21 +240,24 @@ bool j1App::PreUpdate()
 // Call modules on each loop iteration
 bool j1App::DoUpdate()
 {
+	BROFILER_CATEGORY("App AllUpdates", Profiler::Color::Yellow);
+
 	bool ret = true;
 	p2List_item<j1Module*>* item;
 	item = modules.start;
 	j1Module* pModule = NULL;
 
-	for(item = modules.start; item != NULL && ret == true; item = item->next)
+	for (item = modules.start; item != NULL && ret == true; item = item->next)
 	{
 		pModule = item->data;
 
-		if(pModule->active == false) {
+		if (pModule->active == false) {
 			continue;
 		}
 
 		ret = item->data->UpdateTick(dt);
 
+		//IMPROVE: Should be first all logic then all graphics (not like that at the moment because player collider position laggs behind)
 		if (ret)
 			ret = item->data->Update();
 	}
@@ -257,6 +268,8 @@ bool j1App::DoUpdate()
 // Call modules after each loop iteration
 bool j1App::PostUpdate()
 {
+	BROFILER_CATEGORY("App PostUpdate", Profiler::Color::YellowGreen);
+
 	bool ret = true;
 	p2List_item<j1Module*>* item;
 	j1Module* pModule = NULL;

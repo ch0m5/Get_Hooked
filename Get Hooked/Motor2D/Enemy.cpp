@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "p2Animation.h"
@@ -44,6 +45,8 @@ bool Enemy::PreUpdate()
 {
 	bool ret = true;
 
+	BROFILER_CATEGORY("Entity Enemy PreUpdate", Profiler::Color::IndianRed);
+
 	CheckInput();		// Check player input
 	CheckMovement();	// Check player current movement
 
@@ -53,6 +56,8 @@ bool Enemy::PreUpdate()
 // Called between a certain number of frames or times per second
 bool Enemy::UpdateLogic(float dt)
 {
+	BROFILER_CATEGORY("Entity Enemy Update", Profiler::Color::PaleVioletRed);
+
 	//TODO: Pathfinding
 
 	return true;
@@ -61,6 +66,8 @@ bool Enemy::UpdateLogic(float dt)
 // Called each frame (framerate dependant)
 bool Enemy::UpdateTick(float dt)
 {
+	BROFILER_CATEGORY("Entity Enemy UpdateTick", Profiler::Color::Red);
+
 	bool ret = true;
 
 	CheckState();	// Check player state
@@ -76,6 +83,8 @@ bool Enemy::UpdateTick(float dt)
 // Called each loop iteration
 bool Enemy::Update()
 {
+	BROFILER_CATEGORY("Entity Enemy Update", Profiler::Color::DarkRed);
+
 	bool ret = true;
 
 	Draw(&animRect);

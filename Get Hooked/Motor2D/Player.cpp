@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "p2Animation.h"
@@ -83,6 +84,8 @@ bool Player::Start()
 // Called each loop iteration
 bool Player::PreUpdate()
 {
+	BROFILER_CATEGORY("Entity Player PreUpdate", Profiler::Color::LightCyan);
+
 	bool ret = true;
 
 	if (debugMode == true) {
@@ -98,6 +101,8 @@ bool Player::PreUpdate()
 //input and logic
 bool Player::UpdateTick(float dt)
 {
+	BROFILER_CATEGORY("Entity Player UpdateTick", Profiler::Color::Cyan);
+
 	bool ret = true;
 
 	CheckState();	// Check player state
@@ -112,6 +117,8 @@ bool Player::UpdateTick(float dt)
 
 bool Player::Update()
 {
+	BROFILER_CATEGORY("Entity Player Update", Profiler::Color::DarkCyan);
+
 	bool ret = true;
 
 	Draw(&animRect);

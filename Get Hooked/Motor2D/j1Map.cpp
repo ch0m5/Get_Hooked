@@ -1,3 +1,4 @@
+#include "Brofiler/Brofiler.h"
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "j1App.h"
@@ -29,6 +30,8 @@ bool j1Map::Awake(pugi::xml_node& config)
 
 void j1Map::Draw()
 {
+	BROFILER_CATEGORY("Map Draw", Profiler::Color::Magenta);
+
 	if(map_loaded == false)
 		return;
 
