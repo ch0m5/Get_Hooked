@@ -56,7 +56,7 @@ bool Enemy::PreUpdate()
 // Called between a certain number of frames or times per second
 bool Enemy::UpdateLogic(float dt)
 {
-	BROFILER_CATEGORY("Entity Enemy Update", Profiler::Color::PaleVioletRed);
+	BROFILER_CATEGORY("Entity Enemy UpdateLogic", Profiler::Color::PaleVioletRed);
 
 	//TODO: Pathfinding
 
