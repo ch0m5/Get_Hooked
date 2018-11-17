@@ -161,7 +161,7 @@
           <spriteSheet>bat_sprite_sheet.png</spriteSheet>
           <spriteSize x="16" y="24"/>
           <first_sprite>
-            <follow column="0" row="0" frames="5" animSpeed ="8" loop="true">
+            <follow column="0" row="0" frames="5" animSpeed ="16" loop="true">
               <offset x="0" y="3" w="16" h="11"/>
             </follow>
             <idle column="0" row="1" frames="5" animSpeed ="8" loop="true">
