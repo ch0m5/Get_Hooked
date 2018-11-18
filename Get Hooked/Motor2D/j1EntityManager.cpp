@@ -259,7 +259,7 @@ bool j1EntityManager::Load(pugi::xml_node& managerNode)
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	for (item = entities.start; item != NULL && ret == true; item = item->next)	//CHANGE/FIX: Implementation of enemies save and load needed
 	{
 		ret = item->data->Load(managerNode.child(item->data->name.GetString()));
 	}
@@ -272,7 +272,7 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	for (item = entities.start; item != NULL && ret == true; item = item->next)	//CHANGE/FIX: Implementation of enemies save and load needed
 	{
 		ret = item->data->Save(managerNode.append_child(item->data->name.GetString()));
 	}
