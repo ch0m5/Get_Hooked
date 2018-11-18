@@ -76,7 +76,7 @@ bool Entity::IsDead() const
 
 void Entity::Draw(SDL_Rect* animRect) const
 {
-	if (lookingRight == true) {
+	if (lookingRight) {
 		App->render->Blit(graphics, (int)position.x, (int)position.y, animRect, SDL_FLIP_NONE);
 	}
 	else {
