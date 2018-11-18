@@ -111,7 +111,7 @@ bool j1Collision::Load(pugi::xml_document& map_file)
 		for (pugi::xml_node object = collider.child("object"); object && ret; object = object.next_sibling("object"))
 		{
 			// @Carles
-			SDL_Rect tmpRect = { object.attribute("x").as_int(), object.attribute("y").as_uint(), object.attribute("width").as_uint(), object.attribute("height").as_uint() };
+			SDL_Rect tmpRect = { object.attribute("x").as_int(), object.attribute("y").as_int(), object.attribute("width").as_int(), object.attribute("height").as_int() };
 			AddCollider(tmpRect, (collider_type)object.attribute("name").as_uint(), nullptr);
 		}
 	}
