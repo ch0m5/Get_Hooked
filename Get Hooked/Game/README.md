@@ -78,13 +78,13 @@ feature'`
 	- Collisions Module and Logic
 	- Input Interpretation
 	- Debug Functionalities (Except Map ones)
-	- FadeModule
+	- FadeSceneModule
 	- XML Save, Load and Congif/Awake (Except for map data)
 	- Framerate Logic and Limitations
 	- Entitiy System
 	- Player Module and Logic
 	- Enemies Modules and Logic
-	- Brofiler
+	- Brofiler Implementation
 	- Github Webpage and READMEs
 	
 - Samuel Kurt:
