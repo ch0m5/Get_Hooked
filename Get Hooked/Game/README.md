@@ -94,6 +94,8 @@ feature'`
 	- Scene Modules and Logic
 	- FadeSceneModule Logic
 
+- Repository: https://github.com/Scotland-Fury/Hook_Platformer
+
 ## Disclosure
 We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
 
