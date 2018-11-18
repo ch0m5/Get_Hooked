@@ -130,7 +130,7 @@ public:
 
 private:
 	player_state status;
-	Collider* attackCollider;
+	Collider* attackCollider = nullptr;
 	SDL_Rect attackOffset;
 	bool wantAttack = false;
 	bool attackColliderCreated = false;

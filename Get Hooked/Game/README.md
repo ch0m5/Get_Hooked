@@ -25,6 +25,7 @@ No previous installations is required to play the game, just download and execut
 	- Run: A/D
 	- Jump: W
 	- Crouch/Slide: S
+	- Space: Attack
 	
 - XBOX Controller: (Planned!)
 

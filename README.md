@@ -17,9 +17,10 @@ No previous installations is required to play the game, just download and execut
 
 ### Player 1 Controls
 * Keyboard:
-	- Run: A/D
-	- Jump: W
-	- Crouch/Slide: S
+	* Run: A/D
+	* Jump: W
+	* Crouch/Slide: S
+	* Space: Attack
 	
 * XBOX Controller: (Planned!)
 
