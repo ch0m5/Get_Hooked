@@ -92,6 +92,11 @@ void Bat::CheckState()
 			break;
 		}
 	}
+	
+	if (position.y > 800) {	//CHANGE/FIX: Hardcoded pit
+		active = false;
+		mustDestroy = true;
+	}
 }
 
 void Bat::ApplyState()
@@ -117,7 +122,6 @@ void Bat::ApplyState()
 		if (dead) {
 			if (airborne) {
 				animPtr = &fallingSprite.anim;
-				deadTimer = SDL_GetTicks();	//IMPROVE: This is loaded on every cycle, it would be best if it loaded when dead && bat touched ground
 			}
 			else {
 				if (deadTimer < SDL_GetTicks() - deathDelay) {

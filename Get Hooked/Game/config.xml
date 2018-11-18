@@ -155,6 +155,7 @@
           <debugMode value="true" />
           <godMode value="false"/>
           <freeCamera value="false"/>
+          <processingRadius x="500" y="400"/>
         </stats>
       </player>
 
@@ -194,7 +195,7 @@
           <looking right="false"/>
           <attackDelay miliseconds="500"/>
           <hurtDelay miliseconds="500"/>
-          <deathDelay miliseconds="1000"/>
+          <deathDelay miliseconds="3000"/>
         </stats>
       </bat>
       <slime>

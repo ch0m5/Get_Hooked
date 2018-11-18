@@ -336,6 +336,7 @@ void Player::ImportAllStates(pugi::xml_node& config)
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
 	freeCamera = config.child("freeCamera").attribute("value").as_bool();
+	activationRadius = { config.child("processingRadius").attribute("x").as_int(), config.child("processingRadius").attribute("y").as_int() };
 }
 
 // Import all sprite data using the above function for each animation

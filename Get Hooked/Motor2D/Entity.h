@@ -92,6 +92,7 @@ public:
 	virtual entity_type GetType() const;
 	virtual fPoint GetPosition() const;
 	virtual fPoint Entity::GetCenterPosition() const;
+	virtual bool InsideRadius(fPoint targetPosition, iPoint radius);
 
 	//Dynamic Entity
 	virtual fPoint GetSpeed() const;

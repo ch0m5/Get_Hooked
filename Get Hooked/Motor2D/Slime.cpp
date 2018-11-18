@@ -55,10 +55,10 @@ void Slime::ImportAllStates(pugi::xml_node &config)
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	canFly = config.child("canFly").attribute("value").as_bool();
 
-	detectionRadius.x = config.child("detection").attribute("x").as_float();
-	detectionRadius.y = config.child("detection").attribute("y").as_float();
-	attackRange.x = config.child("attack").attribute("x").as_float();
-	attackRange.y = config.child("attack").attribute("y").as_float();
+	detectionRadius.x = config.child("detection").attribute("x").as_int();
+	detectionRadius.y = config.child("detection").attribute("y").as_int();
+	attackRange.x = config.child("attack").attribute("x").as_int();
+	attackRange.y = config.child("attack").attribute("y").as_int();
 
 	// Character status flags and directly related data
 	airborne = config.child("airborne").attribute("value").as_bool();
@@ -165,6 +165,11 @@ void Slime::CheckState()
 			}
 			break;
 		}
+	}
+
+	if (position.y > 800) {	//CHANGE/FIX: Hardcoded pit
+		active = false;
+		mustDestroy = true;
 	}
 }
 

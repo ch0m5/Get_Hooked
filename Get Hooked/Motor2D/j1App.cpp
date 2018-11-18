@@ -461,7 +461,7 @@ void j1App::FramerateLogic() {
 
 p2SString j1App::DebugTitle()	// @Carles
 {
-	title.create("%s (FPS: %i / Av.FPS: %.2f / MsPF: %02u ms / fpsCap: %i / Vsync: %i / Play Time: %.3f / Position: %dx%d)",
+	title.create("%s (FPS: %i / Av.FPS: %.2f / MsPF: %02u ms / fpsCap: %i / Vsync: %i / Play Time: %.3f / Position: %dx%d / Camera: %dx%d)",
 		name.GetString(),
 		prevFPS,
 		avgFPS,
@@ -469,7 +469,8 @@ p2SString j1App::DebugTitle()	// @Carles
 		(int)mustCapFPS,
 		(int)App->render->Vsync,
 		gameTime,
-		(int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y);
+		(int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y,
+		App->render->camera.x, App->render->camera.y);
 
 	// Full debug
 	/*title.create("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d / Av.FPS:%.2f / Last Frame Ms:%02u / Last sec frames:%i / Time since startup:%.3f / Frame Count:%lu)",

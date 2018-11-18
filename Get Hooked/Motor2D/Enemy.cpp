@@ -43,9 +43,9 @@ bool Enemy::Awake(pugi::xml_node& entities)
 // Called each loop iteration
 bool Enemy::PreUpdate()
 {
-	bool ret = true;
-
 	BROFILER_CATEGORY("Entity Enemy PreUpdate", Profiler::Color::IndianRed);
+
+	bool ret = true;
 
 	CheckInput();		// Check player input
 	CheckMovement();	// Check player current movement
@@ -233,10 +233,10 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	canFly = config.child("canFly").attribute("value").as_bool();
 
-	detectionRadius.x = config.child("detection").attribute("x").as_float();
-	detectionRadius.y = config.child("detection").attribute("y").as_float();
-	attackRange.x = config.child("attack").attribute("x").as_float();
-	attackRange.y = config.child("attack").attribute("y").as_float();
+	detectionRadius.x = config.child("detection").attribute("x").as_int();
+	detectionRadius.y = config.child("detection").attribute("y").as_int();
+	attackRange.x = config.child("attack").attribute("x").as_int();
+	attackRange.y = config.child("attack").attribute("y").as_int();
 
 	// Character status flags and directly related data
 	airborne = config.child("airborne").attribute("value").as_bool();
@@ -251,7 +251,8 @@ void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, righ
 	//TODO: This should work with pathfinding
 	
 	fPoint playerCenterPos = App->entityManager->player->GetCenterPosition();
-	playerDetected = InsideDetectionRadius(playerCenterPos);
+
+	playerDetected = InsideRadius(playerCenterPos, detectionRadius);
 	
 	if (playerDetected) {
 		if (playerCenterPos.x > centerPosition.x) {		// Move left input
@@ -282,7 +283,7 @@ void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, righ
 			input.wantMoveDown = false;
 		}
 
-		wantToAttack = InAttackRange(playerCenterPos);
+		wantToAttack = InsideRadius(playerCenterPos, attackRange);
 	}
 	else {
 		input.wantMoveLeft = false;
@@ -292,16 +293,10 @@ void Enemy::CheckInput()	//IMPROVE: RADIUS SHOULD BE BASED ON ENEMY CENTER, righ
 	}
 }
 
-bool Enemy::InsideDetectionRadius(fPoint playerCenter)
+bool Enemy::InsideRadius(fPoint targetPosition, iPoint radius)
 {
-	return !(playerCenter.x > centerPosition.x + detectionRadius.x || playerCenter.x < centerPosition.x - detectionRadius.x
-		|| playerCenter.y > centerPosition.y + detectionRadius.y || playerCenter.y < centerPosition.y - detectionRadius.y);
-}
-
-bool Enemy::InAttackRange(fPoint playerCenter)
-{
-	return !(playerCenter.x > centerPosition.x + attackRange.x || playerCenter.x < centerPosition.x - attackRange.x
-		|| playerCenter.y > centerPosition.y + attackRange.y || playerCenter.y < centerPosition.y - attackRange.y);
+	return !(targetPosition.x > centerPosition.x + radius.x || targetPosition.x < centerPosition.x - radius.x
+		|| targetPosition.y > centerPosition.y + radius.y || targetPosition.y < centerPosition.y - radius.y);
 }
 
 // Add acceleration to Y speed

@@ -28,6 +28,11 @@ fPoint Entity::GetCenterPosition() const
 	return centerPosition;
 }
 
+bool Entity::InsideRadius(fPoint targetPosition, iPoint radius)
+{
+	return !(targetPosition.x > centerPosition.x + radius.x || targetPosition.x < centerPosition.x - radius.x
+		|| targetPosition.y > centerPosition.y + radius.y || targetPosition.y < centerPosition.y - radius.y);
+}
 
 fPoint Entity::GetSpeed() const
 {

@@ -88,6 +88,18 @@ bool j1EntityManager::PreUpdate()
 
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
+		if (item->data != player) {	// Activate entities around player, deactivate the ones that aren't
+			if (player->InsideRadius(item->data->GetPosition(), player->GetActivationRadius()) == true) {
+				item->data->active = true;
+			}
+			else {
+				item->data->active = false;
+			}
+		}
+	}
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	{
 		if (item->data->active == false) {
 			continue;
 		}

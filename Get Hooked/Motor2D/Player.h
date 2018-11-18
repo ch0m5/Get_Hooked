@@ -61,6 +61,9 @@ public:
 	bool IsGod() const {
 		return godMode;
 	}
+	iPoint GetActivationRadius() const {
+		return activationRadius;
+	}
 	void ReturnToSpawn() {
 		position = respawnPosition;
 	}
@@ -138,6 +141,9 @@ private:
 
 	float normalAcceleration;
 	float slideAcceleration;
+
+	// Radius for player surround processing
+	iPoint activationRadius;
 
 	// Character status flags and directly related data
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)

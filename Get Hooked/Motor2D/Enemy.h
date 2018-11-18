@@ -68,8 +68,7 @@ protected:
 
 	//Entity
 	virtual void CheckInput();
-	virtual bool InsideDetectionRadius(fPoint playerPos);
-	virtual bool InAttackRange(fPoint playerPos);
+	virtual bool InsideRadius(fPoint targetPosition, iPoint radius);
 
 	// Add downwards acceleration to Y speed
 	virtual void Fall(float dt);
@@ -80,8 +79,8 @@ protected:
 	fPoint spawnPosition;	// TODO: Load from map?
 	bool airborne;			// Flag to mark if enemy is on air (not colliding with anything)
 
-	fPoint detectionRadius;
-	fPoint attackRange;
+	iPoint detectionRadius;
+	iPoint attackRange;
 	bool playerDetected = false;
 	bool playerInRange = false;
 	bool wantToAttack = false;

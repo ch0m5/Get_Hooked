@@ -46,6 +46,7 @@ No previous installations is required to play the game, just download and execut
 
 ## Innovation
 - Living entities accelerate and deaccelerate when moving, on ground they deaccelerate automatically.
+- Entities that are outside the player activation radius do not update.
 - Player can attack, a collider is created during the animation between a set "start" and "finish" frames.
 - Player collider changes shape and position depending on his current animation.
 - Player can crouch to evade things that could hit his head area.
@@ -78,7 +79,7 @@ feature'`
 	- Collisions Module and Logic
 	- Input Interpretation
 	- Debug Functionalities (Except Map ones)
-	- FadeSceneModule
+	- FadeSceneModule and Logic
 	- XML Save, Load and Congif/Awake (Except for map data)
 	- Framerate Logic and Limitations
 	- Entitiy System
@@ -90,7 +91,7 @@ feature'`
 - Samuel Kurt:
 	- Map Design and Implementation
 	- Scene Modules and Logic
-	- FadeModule Logic
+	- FadeSceneModule Logic
 
 ## Disclosure
 We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
