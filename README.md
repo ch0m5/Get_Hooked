@@ -40,12 +40,15 @@ No previous installations is required to play the game, just download and execut
 * 1/2/3/4/5: Change game scale to number chosen
 
 ## Innovation
-* Player accelerates and deaccelerates when moving on ground, but not while being airborne
-* Player collider changes shape and position depending on his current animation
-* Player can crouch to evade things that could hit his head area
-* Player slides with a different deacceleration when trying to crouch while moving
-* Player can jump in the air once making a somersault
-* Some Original Debug Functionalities
+* Living entities accelerate and deaccelerate when moving, on ground they deaccelerate automatically.
+* Player can attack, a collider is created during the animation between a set "start" and "finish" frames.
+* Player collider changes shape and position depending on his current animation.
+* Player can crouch to evade things that could hit his head area.
+* Player slides with a different deacceleration when trying to crouch while moving.
+* Player can jump in the air once making a somersault.
+* Enemies have a detection and attack radius which they use to input movement and other special attacks (currently slime only).
+* Enemies are briefly stunned if still alive, backing off from the player. If they die, they despawn after a set time.
+* Some Original Debug Functionalities.
 
 ## Contributing
 1. Fork it!
