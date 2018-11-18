@@ -133,7 +133,7 @@ bool j1EntityManager::UpdateTick(float dt)
 	int delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
 
 	/*if (App->FramerateCapped())
-		delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
+		delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);	//CHANGE/FIX: Work on this and how to implement it
 	else
 		delayTime = (1000 / App->GetCurrentFPS()) * (App->GetCurrentFPS() / logicPerSecond);*/
 
