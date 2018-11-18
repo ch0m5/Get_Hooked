@@ -3,7 +3,7 @@ This is a university project made by [CITM](https://www.citm.upc.edu/ing/) (Cent
 
 Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
 
-Release Link: [Get Hooked v0.1](https://github.com/Scotland-Fury/Hook_Platformer/releases/tag/v0.2)
+Lastest Release: [Get Hooked v0.3](https://github.com/Scotland-Fury/Hook_Platformer/releases/tag/0.3)
 
 ## The Team: [Scotland Fury](https://github.com/Scotland-Fury)
 * Carles Homs 
