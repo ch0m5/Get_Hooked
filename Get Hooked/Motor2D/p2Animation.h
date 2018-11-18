@@ -27,7 +27,7 @@ public:
 		frames[last_frame++] = rect;
 	}
 
-	SDL_Rect& GetCurrentFrame(float dt = 1)
+	SDL_Rect& AdvanceAnimation(float dt = 1)
 	{
 		current_frame += speed * dt;
 		if (current_frame >= last_frame)
@@ -42,6 +42,11 @@ public:
 		}
 
 		return frames[(int)current_frame];
+	}
+
+	int GetCurrentFrame()
+	{
+		return (int)current_frame;
 	}
 
 	bool Finished() const

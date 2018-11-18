@@ -8,14 +8,14 @@ struct Collider;
 struct SDL_Texture;
 
 //Components
-struct movement_flags {
+struct movement_flags {	//Dynamic Entity
 	bool movingUp;
 	bool movingRight;
 	bool movingLeft;
 	bool movingDown;
 };
 
-struct movement_input {
+struct movement_input {	//Dynamic Entity
 	bool wantMoveUp;
 	bool wantMoveRight;
 	bool wantMoveLeft;
@@ -23,7 +23,7 @@ struct movement_input {
 };
 
 struct sprite_data {	// @Carles, struct used to store xml data of the first sprite of an animation to then automatize the animation allocation process
-	//sprite_data* spritePtr;	//IMPROVE: Put all sprite_data in a list
+	//p2SString id;	//IMPROVE: Make sprite_data lists and use this to mark them
 	iPoint sheetPosition;
 	SDL_Rect colliderOffset;
 	uint numFrames;
@@ -158,6 +158,7 @@ protected:
 	SDL_Rect hitboxOffset;
 
 	//Living Entity
+	//p2List<Collider*> attackColliders;
 	int life;
 	uint maxLife;
 	bool dead;

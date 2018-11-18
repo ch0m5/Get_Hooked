@@ -75,7 +75,7 @@ bool Enemy::UpdateTick(float dt)
 	Move(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();	// Transform player collider depending on new position and state
 
-	animRect = animPtr->GetCurrentFrame(dt);
+	animRect = animPtr->AdvanceAnimation(dt);
 
 	return ret;
 }

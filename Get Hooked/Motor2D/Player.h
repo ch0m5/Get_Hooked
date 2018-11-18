@@ -12,7 +12,15 @@ enum class player_state {	// @Carles, enum that groups all possible player state
 	FALLING,
 	SLIDING,
 	HURT,
+	ATTACKING,
 	//HOOK
+};
+
+struct attack_data {	//IMPROVE: Make function that automatically "flips" the collider based on the animation sprite data (x,y,w,h)
+	SDL_Rect offsetRight;
+	SDL_Rect offsetLeft;
+	ushort startAttackFrame;	//CHANGE/FIX: Add to config.xml
+	ushort finishAttackFrame;
 };
 
 class Player : public Entity
@@ -55,10 +63,14 @@ public:
 	}
 
 private:	// @Carles
+	void ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite);
 	void ImportAllStates(pugi::xml_node&);													// Import all state data from config.xml
 	void ImportAllSprites(pugi::xml_node&);													// Import all sprite data using the above function for each animation
 	void AllocAllAnimations();																// Allocate all animations with previously recieved sprite data
 	
+	Collider* CreateAttackCollider(attack_data attack);
+	SDL_Rect ReshapeAttackCollider(attack_data attack);
+
 	// Player actions
 	void Jump();			// Add Y speed and jump state when requested
 	void Fall(float dt);	// Add acceleration to Y speed
@@ -88,6 +100,7 @@ private:	// @Carles
 	player_state FallingMoveCheck();
 	player_state SlidingMoveCheck();
 	player_state HurtMoveCheck();
+	player_state AttackMoveCheck();
 	
 	// Apply effects of each state
 	void IdleEffects();
@@ -98,6 +111,7 @@ private:	// @Carles
 	void SlidingEffects();
 	void HurtEffects();
 	void DeadEffects();
+	void AttackEffects();
 
 	// Movement and final changes
 	fPoint GodModeMovement(float dt);
@@ -109,6 +123,11 @@ public:
 
 private:
 	player_state status;
+	Collider* attackCollider;
+	SDL_Rect attackOffset;
+	bool wantAttack = false;
+	bool attackColliderCreated = false;
+	bool weaponDrawn;	// CHANGE/FIX: Put to config & save_game when finally used
 
 	fPoint lastGroundPosition;
 	fPoint respawnPosition;
@@ -122,6 +141,8 @@ private:
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
 	bool somersaultUsed;	// Flag for somersault usage
 
+	uint attackTimer = 0;
+	ushort attackDelay;
 	uint deadTimer = 0;		// Timer used for player death
 	ushort deathDelay;		// Time delay between death and start FadeToBlack
 
@@ -145,6 +166,9 @@ private:
 
 	sprite_data hurtSprite;
 	sprite_data deadSprite;
+
+	sprite_data attack1Sprite;
+	attack_data attack1Data;
 
 	// Audio
 	uint runSfxTimer = 0;	// Timer to mark time between run sounds
@@ -171,7 +195,7 @@ private:
 	//Animation somersault;
 	//Animation fall;
 
-	//Animation attack_1;
+	//Animation attack_1;	//FIRST ATTACK DONE
 	//Animation attack_2;
 	//Animation attack_3;
 
@@ -191,9 +215,6 @@ private:
 	//Animation ladder_climb;
 	//Animation wall_slide;
 	//Animation wall_jump;
-
-	//Animation hurt;
-	//Animation die;
 
 // 2nd list for definitions
 	//idle;

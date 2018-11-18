@@ -110,7 +110,7 @@ bool Player::UpdateTick(float dt)
 	Move(dt);		// Move player position and calculate other movement related factors
 	UpdateHitbox();	// Transform player collider depending on new position and state
 
-	animRect = animPtr->GetCurrentFrame(dt);
+	animRect = animPtr->AdvanceAnimation(dt);
 
 	return ret;
 }
@@ -197,7 +197,7 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 			while (c1->CheckCollision(c2->rect) == true) {
 				c1->rect.x--;
 			}
-			c1->rect.x++;
+			c1->rect.x++;	//IMPROVE: Loading while touching a lateral collider makes the player not Load() position x & y correctly
 			speed.x = 0.0f;
 			ret = collision_type::ON_RIGHT;
 		}
@@ -325,7 +325,8 @@ void Player::ImportAllStates(pugi::xml_node& config)
 	// Character status flags and directly related data
 	airborne = config.child("airborne").attribute("value").as_bool();
 	lookingRight = config.child("looking").attribute("right").as_bool();
-	somersaultUsed = config.child("somersault").attribute("used").as_bool();;
+	somersaultUsed = config.child("somersault").attribute("used").as_bool();
+	attackDelay = config.child("attackDelay").attribute("miliseconds").as_uint();
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
 	fadeDelay = config.child("fadeDelay").attribute("seconds").as_float();
 	debugMode = config.child("debugMode").attribute("value").as_bool();
@@ -345,6 +346,25 @@ void Player::ImportAllSprites(pugi::xml_node& first_sprite)
 	ImportSpriteData("fall", &fallSprite, first_sprite);
 	ImportSpriteData("hurt", &hurtSprite, first_sprite);
 	ImportSpriteData("dead", &deadSprite, first_sprite);
+
+	ImportSpriteData("attack_1", &attack1Sprite, first_sprite);
+	ImportAttackData("attack_1", &attack1Data, first_sprite);
+}
+
+void Player::ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite)
+{
+	attack->offsetRight.x = first_sprite.child(spriteName).child("attackRightOffset").attribute("x").as_int();
+	attack->offsetRight.y = first_sprite.child(spriteName).child("attackRightOffset").attribute("y").as_int();
+	attack->offsetRight.w = first_sprite.child(spriteName).child("attackRightOffset").attribute("w").as_int();
+	attack->offsetRight.h = first_sprite.child(spriteName).child("attackRightOffset").attribute("h").as_int();
+
+	attack->offsetLeft.x = first_sprite.child(spriteName).child("attackLeftOffset").attribute("x").as_int();
+	attack->offsetLeft.y = first_sprite.child(spriteName).child("attackLeftOffset").attribute("y").as_int();
+	attack->offsetLeft.w = first_sprite.child(spriteName).child("attackLeftOffset").attribute("w").as_int();
+	attack->offsetLeft.h = first_sprite.child(spriteName).child("attackLeftOffset").attribute("h").as_int();
+
+	attack->startAttackFrame = first_sprite.child(spriteName).child("attackFrames").attribute("start").as_uint();
+	attack->finishAttackFrame = first_sprite.child(spriteName).child("attackFrames").attribute("finish").as_uint();
 }
 
 // Allocates all animations using the AllocAnimation function and parameters related to their sprite sheet location extracted from the config.xml file
@@ -357,6 +377,7 @@ void Player::AllocAllAnimations()
 	jumpSprite.anim.AllocAnimation({ jumpSprite.sheetPosition.x * spriteSize.x, jumpSprite.sheetPosition.y * spriteSize.y }, spriteSize, jumpSprite.numFrames);
 	somersaultSprite.anim.AllocAnimation({ somersaultSprite.sheetPosition.x * spriteSize.x, somersaultSprite.sheetPosition.y * spriteSize.y }, spriteSize, somersaultSprite.numFrames);
 	fallSprite.anim.AllocAnimation({ fallSprite.sheetPosition.x * spriteSize.x, fallSprite.sheetPosition.y * spriteSize.y }, spriteSize, fallSprite.numFrames);
+	attack1Sprite.anim.AllocAnimation({ attack1Sprite.sheetPosition.x * spriteSize.x, attack1Sprite.sheetPosition.y * spriteSize.y }, spriteSize, attack1Sprite.numFrames);
 	hurtSprite.anim.AllocAnimation({ hurtSprite.sheetPosition.x * spriteSize.x, hurtSprite.sheetPosition.y * spriteSize.y }, spriteSize, hurtSprite.numFrames);
 	deadSprite.anim.AllocAnimation({ deadSprite.sheetPosition.x * spriteSize.x, deadSprite.sheetPosition.y * spriteSize.y }, spriteSize, deadSprite.numFrames);
 }
@@ -429,6 +450,14 @@ void Player::PlayerReset()
 	acceleration.x = normalAcceleration;
 	playedSlideSfx = false;
 	slideSprite.anim.Reset();
+
+	attack1Sprite.anim.Reset();
+
+	if (attackCollider != nullptr) {
+		attackCollider->to_delete = true;
+		attackCollider = nullptr;
+		attackColliderCreated = false;
+	}
 }
 
 //Check debug input
@@ -552,6 +581,13 @@ void Player::CheckInput()
 		input.wantMoveDown = true;
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {	// Attack
+		wantAttack = true;
+	}
+	else {
+		wantAttack = false;
+	}
+
 	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input
 		debugMode = true;
 	}
@@ -599,6 +635,9 @@ void Player::CheckState() {	// For each state, check possible new states based o
 		case player_state::HURT:
 			status = HurtMoveCheck();
 			break;
+		case player_state::ATTACKING:
+			status = AttackMoveCheck();
+			break;
 		}
 	}
 }
@@ -607,7 +646,7 @@ player_state Player::IdleMoveCheck()
 {
 	player_state ret = player_state::IDLE;
 
-	if (airborne == true) {
+	if (airborne) {
 		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveRight == true && input.wantMoveLeft == false || input.wantMoveLeft == true && input.wantMoveRight == false) {
@@ -620,6 +659,10 @@ player_state Player::IdleMoveCheck()
 	else if (input.wantMoveDown == true) {
 		ret = player_state::CROUCHING;
 	}
+	else if (wantAttack == true) {
+		attackTimer = SDL_GetTicks();
+		ret = player_state::ATTACKING;
+	}
 
 	return ret;
 }
@@ -628,7 +671,7 @@ player_state Player::CrouchingMoveCheck()
 {
 	player_state ret = player_state::CROUCHING;
 
-	if (airborne == true) {
+	if (airborne) {
 		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveDown == false) {
@@ -642,6 +685,10 @@ player_state Player::CrouchingMoveCheck()
 		Jump();
 		ret = player_state::JUMPING;
 	}
+	else if (wantAttack == true) {
+		attackTimer = SDL_GetTicks();
+		ret = player_state::ATTACKING;
+	}
 
 	return ret;
 }
@@ -650,7 +697,7 @@ player_state Player::RunningMoveCheck()
 {
 	player_state ret = player_state::RUNNING;
 
-	if (airborne == true) {
+	if (airborne) {
 		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveUp == true) {
@@ -665,6 +712,10 @@ player_state Player::RunningMoveCheck()
 			ret = player_state::IDLE;
 		}
 	}
+	else if (wantAttack == true) {
+		attackTimer = SDL_GetTicks();
+		ret = player_state::ATTACKING;
+	}
 
 	return ret;
 }
@@ -674,14 +725,16 @@ player_state Player::JumpingMoveCheck()
 	player_state ret = player_state::JUMPING;
 
 	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN && somersaultUsed == false) {
-		somersaultSprite.anim.Reset();
 		Jump();
-		ret = player_state::JUMPING;
+		somersaultSprite.anim.Reset();
 		somersaultUsed = true;
 	}
 	else if (movement.movingDown == true) {
 		ret = player_state::FALLING;
 	}
+
+	if (ret != player_state::JUMPING)
+		jumpSprite.anim.Reset();
 
 	return ret;
 }
@@ -696,7 +749,7 @@ player_state Player::FallingMoveCheck()
 		ret = player_state::JUMPING;
 		somersaultUsed = true;
 	}
-	else if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
+	else if (!airborne) {
 		Land();
 
 		if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true) {
@@ -729,17 +782,14 @@ player_state Player::SlidingMoveCheck()
 {
 	player_state ret = player_state::SLIDING;
 
-	if (airborne == true) {
-		StandUp();
+	if (airborne) {
 		ret = player_state::FALLING;
 	}
 	else if (input.wantMoveUp == true) {
-		StandUp();
 		Jump();
 		ret = player_state::JUMPING;
 	}
 	else if (input.wantMoveDown == false) {
-		StandUp();
 
 		if (input.wantMoveRight == true || input.wantMoveLeft == true || movement.movingRight == true || movement.movingLeft == true) {
 			ret = player_state::RUNNING;
@@ -749,7 +799,6 @@ player_state Player::SlidingMoveCheck()
 		}
 	}
 	else if (movement.movingLeft == false && movement.movingRight == false) {
-		StandUp();
 
 		if (input.wantMoveDown == true) {
 			ret = player_state::CROUCHING;
@@ -759,6 +808,9 @@ player_state Player::SlidingMoveCheck()
 		}
 	}
 
+	if (ret != player_state::SLIDING)
+		StandUp();
+
 	return ret;
 }
 
@@ -766,7 +818,7 @@ player_state Player::HurtMoveCheck()
 {
 	player_state ret = player_state::HURT;
 
-	if (airborne == false) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
+	if (!airborne) {		//SamAlert: Hardcoded values, this condition should be "if feet collision", 
 		Land();
 
 		if (dead == false) {
@@ -797,10 +849,45 @@ player_state Player::HurtMoveCheck()
 	return ret;
 }
 
+player_state Player::AttackMoveCheck()
+{
+	player_state ret = player_state::ATTACKING;
+
+	if (airborne) {
+		ret = player_state::FALLING;
+	}
+	else if (attackTimer < SDL_GetTicks() - attackDelay) {
+		if (input.wantMoveUp == true) {
+			Jump();
+			ret = player_state::JUMPING;
+		}
+		else if (input.wantMoveDown == true) {
+			ret = player_state::CROUCHING;
+		}
+		else if (input.wantMoveRight == true && input.wantMoveLeft == false || input.wantMoveLeft == true && input.wantMoveRight == false) {
+			ret = player_state::RUNNING;
+		}
+		else {
+			ret = player_state::IDLE;
+		}
+	}
+
+	if (ret != player_state::ATTACKING) {
+		attack1Sprite.anim.Reset();
+
+		if (attackCollider != nullptr) {
+			attackCollider->to_delete = true;
+			attackCollider = nullptr;
+		}
+	}
+		
+	return ret;
+}
+
 // Add state effects like movement restrictions, animation and sounds
 void Player::ApplyState()
 {
-	if (status != player_state::SLIDING && status != player_state::HURT) {
+	if (!(status == player_state::SLIDING || status == player_state::HURT || status == player_state::ATTACKING)) {
 		lookingRight = CheckOrientation(lookingRight);
 	}
 
@@ -809,7 +896,7 @@ void Player::ApplyState()
 		mustReset = false;
 	}
 
-	if (airborne == false) {
+	if (!airborne) {
 		lastGroundPosition = position;
 	}
 
@@ -834,6 +921,9 @@ void Player::ApplyState()
 		break;
 	case player_state::HURT:
 		HurtEffects();
+		break;
+	case player_state::ATTACKING:
+		AttackEffects();
 		break;
 	}
 }
@@ -947,10 +1037,35 @@ void Player::DeadEffects() {
 	}
 }
 
+void Player::AttackEffects()
+{
+	input.wantMoveUp = false;
+	input.wantMoveDown = false;
+	input.wantMoveRight = false;
+	input.wantMoveLeft = false;
+
+	if (animPtr->GetCurrentFrame() == attack1Data.startAttackFrame && attackColliderCreated == false) {
+		attackCollider = CreateAttackCollider(attack1Data);
+		attackColliderCreated = true;
+	}
+	else if (animPtr->GetCurrentFrame() == attack1Data.finishAttackFrame && attackColliderCreated == true) {
+		assert(attackCollider != nullptr, "Attack Collider was nullptr and it shouldn't be!");
+
+		if (attackCollider != nullptr) {
+			attackCollider->to_delete = true;
+			attackCollider = nullptr;
+		}
+
+		attackColliderCreated = false;
+	}
+
+	animPtr = &attack1Sprite.anim;
+}
+
 // Move player position and decide/calculate other movement related factors
 void Player::Move(float dt)
 {
-	if (godMode == true) {
+	if (godMode) {
 		GodModeMovement(dt);
 	}
 	else {
@@ -995,7 +1110,7 @@ fPoint Player::NormalMovement(float dt)
 	else if (input.wantMoveLeft == true && input.wantMoveRight == false) {
 		speed.x -= acceleration.x * dt;
 	}
-	else if (airborne == false) {	// Natural deacceleration when on ground
+	else if (!airborne) {	// Natural deacceleration when on ground
 		if (movement.movingRight == true) {
 			speed.x -= acceleration.x * dt;
 
@@ -1011,7 +1126,7 @@ fPoint Player::NormalMovement(float dt)
 	}
 
 	// If on air, apply gravity
-	if (airborne == true) {
+	if (airborne) {
 		Fall(dt);
 	}
 
@@ -1060,7 +1175,57 @@ void Player::UpdateHitbox()
 	case player_state::HURT:
 		hitboxOffset = ReshapeCollider(hurtSprite);
 		break;
+	case player_state::ATTACKING:
+		hitboxOffset = ReshapeCollider(attack1Sprite);
+
+		if (attackColliderCreated)
+			attackOffset = ReshapeAttackCollider(attack1Data);
+		break;
 	default:
 		break;
 	}
+}
+
+Collider* Player::CreateAttackCollider(attack_data attack)
+{
+	SDL_Rect tmpRect;
+
+	if (lookingRight) {
+		tmpRect.x = (int)position.x + attack.offsetRight.x;
+		tmpRect.y = (int)position.y + attack.offsetRight.y;
+		tmpRect.w = attack.offsetRight.w;
+		tmpRect.h = attack.offsetRight.h;
+	}
+	else {
+		tmpRect.x = (int)position.x + attack.offsetLeft.x;
+		tmpRect.y = (int)position.y + attack.offsetLeft.y;
+		tmpRect.w = attack.offsetLeft.w;
+		tmpRect.h = attack.offsetLeft.h;
+	}
+
+	return App->collision->AddCollider(tmpRect, COLLIDER_PLAYER_ATTACK, nullptr);
+}
+
+SDL_Rect Player::ReshapeAttackCollider(attack_data attack)
+{
+	SDL_Rect tmpOffset;
+
+	if (lookingRight) {
+		attackCollider->rect.x = (int)position.x + attack.offsetRight.x;
+		attackCollider->rect.y = (int)position.y + attack.offsetRight.y;
+		attackCollider->rect.w = attack.offsetRight.w;
+		attackCollider->rect.h = attack.offsetRight.h;
+
+		tmpOffset = attack.offsetRight;
+	}
+	else {
+		attackCollider->rect.x = (int)position.x + attack.offsetLeft.x;
+		attackCollider->rect.y = (int)position.y + attack.offsetLeft.y;
+		attackCollider->rect.w = attack.offsetLeft.w;
+		attackCollider->rect.h = attack.offsetLeft.h;
+
+		tmpOffset = attack.offsetLeft;
+	}
+
+	return tmpOffset;
 }
