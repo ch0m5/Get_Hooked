@@ -73,10 +73,12 @@ protected:
 	// Add downwards acceleration to Y speed
 	virtual void Fall(float dt);
 
+public:
+	fPoint spawnPosition;	// TODO: Load from map?
+
 protected:
 	bool canFly;
 	enemy_state status;
-	fPoint spawnPosition;	// TODO: Load from map?
 	bool airborne;			// Flag to mark if enemy is on air (not colliding with anything)
 
 	iPoint detectionRadius;

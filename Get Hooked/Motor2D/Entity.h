@@ -121,7 +121,7 @@ protected:
 	virtual void ApplyState() {};		// Add state effects like movement restrictions, animation and sounds
 	virtual void Move(float dt) {};		// Move player position and decide/calculate other movement related factors
 	virtual void UpdateHitbox() {};		// Transform player collider depending on new position and state
-	virtual bool CheckOrientation(bool orientation);
+	virtual bool CheckOrientation();
 	virtual fPoint LimitSpeed();
 
 	//Physical Entity

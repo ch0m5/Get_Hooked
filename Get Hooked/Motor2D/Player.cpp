@@ -155,8 +155,15 @@ collision_type Player::OnCollision(Collider* c1, Collider* c2)
 		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_WALL) {
 			ret = WallCollision(c1, c2);
 		}
-		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY
-			|| c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY_ATTACK) {
+		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY) {
+
+			if (c2->callback->IsDead() == false && status != player_state::HURT) {
+				Hurt();
+				status = player_state::HURT;
+				ret = collision_type::UNDEFINED;
+			}
+		}
+		else if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY_ATTACK) {
 			
 			if (status != player_state::HURT) {
 				Hurt();
@@ -897,7 +904,7 @@ player_state Player::AttackMoveCheck()
 void Player::ApplyState()
 {
 	if (!(status == player_state::SLIDING || status == player_state::HURT || status == player_state::ATTACKING)) {
-		lookingRight = CheckOrientation(lookingRight);
+		CheckOrientation();
 	}
 
 	if (mustReset) {

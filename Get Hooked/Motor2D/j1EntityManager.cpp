@@ -16,7 +16,20 @@ j1EntityManager::j1EntityManager()
 {
 	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);
-	//(Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::BAT);	//TODO: Dynamic enemy addition w/ spawnPosition!
+
+	//Enemy spawns
+	pugi::xml_document configFile;
+	pugi::xml_node spawnPoints = LoadConfig(configFile);
+	spawnPoints = spawnPoints.child("entityManager").child("entities").child("spawnPoints");
+
+	Enemy* tmpPtr;
+	pugi::xml_node lastChild = spawnPoints.last_child();	//CHANGE/FIX: Terrible workaround, but couldn't do it any better in time. Works, but it shouldn't be here loading config out of nowhere.
+
+	for (spawnPoints = spawnPoints.first_child(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
+		tmpPtr = (Enemy*)CreateEntity(entity_type::ENEMY, (enemy_type)spawnPoints.attribute("type").as_int());
+		tmpPtr->spawnPosition.x = spawnPoints.attribute("xSpawn").as_int();
+		tmpPtr->spawnPosition.y = spawnPoints.attribute("ySpawn").as_int();
+	}
 }
 
 // Destructor

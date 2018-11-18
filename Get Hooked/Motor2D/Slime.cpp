@@ -176,8 +176,8 @@ void Slime::CheckState()
 void Slime::ApplyState()
 {
 	if (!(status == enemy_state::ATTACKING || status == enemy_state::HURT))
-		lookingRight = CheckOrientation(lookingRight);
-
+		CheckOrientation();
+	
 	if (mustReset) {
 		attackSprite.anim.Reset();
 		maxSpeed.x = origMaxSpeed;

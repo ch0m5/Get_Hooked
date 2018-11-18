@@ -195,7 +195,7 @@
           <looking right="false"/>
           <attackDelay miliseconds="500"/>
           <hurtDelay miliseconds="500"/>
-          <deathDelay miliseconds="3000"/>
+          <deathDelay miliseconds="2000"/>
         </stats>
       </bat>
       <slime>
@@ -236,10 +236,20 @@
           <looking right="false"/>
           <attackDelay miliseconds="1000"/>
           <hurtDelay miliseconds="500"/>
-          <deathDelay miliseconds="1000"/>
+          <deathDelay miliseconds="2000"/>
           <dash speed="100" />
         </stats>
       </slime>
+      <spawnPoints>
+        <bat type="0" xSpawn="932" ySpawn="345" />
+        <bat type="0" xSpawn="1082" ySpawn="275" />
+        <bat type="0" xSpawn="2791" ySpawn="258" />
+        <bat type="0" xSpawn="4060" ySpawn="244" />
+        <slime type="1" xSpawn="1371" ySpawn="305" />
+        <slime type="1" xSpawn="1886" ySpawn="278" />
+        <slime type="1" xSpawn="4189" ySpawn="332" />
+        <end/>
+      </spawnPoints>
     </entities>
   </entityManager>  
 </config>

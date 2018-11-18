@@ -98,18 +98,16 @@ void Entity::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi:
 	sprite->colliderOffset.h = first_sprite.child(spriteName).child("offset").attribute("h").as_int();
 }
 
-bool Entity::CheckOrientation(bool orientation)
+bool Entity::CheckOrientation()
 {
-	bool ret = orientation;
-
 	if (input.wantMoveRight == true && input.wantMoveLeft == false) {
-		orientation = true;
+		lookingRight = true;
 	}
 	else if (input.wantMoveLeft == true && input.wantMoveRight == false) {
-		orientation = false;
+		lookingRight = false;
 	}
 
-	return orientation;
+	return lookingRight;
 }
 
 fPoint Entity::LimitSpeed()

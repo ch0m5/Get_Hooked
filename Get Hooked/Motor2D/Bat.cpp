@@ -102,7 +102,7 @@ void Bat::CheckState()
 void Bat::ApplyState()
 {
 	if (!(status == enemy_state::HURT))
-		lookingRight = CheckOrientation(lookingRight);
+		CheckOrientation();
 
 	switch (status) {
 	case enemy_state::IDLE:
