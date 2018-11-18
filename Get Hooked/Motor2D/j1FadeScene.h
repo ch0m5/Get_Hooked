@@ -4,9 +4,7 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
-
-
-class j1FadeScene : public j1Module
+class j1FadeScene : public j1Module	//CHANGE/FIX: FadeToBlack has parameters that do nothing, needs rework
 {
 public:
 	j1FadeScene();

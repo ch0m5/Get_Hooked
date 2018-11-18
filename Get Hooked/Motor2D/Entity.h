@@ -132,7 +132,7 @@ public:
 	bool active;
 	bool mustDestroy = false;
 
-protected:
+protected:	//IMPROVE: Entity is pretty full, future subdivision of classes would be better, specially if using a component-based format
 	//Entity
 	fPoint position;
 	fPoint centerPosition;

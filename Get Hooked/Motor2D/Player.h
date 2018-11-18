@@ -19,7 +19,7 @@ enum class player_state {	// @Carles, enum that groups all possible player state
 struct attack_data {	//IMPROVE: Make function that automatically "flips" the collider based on the animation sprite data (x,y,w,h)
 	SDL_Rect offsetRight;
 	SDL_Rect offsetLeft;
-	ushort startAttackFrame;	//CHANGE/FIX: Add to config.xml
+	ushort startAttackFrame;
 	ushort finishAttackFrame;
 };
 

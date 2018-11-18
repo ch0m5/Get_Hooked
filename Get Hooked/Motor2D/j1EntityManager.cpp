@@ -274,7 +274,7 @@ Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
 
 Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
 {
-	//static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");	//CHANGE/FIX: UNCOMMENT
+	static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");
 
 	Enemy* ret = nullptr;
 	switch (enemy) {
@@ -287,8 +287,8 @@ Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
 		default:
 			break;
 	}
-	//CHANGE/FIX: Comment for testing, should be uncommented when running the game normally
-	pugi::xml_document config_file;
+
+	pugi::xml_document config_file;	//IMPROVE: Make function?
 	pugi::xml_node config = LoadConfig(config_file);
 	ret->Awake(config.child("EntityManager").child("entities").child(ret->name.GetString()));
 

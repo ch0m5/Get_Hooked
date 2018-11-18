@@ -4,11 +4,10 @@
 #include "j1Module.h"
 
 struct SDL_Texture;
-
+								//CHANGE/FIX: Scene, both 1 and 2, have a very buggy functionality and need reworking, also reduced to a single module
 class j1Scene : public j1Module	//CHANGE/FIX: Remake maps 1 and 2, implement correspondant debug functionalities correctly, and if enough time make maps work on the same scene
 {
 public:
-
 	j1Scene();
 
 	// Destructor
@@ -38,7 +37,6 @@ public:
 	// Changes to next scene
 	void ChangeScene();
 
-
 public:	// @Carles
 	// Inputs
 	SDL_Rect LimitCameraPos(fPoint playerPos);
@@ -47,10 +45,9 @@ public:	// @Carles
 	bool active = true;
 
 	fPoint playerPos;
+
 private:
 	fPoint cameraSpeed;	// @Carles
-	
-
 	p2SString map;
 };
 
