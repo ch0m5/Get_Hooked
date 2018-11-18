@@ -117,6 +117,7 @@ bool j1Scene2::CleanUp()
 	App->collision->CleanUp();
 	App->tex->CleanUp();
 	App->entityManager->player->CleanUp();
+	App->entityManager->CleanEnemies();
 
 	return true;
 }

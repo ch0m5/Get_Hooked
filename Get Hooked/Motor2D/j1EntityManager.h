@@ -36,6 +36,7 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
+	bool CleanEnemies();
 
 	// Save and Load
 	bool Load(pugi::xml_node&);

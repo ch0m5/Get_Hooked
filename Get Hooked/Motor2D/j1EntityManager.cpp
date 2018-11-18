@@ -207,6 +207,26 @@ bool j1EntityManager::CleanUp()
 	return ret;
 }
 
+bool j1EntityManager::CleanEnemies()
+{
+	bool ret = true;
+
+	p2List_item<Entity*>* item;
+	p2List_item<Entity*>* prevItem;
+
+	for (item = entities.end; item != NULL && ret == true; item = prevItem)
+	{
+		prevItem = item->prev;
+
+		if (item->data->GetType() == entity_type::ENEMY) {
+			ret = item->data->CleanUp();
+			entities.del(item);
+		}
+	}
+
+	return ret;
+}
+
 pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
 {
 	pugi::xml_node ret;
