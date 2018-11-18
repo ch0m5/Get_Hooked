@@ -26,6 +26,7 @@ Slime::Slime() : Enemy(enemy_type::SLIME)
 bool Slime::Start()
 {
 	dead = false;
+	speed = { 0, 0 };
 	life = maxLife;
 	hitboxOffset = idleSprite.colliderOffset;
 	status = enemy_state::IDLE;

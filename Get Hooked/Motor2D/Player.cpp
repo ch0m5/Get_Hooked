@@ -60,6 +60,7 @@ bool Player::Start()
 
 	dead = false;
 	life = maxLife;
+	speed = { 0, 0 };
 	acceleration.x = normalAcceleration;
 	hitboxOffset = idleSprite.colliderOffset;
 	status = player_state::IDLE;
@@ -318,7 +319,6 @@ void Player::ImportAllStates(pugi::xml_node& config)
 {
 	// Character stats
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
-	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();

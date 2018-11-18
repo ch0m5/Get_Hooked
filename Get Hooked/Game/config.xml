@@ -143,7 +143,6 @@
         </audio>
         <stats>
           <life value="3"/>
-          <speed x="0" y="0"/>
           <maxSpeed x="150" y="240"/>
           <hurtSpeed x="110" y="110"/>
           <accelerations x="700" y="220" gravity="560" slide="200"/>
@@ -185,7 +184,6 @@
         </audio>
         <stats>
           <life value="1"/>
-          <speed x="0" y="0"/>
           <maxSpeed x="100" y="100"/>
           <hurtSpeed x="330" y="330"/>
           <accelerations x="230" y="230" gravity="560"/>
@@ -227,7 +225,6 @@
         </audio>
         <stats>
           <life value="3"/>
-          <speed x="0" y="0"/>
           <maxSpeed x="50" y="240"/>
           <hurtSpeed x="500" y="0"/>
           <accelerations x="150" y="0" gravity="560"/>

@@ -227,7 +227,6 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 {
 	// Character stats
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
-	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
 	acceleration = { config.child("accelerations").attribute("x").as_float(), config.child("accelerations").attribute("y").as_float() };

@@ -27,6 +27,7 @@ bool Bat::Start()
 {
 	dead = false;
 	life = maxLife;
+	speed = { 0, 0 };
 	hitboxOffset = idleSprite.colliderOffset;
 	status = enemy_state::IDLE;
 
