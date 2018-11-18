@@ -34,7 +34,8 @@ private:	// @Carles
 	void UpdateHitbox();	// Transform player collider depending on new position and state
 
 private:
-	ushort dashMultiplier;
+	ushort origMaxSpeed;
+	ushort dashSpeed;
 
 	//Character sprites
 	sprite_data idleSprite;

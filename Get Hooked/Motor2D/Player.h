@@ -132,8 +132,6 @@ private:
 	fPoint lastGroundPosition;
 	fPoint respawnPosition;
 
-	fPoint hurtSpeed;	// Speed that the player adopts when getting hurt/killed
-
 	float normalAcceleration;
 	float slideAcceleration;
 

@@ -422,7 +422,7 @@ void Player::StandUp() {
 // Stop and move slightly up and opposite of current direction, player state changes to AIRBORNE
 void Player::Hurt()
 {
-	if (lookingRight == true) {
+	if (lookingRight) {
 		speed.x = -hurtSpeed.x;
 	}
 	else {
@@ -430,6 +430,7 @@ void Player::Hurt()
 	}
 
 	speed.y = -hurtSpeed.y;
+	
 	airborne = true;
 
 	if (--life == 0) {

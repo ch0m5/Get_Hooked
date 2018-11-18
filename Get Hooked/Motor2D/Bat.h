@@ -35,6 +35,7 @@ private:
 	//Character sprites
 	sprite_data followSprite;
 	sprite_data idleSprite;
+	sprite_data fallingSprite;
 	sprite_data deadSprite;
 };
 

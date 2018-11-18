@@ -61,11 +61,11 @@
     <ClCompile Include="Bat.cpp">
       <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Desenvolupament  ========\Entities\Types</Filter>
-    </ClCompile>
     <ClCompile Include="Slime.cpp">
       <Filter>Desenvolupament  ========\Entities\Types\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Desenvolupament  ========\Entities\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

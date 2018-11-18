@@ -131,15 +131,9 @@ collision_type Enemy::OnCollision(Collider* c1, Collider* c2)
 
 	if (App->entityManager->player->IsGod() == false) {
 		if (c1->GetType() == collider_type::COLLIDER_ENEMY && c2->GetType() == collider_type::COLLIDER_PLAYER_ATTACK) {
-			//ret = PlayerAttackCollision(c1, c2);
-			Hurt();
-			status = enemy_state::HURT;
-			if (IsDead()) {
-				deadTimer = SDL_GetTicks();
-				dead = true;
-			}
-			else {
-				hurtTimer = SDL_GetTicks();
+			if (status != enemy_state::HURT) {
+				Hurt();
+				status = enemy_state::HURT;
 			}
 		}
 	}
@@ -147,7 +141,7 @@ collision_type Enemy::OnCollision(Collider* c1, Collider* c2)
 	return ret;
 }
 
-// Called when colliding
+// Called when colliding with a wall
 collision_type Enemy::WallCollision(Collider* c1, Collider* c2)
 {
 	collision_type ret = collision_type::UNDEFINED;
@@ -202,6 +196,30 @@ collision_type Enemy::WallCollision(Collider* c1, Collider* c2)
 	return ret;
 }
 
+void Enemy::Hurt()
+{
+	if (lookingRight) {
+		speed.x = -hurtSpeed.x;
+	}
+	else {
+		speed.x = hurtSpeed.x;
+	}
+
+	speed.y = -hurtSpeed.y;
+	
+	airborne = true;
+
+	if (--life == 0) {
+		dead = true;
+		deadTimer = SDL_GetTicks();
+	}
+	else {
+		hurtTimer = SDL_GetTicks();
+	}
+
+	mustReset = true;
+}
+
 // Import all state data from config.xml
 void Enemy::ImportAllStates(pugi::xml_node &config)
 {
@@ -209,8 +227,8 @@ void Enemy::ImportAllStates(pugi::xml_node &config)
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-	acceleration.x = config.child("accelerations").attribute("x").as_float();
-	acceleration.y = config.child("accelerations").attribute("y").as_float();
+	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
+	acceleration = { config.child("accelerations").attribute("x").as_float(), config.child("accelerations").attribute("y").as_float() };
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	canFly = config.child("canFly").attribute("value").as_bool();
 

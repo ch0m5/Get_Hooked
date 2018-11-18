@@ -161,6 +161,7 @@ protected:
 	//p2List<Collider*> attackColliders;
 	int life;
 	uint maxLife;
+	fPoint hurtSpeed;
 	bool dead;
 
 private:

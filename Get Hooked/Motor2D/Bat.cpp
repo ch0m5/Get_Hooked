@@ -48,6 +48,7 @@ void Bat::ImportAllSprites(pugi::xml_node& first_sprite)
 {
 	ImportSpriteData("follow", &followSprite, first_sprite);
 	ImportSpriteData("idle", &idleSprite, first_sprite);
+	ImportSpriteData("falling", &fallingSprite, first_sprite);
 	ImportSpriteData("dead", &deadSprite, first_sprite);
 }
 
@@ -56,12 +57,13 @@ void Bat::AllocAllAnimations()
 {
 	followSprite.anim.AllocAnimation({ followSprite.sheetPosition.x * spriteSize.x, followSprite.sheetPosition.y * spriteSize.y }, spriteSize, followSprite.numFrames);
 	idleSprite.anim.AllocAnimation({ idleSprite.sheetPosition.x * spriteSize.x, idleSprite.sheetPosition.y * spriteSize.y }, spriteSize, idleSprite.numFrames);
+	fallingSprite.anim.AllocAnimation({ fallingSprite.sheetPosition.x * spriteSize.x, fallingSprite.sheetPosition.y * spriteSize.y }, spriteSize, fallingSprite.numFrames);
 	deadSprite.anim.AllocAnimation({ deadSprite.sheetPosition.x * spriteSize.x, deadSprite.sheetPosition.y * spriteSize.y }, spriteSize, deadSprite.numFrames);
 }
 
 void Bat::CheckState()
 {
-	if (!canFly && App->collision->CheckGroundCollision(hitbox) == false)
+	if (!dead && App->collision->CheckGroundCollision(hitbox) == false)
 		airborne = true;
 
 	if (!dead) {
@@ -83,6 +85,12 @@ void Bat::CheckState()
 		case enemy_state::FALLING:
 			break;
 		case enemy_state::HURT:
+			if (hurtTimer < SDL_GetTicks() - hurtDelay) {
+				if (playerDetected)
+					status = enemy_state::FOLLOWING;
+				else
+					status = enemy_state::IDLE;
+			}
 			break;
 		}
 	}
@@ -90,7 +98,8 @@ void Bat::CheckState()
 
 void Bat::ApplyState()
 {
-	lookingRight = CheckOrientation(lookingRight);
+	if (!(status == enemy_state::HURT))
+		lookingRight = CheckOrientation(lookingRight);
 
 	switch (status) {
 	case enemy_state::IDLE:
@@ -107,11 +116,21 @@ void Bat::ApplyState()
 	case enemy_state::FALLING:
 		break;
 	case enemy_state::HURT:
-		if (deadTimer < SDL_GetTicks() - deathDelay) {
-			mustDestroy = true;
-		}
+		if (dead) {
+			if (airborne) {
+				animPtr = &fallingSprite.anim;
+			}
+			else {
+				if (deadTimer < SDL_GetTicks() - deathDelay) {
+					mustDestroy = true;
+				}
 
-		animPtr = &deadSprite.anim;
+				animPtr = &deadSprite.anim;
+			}
+		}
+		else {
+			animPtr = &idleSprite.anim;
+		}
 
 		input.wantMoveUp = false;
 		input.wantMoveDown = false;
@@ -163,6 +182,10 @@ void Bat::Move(float dt)
 			if (speed.y > 0.0f)
 				speed.y = 0.0f;
 		}
+	}
+
+	if (dead && airborne) {
+		Fall(dt);
 	}
 
 	// Max Speeds

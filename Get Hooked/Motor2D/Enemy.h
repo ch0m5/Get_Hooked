@@ -3,7 +3,7 @@
 
 #include "Entity.h"
 
-enum class enemy_type {
+enum class enemy_type {	//IMPROVE: Sub-Entities Flying enemy & Ground enemy
 	NONE = -1,
 	BAT,
 	SLIME,
@@ -60,6 +60,7 @@ public:
 	collision_type WallCollision(Collider* c1, Collider* c2);
 
 protected:
+	virtual void Hurt();
 	virtual void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
 	virtual void ImportAllSprites(pugi::xml_node&) {};	// Import all sprite data using the above function for each animation
 	virtual void AllocAllAnimations() {};				// Allocate all animations with previously recieved sprite data

@@ -33,6 +33,8 @@ bool Slime::Start()
 	hitboxOffset = idleSprite.colliderOffset;
 	status = enemy_state::IDLE;
 
+	origMaxSpeed = maxSpeed.x;
+
 	graphics = App->tex->Load(textureName.GetString());
 
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_ENEMY, this);
@@ -50,8 +52,8 @@ void Slime::ImportAllStates(pugi::xml_node &config)
 	maxLife = (ushort)config.child("life").attribute("value").as_uint();
 	speed = { config.child("speed").attribute("x").as_float(), config.child("speed").attribute("y").as_float() };
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
-	acceleration.x = config.child("accelerations").attribute("x").as_float();
-	acceleration.y = config.child("accelerations").attribute("y").as_float();
+	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
+	acceleration = { config.child("accelerations").attribute("x").as_float(), config.child("accelerations").attribute("y").as_float() };
 	gravity = config.child("accelerations").attribute("gravity").as_float();
 	canFly = config.child("canFly").attribute("value").as_bool();
 
@@ -68,7 +70,7 @@ void Slime::ImportAllStates(pugi::xml_node &config)
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
 
 	//Slime
-	dashMultiplier = config.child("dash").attribute("multiplier").as_uint();
+	dashSpeed = config.child("dash").attribute("speed").as_uint();
 }
 
 // Import all sprite data using the above function for each animation
@@ -93,8 +95,6 @@ void Slime::AllocAllAnimations()
 
 void Slime::DashAttack()
 {
-	maxSpeed.x *= dashMultiplier;
-	
 	if (lookingRight)
 		speed.x = maxSpeed.x;
 	else
@@ -107,7 +107,7 @@ void Slime::CheckState()
 		airborne = true;
 
 	if (!dead) {
-		if (airborne) {
+		if (airborne && status != enemy_state::HURT) {
 			status = enemy_state::FALLING;
 		}
 
@@ -132,18 +132,18 @@ void Slime::CheckState()
 			else if (wantToAttack) {
 				status = enemy_state::ATTACKING;
 				attackTimer = SDL_GetTicks();
+				maxSpeed.x = dashSpeed;
 				DashAttack();
 			}
 			break;
 		case enemy_state::ATTACKING:
 			if (attackTimer < SDL_GetTicks() - attackDelay) {
 				attackSprite.anim.Reset();
-				maxSpeed.x /= dashMultiplier;
+				maxSpeed.x = origMaxSpeed;
 				if (playerDetected)
 					status = enemy_state::FOLLOWING;
 				else
 					status = enemy_state::IDLE;
-				LOG("Exiting Attack");
 			}
 			break;
 		case enemy_state::FALLING:
@@ -155,9 +155,12 @@ void Slime::CheckState()
 			}
 			break;
 		case enemy_state::HURT:
-			if (hurtTimer > SDL_GetTicks() - hurtDelay) {
+			if (hurtTimer < SDL_GetTicks() - hurtDelay) {
 				hurtSprite.anim.Reset();
-				if (playerDetected)
+				maxSpeed.x = origMaxSpeed;
+				if (airborne)
+					status = enemy_state::FALLING;
+				else if (playerDetected)
 					status = enemy_state::FOLLOWING;
 				else
 					status = enemy_state::IDLE;
@@ -169,8 +172,14 @@ void Slime::CheckState()
 
 void Slime::ApplyState()
 {
-	if (status != enemy_state::ATTACKING)
+	if (!(status == enemy_state::ATTACKING || status == enemy_state::HURT))
 		lookingRight = CheckOrientation(lookingRight);
+
+	if (mustReset) {
+		attackSprite.anim.Reset();
+		maxSpeed.x = origMaxSpeed;
+		mustReset = false;
+	}
 
 	switch (status) {
 	case enemy_state::IDLE:
@@ -192,6 +201,11 @@ void Slime::ApplyState()
 		break;
 	case enemy_state::FALLING:
 		animPtr = &idleSprite.anim;
+
+		input.wantMoveUp = false;
+		input.wantMoveDown = false;
+		input.wantMoveRight = false;
+		input.wantMoveLeft = false;
 		break;
 	case enemy_state::HURT:
 		if (dead) {
@@ -220,7 +234,7 @@ void Slime::Move(float dt)
 	else if (input.wantMoveLeft == true && input.wantMoveRight == false) {
 		speed.x -= acceleration.x * dt;
 	}
-	else {	// Natural deacceleration
+	else if (!airborne) {	// Natural deacceleration
 		if (movement.movingRight == true) {
 			speed.x -= acceleration.x * dt;
 

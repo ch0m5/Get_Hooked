@@ -168,7 +168,10 @@
             <idle column="0" row="1" frames="5" animSpeed ="8" loop="true">
               <offset x="0" y="3" w="16" h="11"/>
             </idle>
-            <dead column="0" row="2" frames="5" animSpeed ="8" loop="false">
+            <falling column="0" row="2" frames="5" animSpeed ="8" loop="false">
+              <offset x="0" y="3" w="16" h="11"/>
+            </falling>
+            <dead column="4" row="2" frames="1" animSpeed ="8" loop="false">
               <offset x="0" y="3" w="16" h="11"/>
             </dead>
           </first_sprite>
@@ -180,7 +183,8 @@
           <life value="1"/>
           <speed x="0" y="0"/>
           <maxSpeed x="100" y="100"/>
-          <accelerations x="230" y="230" gravity="0"/>
+          <hurtSpeed x="330" y="330"/>
+          <accelerations x="230" y="230" gravity="560"/>
           <canFly value="true"/>
           <attack x="150" y="150" />
           <detection x="150" y="150"/>
@@ -221,6 +225,7 @@
           <life value="3"/>
           <speed x="0" y="0"/>
           <maxSpeed x="50" y="240"/>
+          <hurtSpeed x="500" y="0"/>
           <accelerations x="150" y="0" gravity="560"/>
           <canFly value="false"/>
           <attack x="40" y="25" />
@@ -230,7 +235,7 @@
           <attackDelay miliseconds="1000"/>
           <hurtDelay miliseconds="500"/>
           <deathDelay miliseconds="1000"/>
-          <dash multiplier="2" />
+          <dash speed="100" />
         </stats>
       </slime>
     </entities>
