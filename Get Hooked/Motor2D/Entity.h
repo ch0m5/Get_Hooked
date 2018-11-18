@@ -50,6 +50,7 @@ public:
 	//Constructor
 	Entity(entity_type type) : type(type) {}
 
+	//Destructor
 	virtual ~Entity();
 
 	// Called on entity creation

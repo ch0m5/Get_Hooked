@@ -22,9 +22,6 @@ Slime::Slime() : Enemy(enemy_type::SLIME)
 	name.create("slime");
 }
 
-Slime::~Slime()
-{}
-
 // Called before the first frame
 bool Slime::Start()
 {
@@ -211,8 +208,12 @@ void Slime::ApplyState()
 		if (dead) {
 			animPtr = &deadSprite.anim;
 
-			if (deadTimer < SDL_GetTicks() - deathDelay)
+			if (deadTimer < SDL_GetTicks() - deathDelay) {
+				active = false;
 				mustDestroy = true;
+			}
+				
+		
 		}
 		else {
 			animPtr = &hurtSprite.anim;

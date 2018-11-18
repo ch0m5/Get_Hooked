@@ -172,7 +172,7 @@
             <idle column="0" row="1" frames="5" animSpeed ="8" loop="true">
               <offset x="0" y="3" w="16" h="11"/>
             </idle>
-            <falling column="0" row="2" frames="5" animSpeed ="8" loop="false">
+            <falling column="0" row="2" frames="4" animSpeed ="8" loop="false">
               <offset x="0" y="3" w="16" h="11"/>
             </falling>
             <dead column="4" row="2" frames="1" animSpeed ="8" loop="false">

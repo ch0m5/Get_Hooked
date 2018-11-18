@@ -7,7 +7,10 @@
 
 Entity::~Entity()
 {
-	App->collision->DestroyCollider(hitbox);
+	if (hitbox != nullptr) {
+		hitbox->to_delete = true;
+		hitbox = nullptr;
+	}	
 }
 
 entity_type Entity::GetType() const

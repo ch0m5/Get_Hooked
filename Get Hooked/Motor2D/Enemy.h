@@ -25,7 +25,8 @@ class Enemy : public Entity
 public:
 	Enemy(enemy_type enemyType) : Entity(entity_type::ENEMY), enemyType(enemyType) {}
 
-	virtual ~Enemy() {}
+	//Destructor
+	virtual ~Enemy() {};
 
 	// Called before render is available
 	virtual bool Awake(pugi::xml_node&);
@@ -49,7 +50,7 @@ public:
 	//virtual bool PostUpdate();
 
 	// Called before quitting
-	virtual bool CleanUp();
+	bool CleanUp();
 
 	// Save and Load
 	virtual bool Load(pugi::xml_node &entities);

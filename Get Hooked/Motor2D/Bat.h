@@ -8,8 +8,6 @@ class Bat : public Enemy
 public:
 	Bat();
 
-	virtual ~Bat();
-
 	// Called before the first frame
 	bool Start();
 

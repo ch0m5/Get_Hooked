@@ -16,7 +16,7 @@ j1EntityManager::j1EntityManager()
 {
 	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);
-	//(Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::SLIME);	//TODO: Dynamic enemy addition w/ spawnPosition!
+	//(Enemy*)CreateEntity(entity_type::ENEMY, enemy_type::BAT);	//TODO: Dynamic enemy addition w/ spawnPosition!
 }
 
 // Destructor
@@ -167,17 +167,13 @@ bool j1EntityManager::PostUpdate()
 		nextItem = item->next;
 
 		if (item->data->active == false) {
+			if (item->data->mustDestroy) {	//Destroy all entities that are unactive and marked to be destroyed
+				DestroyEntity(item);
+			}
 			continue;
 		}
 
 		ret = item->data->PostUpdate();
-
-		//Destroy all enemies that are signaled to
-		if (ret && item->data->GetType() == entity_type::ENEMY && item->data->mustDestroy) {
-			ret = item->data->CleanUp();
-			DestroyEntity(item->data);	//Are both needed?
-			entities.del(item);	//Are both needed?
-		}
 	}
 
 	return ret;
@@ -299,7 +295,8 @@ Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
 	return (Enemy*)ret;
 }
 
-void j1EntityManager::DestroyEntity(Entity* entity)
+void j1EntityManager::DestroyEntity(p2List_item<Entity*>* item)
 {
-	RELEASE(entity);
+	item->data->CleanUp();
+	entities.del(item);
 }

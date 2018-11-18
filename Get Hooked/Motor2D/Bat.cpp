@@ -22,9 +22,6 @@ Bat::Bat() : Enemy(enemy_type::BAT)
 	name.create("bat");
 }
 
-Bat::~Bat()
-{}
-
 // Called before the first frame
 bool Bat::Start()
 {
@@ -49,7 +46,7 @@ void Bat::ImportAllSprites(pugi::xml_node& first_sprite)
 	ImportSpriteData("follow", &followSprite, first_sprite);
 	ImportSpriteData("idle", &idleSprite, first_sprite);
 	ImportSpriteData("falling", &fallingSprite, first_sprite);
-	ImportSpriteData("dead", &deadSprite, first_sprite);
+	ImportSpriteData("dead", &deadSprite, first_sprite);	//IMPROVE: Single frame animation
 }
 
 // Allocate all animations with previously recieved sprite data
@@ -119,9 +116,11 @@ void Bat::ApplyState()
 		if (dead) {
 			if (airborne) {
 				animPtr = &fallingSprite.anim;
+				deadTimer = SDL_GetTicks();	//IMPROVE: This is loaded on every cycle, it would be best if it loaded when dead && bat touched ground
 			}
 			else {
 				if (deadTimer < SDL_GetTicks() - deathDelay) {
+					active = false;
 					mustDestroy = true;
 				}
 

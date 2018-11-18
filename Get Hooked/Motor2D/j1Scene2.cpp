@@ -52,6 +52,8 @@ bool j1Scene2::Start()	//TODO: Create enemies in their respective positions usin
 		App->audio->SetMusicVolume();
 	}
 
+	App->entityManager->player->ReturnToSpawn();
+
 	return true;
 }
 

@@ -44,7 +44,7 @@ public:
 public:
 	Entity* CreateEntity(entity_type type, enemy_type enemy = (enemy_type)-1);
 	Enemy* CreateEnemy(enemy_type type);
-	void DestroyEntity(Entity* entity);
+	void DestroyEntity(p2List_item<Entity*>* item);
 
 private:
 	bool UpdateEntities(float dt, bool mustCheckLogic);

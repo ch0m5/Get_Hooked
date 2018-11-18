@@ -29,7 +29,7 @@ public:
 
 	Player();
 
-	virtual ~Player();
+	~Player();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node&);
@@ -61,6 +61,9 @@ public:
 	bool IsGod() const {
 		return godMode;
 	}
+	void ReturnToSpawn() {
+		position = respawnPosition;
+	}
 
 private:	// @Carles
 	void ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite);
@@ -79,6 +82,7 @@ private:	// @Carles
 	void StandUp();			// Return to normal acceleration and reset slide values
 	void Hurt();	// Stop and move slightly up and opposite of current direction, player state changes to HURT
 	void PlayerReset();
+	void DeathByPit();
 	//void Hook();
 
 	// Debug update

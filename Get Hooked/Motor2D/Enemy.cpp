@@ -101,8 +101,10 @@ bool Enemy::CleanUp()
 	App->tex->UnLoad(graphics);
 	graphics = nullptr;
 
-	hitbox->to_delete = true;	// @Carles, mark collider for destruction
-	hitbox = nullptr;
+	if (hitbox != nullptr) {
+		hitbox->to_delete = true;	// @Carles, mark collider for destruction
+		hitbox = nullptr;
+	}
 
 	return ret;
 }

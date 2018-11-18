@@ -8,8 +8,6 @@ class Slime : public Enemy
 public:
 	Slime();
 
-	virtual ~Slime();
-
 	// Called before the first frame
 	bool Start();
 

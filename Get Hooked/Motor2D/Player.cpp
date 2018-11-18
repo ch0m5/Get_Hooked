@@ -136,7 +136,11 @@ bool Player::CleanUp()
 	App->tex->UnLoad(graphics);
 	graphics = nullptr;
 	position = respawnPosition;
-	hitbox = nullptr;	// @Carles, Deassign collider from player for later CleanUp in j1Collision
+
+	if (hitbox != nullptr) {
+		hitbox->to_delete = true;
+		hitbox = nullptr;
+	}
 
 	return ret;
 }
@@ -461,6 +465,15 @@ void Player::PlayerReset()
 	}
 }
 
+void Player::DeathByPit()
+{
+	life = 0;
+	dead = true;
+	deadTimer = SDL_GetTicks();
+	mustReset = true;
+	playedHurtSfx = false;
+}
+
 //Check debug input
 void Player::DebugInput()
 {
@@ -768,11 +781,8 @@ player_state Player::FallingMoveCheck()
 			ret = player_state::IDLE;
 		}		
 	}
-	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
-		dead = true;
-		deadTimer = SDL_GetTicks();
-		mustReset = true;
-		playedHurtSfx = false;
+	if (position.y > 800 && !dead) {	//CHANGE/FIX: Hardcoded fallen pit
+		DeathByPit();
 		ret = player_state::HURT;
 	}
 
@@ -839,11 +849,8 @@ player_state Player::HurtMoveCheck()
 			}
 		}
 	}
-	if (position.y > 800) {	//CHANGE/FIX: Hardcoded fallen pit	//CHANGE/FIX: Create pit function
-		dead = true;
-		deadTimer = SDL_GetTicks();
-		mustReset = true;
-		playedHurtSfx = false;
+	if (position.y > 800 && !dead) {	//CHANGE/FIX: Hardcoded fallen pit
+		DeathByPit();
 		ret = player_state::HURT;
 	}
 
@@ -1007,23 +1014,26 @@ void Player::DeadEffects() {
 		playedHurtSfx = false;
 		dead = false;
 		fading = false;
-		position = respawnPosition;
 		
 		if (App->scene2->active)
 		{
-			App->scene2->CleanUp();
-			App->fade->FadeToBlack(App->scene2, App->scene2);
-			App->scene2->Start();
+			//App->scene2->CleanUp();
+			//App->fade->FadeToBlack(App->scene2, App->scene2);
+			//App->scene2->Start();
+			App->entityManager->player->CleanUp();
 			App->entityManager->player->Start();
 		}
 
 		else if (App->scene->active)
 		{
-			App->scene->CleanUp();
-			App->fade->FadeToBlack(App->scene, App->scene);
-			App->scene->Start();
+			//App->scene->CleanUp();
+			//App->fade->FadeToBlack(App->scene, App->scene);
+			//App->scene->Start();
+			App->entityManager->player->CleanUp();
 			App->entityManager->player->Start();
 		}
+
+		position = respawnPosition;
 	}
 	else {
 		input.wantMoveUp = false;
