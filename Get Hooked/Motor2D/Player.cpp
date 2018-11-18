@@ -1060,8 +1060,6 @@ void Player::AttackEffects()
 		attackColliderCreated = true;
 	}
 	else if (animPtr->GetCurrentFrame() == attack1Data.finishAttackFrame && attackColliderCreated == true) {
-		assert(attackCollider != nullptr, "Attack Collider was nullptr and it shouldn't be!");
-
 		if (attackCollider != nullptr) {
 			attackCollider->to_delete = true;
 			attackCollider = nullptr;

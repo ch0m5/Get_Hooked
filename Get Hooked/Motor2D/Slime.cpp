@@ -31,7 +31,7 @@ bool Slime::Start()
 	hitboxOffset = idleSprite.colliderOffset;
 	status = enemy_state::IDLE;
 
-	origMaxSpeed = maxSpeed.x;
+	origMaxSpeed = (ushort)maxSpeed.x;
 
 	graphics = App->tex->Load(textureName.GetString());
 
@@ -213,7 +213,6 @@ void Slime::ApplyState()
 				active = false;
 				mustDestroy = true;
 			}
-				
 		
 		}
 		else {
