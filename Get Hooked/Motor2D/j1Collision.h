@@ -35,7 +35,7 @@ struct Collider
 	bool to_delete = false;
 	collider_type type;
 	Entity* callback = nullptr;
-	bool airborne;	// CHANGE/FIX: We might need this for the enemies but who knows
+	//bool active = true;	CHANGE/FIX: IMPLEMENT COLLIDER DETECTION RADIUS
 
 	Collider() :
 		rect({ 0,0 }),
@@ -91,10 +91,10 @@ public:	// @Carles
 
 public:
 	bool mustDebugDraw;
-	p2List<Collider> colliders;
 
 private:
 	bool matrix[COLLIDER_MAX][COLLIDER_MAX];
+	p2List<Collider> colliders;
 	SDL_Rect screen;
 };
 

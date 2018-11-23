@@ -9,7 +9,6 @@
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
-#include "j1Scene2.h"
 
 #include "j1EntityManager.h"
 #include "Player.h"

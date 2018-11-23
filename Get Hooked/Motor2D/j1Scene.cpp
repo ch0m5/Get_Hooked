@@ -10,7 +10,6 @@
 #include "j1Map.h"
 #include "j1FadeScene.h"
 #include "j1Scene.h"
-#include "j1Scene2.h"
 #include "Player.h"	// @Carles
 #include "j1Collision.h"
 #include "j1Timer.h"
@@ -34,34 +33,56 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	cameraSpeed.x = config.child("cameraSpeed").attribute("x").as_float();
 	cameraSpeed.y = config.child("cameraSpeed").attribute("y").as_float();
 
-	map.create(config.child("map").attribute("name").as_string());
-	playerPos.x = config.child("map").child("playerStartPos").attribute("x").as_float();
-	playerPos.y = config.child("map").child("playerStartPos").attribute("y").as_float();
+	scene = (scene_type)config.child("scene").attribute("start").as_int();
+
+	pugi::xml_node item;
+	for (item = config.child("maps").first_child(); item != NULL; item = item.next_sibling()) {
+		maps.add(item.child_value());
+	}
+
 	return ret;
 }
 
 // Called before the first frame
 bool j1Scene::Start()	//TODO: Create enemies in their respective positions using XML
 {
-	if (App->scene2->active == true)
-		active = false;
+	bool ret = true;
 
-	if (active)
-	{
-		App->map->Load(map.GetString());	// SamAlert: Hardcoded map loading, should use a p2SString that copies a string from an xml file
-		App->audio->PlayMusic(App->audio->musicMap1.GetString());	// SamAlert: Add map condition for playing music, this always calls the map 1 music
-		App->audio->SetMusicVolume();
+	switch (scene) {
+	case scene_type::LEVEL_1:
+		App->map->Load(maps.At(0)->data.GetString());	//CHANGE/FIX: Make function?
+		App->audio->PlayMusic(App->audio->musicMap1.GetString());
+		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;
+		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
+		break;
+	case scene_type::LEVEL_2:
+		App->map->Load(maps.At(1)->data.GetString());
+		App->audio->PlayMusic(App->audio->musicMap2.GetString());
+		playerStart = { 720, -400 };	//start = App->map->data.checkpoints.start->data;
+		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
+		break;
+	/*case scene_type::LEVEL_3:
+		App->map->Load(mapList.At(2)->data.name.GetString());
+		break;
+	case scene_type::LEVEL_4:
+		break;
+	case scene_type::LEVEL_5:
+		break;*/
+	default:
+		ret = false;
 	}
 
-	App->entityManager->player->ReturnToSpawn();
+	App->audio->SetMusicVolume();
 
-	return true;
+	return ret;
 }
 
 // Called each loop iteration
 bool j1Scene::PreUpdate()
 {
 	BROFILER_CATEGORY("Module Scene PreUpdate", Profiler::Color::DarkOrange);
+
+	//IMPROVE: Debug input here?
 
 	return true;
 }
@@ -77,8 +98,8 @@ bool j1Scene::UpdateTick(float dt)
 	if (App->entityManager->player->debugMode == true) {
 		CameraInput(dt);
 
-		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
-			ChangeScene();
+		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {}
+			//ChangeScene();
 	}
 
 	return true;
@@ -116,10 +137,8 @@ bool j1Scene::CleanUp()
 {
 	LOG("Freeing scene");
 	App->map->CleanUp();
-	App->collision->CleanUp();
-	App->tex->CleanUp();
 	App->entityManager->player->CleanUp();
-	App->entityManager->CleanEnemies();
+	App->collision->CleanUp();
 
 	return true;
 }
@@ -161,20 +180,41 @@ void j1Scene::AudioInput()	// @Carles
 	}
 }
 
-void j1Scene::ChangeScene()
+void j1Scene::NextLevel()
 {
-	App->scene2->active = true;
-	App->scene->active = false;
-	CleanUp();
-	App->fade->FadeToBlack(App->scene, App->scene2);
+	scene = (scene_type)((int)scene + 1);
+
+	if (scene == scene_type::MAX_SCENES) {
+		RestartGame();
+	}
+	else {
+		CleanUp();
+		App->entityManager->player->CleanUp();
+		Start();
+		App->entityManager->player->Start();
+	}
+}
+
+void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full map reloading)
+{
+	//Reload enemies (restart states, life, and positions)
+	App->entityManager->player->CleanUp();
 	App->entityManager->player->Start();
-	App->scene2->Start();
-	App->render->camera = { 0,0 };
+}
+
+void j1Scene::RestartGame()	//Restart at the first level
+{
+	scene = scene_type::LEVEL_1;
+
+	CleanUp();
+	App->entityManager->player->CleanUp();
+	Start();
+	App->entityManager->player->Start();
 }
 
 SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)
 {
-	if (App->render->camera.x < (int)-(playerPos.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits & magic numbers
+	if (App->render->camera.x < (int)-(playerPos.x * App->win->GetScale() - 350)/* && mapRightLimit is not crossed*/) {	//left	// Improve: Map limits & eliminate magic numbers
 		App->render->camera.x = (int)-(playerPos.x * App->win->GetScale() - 350);
 	}
 	else if (App->render->camera.x > (int)-(playerPos.x * App->win->GetScale() - 500)/* && mapLeftLimit is not crossed*/) {	//right

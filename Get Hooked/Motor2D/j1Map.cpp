@@ -6,6 +6,7 @@
 #include "j1Textures.h"
 #include "j1Map.h"
 #include "j1Collision.h"
+#include "Enemy.h"
 #include <cmath>
 
 j1Map::j1Map() : j1Module(), map_loaded(false)
@@ -109,6 +110,17 @@ bool j1Map::CleanUp()
 		item2 = item2->next;
 	}
 	data.layers.clear();
+
+	// Remove all enemies	//SCENE_UPDATE
+	p2List_item<Enemy*>* item3;
+	item3 = data.enemies.start;
+
+	while (item3 != NULL)
+	{
+		RELEASE(item3->data);
+		item3 = item3->next;
+	}
+	data.enemies.clear();
 
 	// Clean up the pugui tree
 	map_file.reset();

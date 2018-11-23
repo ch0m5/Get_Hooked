@@ -6,6 +6,7 @@
 #include "p2Point.h"
 #include "j1Module.h"
 
+class Enemy;
 
 // ----------------------------------------------------
 
@@ -56,6 +57,9 @@ struct MapData
 	MapTypes			type;
 	p2List<TileSet*>	tilesets;
 	p2List<MapLayer*>	layers;
+	
+	p2List<iPoint>	checkpoints;	//CHANGE/FIX: This info should be included in the map xml using game objects or similar, first item is start, last is next lvl
+	p2List<Enemy*>		enemies;	//CHANGE/FIX: This info should be included in the map xml using game objects or similar
 };
 
 // ----------------------------------------------------

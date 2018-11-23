@@ -46,9 +46,6 @@
     <ClCompile Include="j1PerfTimer.cpp">
       <Filter>Desenvolupament  ========\Tools\Timers</Filter>
     </ClCompile>
-    <ClCompile Include="j1Scene2.cpp">
-      <Filter>Desenvolupament  ========\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Desenvolupament  ========\Entities</Filter>
     </ClCompile>
@@ -134,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="j1Timer.h">
       <Filter>Desenvolupament  ========\Tools\Timers</Filter>
-    </ClInclude>
-    <ClInclude Include="j1Scene2.h">
-      <Filter>Desenvolupament  ========\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Desenvolupament  ========\Entities</Filter>

@@ -14,7 +14,6 @@ class j1Render;
 class j1Textures;
 class j1Audio;
 class j1Scene;
-class j1Scene2;
 class j1Map;
 class j1EntityManager;
 class j1Collision;	// @Carles
@@ -104,7 +103,6 @@ public:
 	j1Textures*			tex;
 	j1Audio*			audio;
 	j1Scene*			scene;
-	j1Scene2*			scene2;
 	j1Map*				map;
 	j1EntityManager*	entityManager;
 	j1Collision*		collision;	// @Carles

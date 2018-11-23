@@ -11,7 +11,6 @@
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
-#include "j1Scene2.h"
 
 #include "j1EntityManager.h"
 #include "Player.h"
@@ -65,14 +64,7 @@ bool Player::Start()
 	hitboxOffset = idleSprite.colliderOffset;
 	status = player_state::IDLE;
 
-	if (App->scene->active)
-	{
-		position = lastGroundPosition = respawnPosition = App->scene->playerPos;
-	}
-	else if (App->scene2->active)
-	{
-		position = lastGroundPosition = respawnPosition = App->scene2->playerPos;
-	}
+	position = lastGroundPosition = respawnPosition = App->scene->playerStart;
 
 	graphics = App->tex->Load(textureName.GetString());
 	
@@ -483,39 +475,16 @@ void Player::DeathByPit()
 }
 
 //Check debug input
-void Player::DebugInput()
+void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 {
-	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)	//CHANGE/FIX: Should be in scene?
+	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 	{
-		if (App->scene2->active)
-			App->scene2->ChangeScene();
-
-		else if (App->scene->active)
-		{
-			App->scene->CleanUp();
-			App->fade->FadeToBlack(App->scene, App->scene);
-			App->scene->Start();
-			App->entityManager->player->Start();
-		}
+		App->scene->RestartGame();
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)	//CHANGE/FIX: Should be in scene?
+	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
 	{
-		if (App->scene2->active)
-		{
-			App->scene2->CleanUp();
-			App->fade->FadeToBlack(App->scene2, App->scene2);
-			App->scene2->Start();
-			App->entityManager->player->Start();
-		}
-
-		else if (App->scene->active)
-		{
-			App->scene->CleanUp();
-			App->fade->FadeToBlack(App->scene, App->scene);
-			App->scene->Start();
-			App->entityManager->player->Start();
-		}
+		App->scene->RestartLevel();
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == false) {	// Free camera
@@ -1023,23 +992,7 @@ void Player::DeadEffects() {
 		dead = false;
 		fading = false;
 		
-		if (App->scene2->active)
-		{
-			//App->scene2->CleanUp();
-			//App->fade->FadeToBlack(App->scene2, App->scene2);
-			//App->scene2->Start();
-			App->entityManager->player->CleanUp();
-			App->entityManager->player->Start();
-		}
-
-		else if (App->scene->active)
-		{
-			//App->scene->CleanUp();
-			//App->fade->FadeToBlack(App->scene, App->scene);
-			//App->scene->Start();
-			App->entityManager->player->CleanUp();
-			App->entityManager->player->Start();
-		}
+		App->scene->RestartLevel();
 
 		position = respawnPosition;
 	}
