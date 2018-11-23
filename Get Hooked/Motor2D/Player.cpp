@@ -135,6 +135,11 @@ bool Player::CleanUp()
 		hitbox = nullptr;
 	}
 
+	if (attackCollider != nullptr) {
+		attackCollider->to_delete = true;
+		attackCollider = nullptr;
+	}
+
 	return ret;
 }
 
@@ -437,7 +442,7 @@ void Player::Hurt()
 	
 	airborne = true;
 
-	if (--life == 0) {
+	if (--life < 1) {
 		dead = true;
 		deadTimer = SDL_GetTicks();
 	}
@@ -513,7 +518,7 @@ void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 		App->collision->mustDebugDraw = false;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == false) {	// GodMode
+	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && IsDead() == false && godMode == false) {	// GodMode
 		godMode = true;
 		speed = { 0, 0 };
 		status = player_state::FALLING;
@@ -863,6 +868,7 @@ player_state Player::AttackMoveCheck()
 		if (attackCollider != nullptr) {
 			attackCollider->to_delete = true;
 			attackCollider = nullptr;
+			attackColliderCreated = false;
 		}
 	}
 		

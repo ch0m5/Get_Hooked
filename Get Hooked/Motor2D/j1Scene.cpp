@@ -98,8 +98,8 @@ bool j1Scene::UpdateTick(float dt)
 	if (App->entityManager->player->debugMode == true) {
 		CameraInput(dt);
 
-		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {}
-			//ChangeScene();
+		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
+			NextLevel();
 	}
 
 	return true;
@@ -137,7 +137,6 @@ bool j1Scene::CleanUp()
 {
 	LOG("Freeing scene");
 	App->map->CleanUp();
-	App->entityManager->player->CleanUp();
 	App->collision->CleanUp();
 
 	return true;
@@ -197,7 +196,7 @@ void j1Scene::NextLevel()
 
 void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full map reloading)
 {
-	//Reload enemies (restart states, life, and positions)
+	//App->entityManager->ReloadEnemies();
 	App->entityManager->player->CleanUp();
 	App->entityManager->player->Start();
 }
