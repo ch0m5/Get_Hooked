@@ -9,6 +9,85 @@
 class Enemy;
 
 // ----------------------------------------------------
+struct Objects {
+
+	p2SString nameGroup;
+
+	struct Object
+	{
+		p2SString name;
+		float x, y, width, height;
+		int id;
+
+	};
+
+
+	~Objects()
+	{
+		p2List_item<Object*>* itemP;
+		itemP = Objectlist.start;
+
+		while (itemP != NULL)
+		{
+			RELEASE(itemP->data);
+			itemP = itemP->next;
+		}
+
+		Objectlist.clear();
+	}
+
+
+
+
+	p2List<Object*>	Objectlist;
+
+};
+
+struct Properties
+{
+	struct Property
+	{
+		p2SString name;
+		float value;
+	};
+
+
+	~Properties()
+	{
+		p2List_item<Property*>* itemP;
+		itemP = Propertieslist.start;
+
+		while (itemP != NULL)
+		{
+			RELEASE(itemP->data);
+			itemP = itemP->next;
+		}
+
+		Propertieslist.clear();
+	}
+
+	float GetProperty(const char* value, float def_value) const;
+
+	int Get(const char* name, int default_value = 0) const;
+
+	p2List<Property*>	Propertieslist;
+};
+
+struct ImageLayer {
+
+	SDL_Rect GetImageLayerRect() const;
+
+	p2SString name;
+	int Width, Height;
+	float OffsetX, OffsetY = 0.0f;
+
+	SDL_Texture*texture;
+
+	float SpeedBack;
+
+	Properties PropImg;
+
+};
 
 struct MapLayer {
 	p2SString name;
@@ -58,7 +137,8 @@ struct MapData
 	p2List<TileSet*>	tilesets;
 	p2List<MapLayer*>	layers;
 	
-	p2List<iPoint>	checkpoints;	//CHANGE/FIX: This info should be included in the map xml using game objects or similar, first item is start, last is next lvl
+	p2List<ImageLayer*> imagelayers;
+	p2List<iPoint>		checkpoints;	//CHANGE/FIX: This info should be included in the map xml using game objects or similar, first item is start, last is next lvl
 	p2List<Enemy*>		enemies;	//CHANGE/FIX: This info should be included in the map xml using game objects or similar
 };
 
@@ -92,6 +172,8 @@ private:
 	bool LoadTilesetDetails(pugi::xml_node& tileset_node, TileSet* set);
 	bool LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set);
 	bool LoadLayer(pugi::xml_node& node, MapLayer* layer);
+	bool LoadImageLayer(pugi::xml_node& node, ImageLayer* Image);
+	bool LoadProperties(pugi::xml_node& node, Properties& list);	
 
 public:
 

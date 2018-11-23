@@ -36,6 +36,21 @@ void j1Map::Draw()
 	if(map_loaded == false)
 		return;
 
+	ImageLayer*Image;
+
+	for (int x = 0; x < data.imagelayers.count(); ++x) {
+
+		Image = data.imagelayers.At(x)->data;
+
+		/*if (Image->PropImg.GetProperty("Movement", 0) == 1) {*/
+
+
+		App->render->Blit(data.imagelayers[x]->texture,
+			Image->SpeedBack, data.imagelayers[x]->OffsetY,
+			&data.imagelayers[x]->GetImageLayerRect());
+
+	}
+
 	p2List_item<TileSet*>* item; //Sprites_Layer
 	item = data.tilesets.start;
 
@@ -82,6 +97,18 @@ SDL_Rect TileSet::GetTileRect(int id) const
 
 uint MapLayer::Get(int x, int y) const {
 	return (y * width) + x;
+}
+
+SDL_Rect ImageLayer::GetImageLayerRect() const {
+
+	SDL_Rect rec;
+
+	rec.w = Width;
+	rec.h = Height;
+	rec.x = 0;
+	rec.y = 0;
+
+	return rec;
 }
 
 // Called before quitting
@@ -179,6 +206,21 @@ bool j1Map::Load(const char* file_name)
 		}
 
 		data.layers.add(set);
+	}
+
+
+	//Load ImageLayer Info-------------------------------------------
+	pugi::xml_node Image_Layer;
+	for (Image_Layer = map_file.child("map").child("imagelayer"); Image_Layer && ret; Image_Layer = Image_Layer.next_sibling("imagelayer"))
+	{
+
+		ImageLayer*ImagLay = new ImageLayer();
+
+		ret = LoadImageLayer(Image_Layer, ImagLay);
+
+		if (ret == true)
+			data.imagelayers.add(ImagLay);
+
 	}
 
 	if(ret == true)
@@ -360,4 +402,76 @@ bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	}
 
 	return ret;
+}
+
+bool j1Map::LoadImageLayer(pugi::xml_node& node, ImageLayer* Image) {
+
+	bool ret = true;
+
+	Image->name = node.attribute("name").as_string();
+	Image->Width = node.child("image").attribute("width").as_int();
+	Image->Height = node.child("image").attribute("height").as_int();
+	Image->texture = App->tex->Load(PATH(folder.GetString(), node.child("image").attribute("source").as_string()));
+
+	LoadProperties(node, Image->PropImg);
+
+	if (node.attribute("offsetx").as_int() != NULL)
+		Image->OffsetX = node.attribute("offsetx").as_float();
+
+
+	if (node.attribute("offsety").as_int() != NULL)
+		Image->OffsetY = node.attribute("offsety").as_float();
+
+	return ret;
+}
+
+
+bool j1Map::LoadProperties(pugi::xml_node& node, Properties& properties)
+{
+	bool ret = false;
+	pugi::xml_node data = node.child("properties");
+
+	if (data != NULL)
+	{
+		pugi::xml_node prop;
+
+		for (prop = data.child("property"); prop; prop = prop.next_sibling("property"))
+		{
+			Properties::Property* property_aux = new Properties::Property();
+
+			property_aux->name = prop.attribute("name").as_string();
+			property_aux->value = prop.attribute("value").as_int();
+
+			properties.Propertieslist.add(property_aux);
+		}
+	}
+
+	return ret;
+}
+float Properties::GetProperty(const char* value, float def_value) const
+{
+	p2List_item<Property*>* itemP = Propertieslist.start;
+
+	while (itemP)
+	{
+		if (itemP->data->name == value)
+			return itemP->data->value;
+		itemP = itemP->next;
+	}
+
+	return def_value;
+}
+
+int Properties::Get(const char* value, int default_value) const
+{
+	p2List_item<Property*>* item = Propertieslist.start;
+
+	while (item)
+	{
+		if (item->data->name == value)
+			return item->data->value;
+		item = item->next;
+	}
+
+	return default_value;
 }
