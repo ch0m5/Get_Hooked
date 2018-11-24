@@ -37,6 +37,10 @@
     <fullscreen_window value="false"/>
   </window>
 
+  <fade>
+    <duration seconds="2" />
+  </fade>
+  
   <file_system>
     <path>data.zip</path>
   </file_system>
@@ -74,6 +78,7 @@
   </scene>
   
   <entityManager>
+    <start active="false" />
     <logic cooldown="5" />
     <entities>
       <player>
@@ -132,7 +137,6 @@
           <somersault used="false"/>
           <attackDelay miliseconds="500"/>
           <deathDelay miliseconds="1000"/>
-          <fadeDelay seconds="1"/>
           <debugMode value="true" />
           <godMode value="false"/>
           <freeCamera value="false"/>

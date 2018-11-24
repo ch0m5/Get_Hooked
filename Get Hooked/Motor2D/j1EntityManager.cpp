@@ -18,18 +18,18 @@ j1EntityManager::j1EntityManager()
 	player = (Player*)CreateEntity(entity_type::PLAYER);
 
 	//Enemy spawns
-	pugi::xml_document configFile;
-	pugi::xml_node spawnPoints = LoadConfig(configFile);
-	spawnPoints = spawnPoints.child("entityManager").child("entities").child("spawnPoints");
+	//pugi::xml_document configFile;
+	//pugi::xml_node spawnPoints = LoadConfig(configFile);
+	//spawnPoints = spawnPoints.child("entityManager").child("entities").child("spawnPoints");
 
-	Enemy* tmpPtr;
-	pugi::xml_node lastChild = spawnPoints.last_child();	//CHANGE/FIX: Terrible workaround, but couldn't do it any better in time. Works, but it shouldn't be here loading config out of nowhere.
+	//Enemy* tmpPtr;
+	//pugi::xml_node lastChild = spawnPoints.last_child();	//CHANGE/FIX: Terrible workaround, but couldn't do it any better in time. Works, but it shouldn't be here loading config out of nowhere.
 
-	for (spawnPoints = spawnPoints.first_child(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
-		tmpPtr = (Enemy*)CreateEntity(entity_type::ENEMY, (enemy_type)spawnPoints.attribute("type").as_int());
-		tmpPtr->spawnPosition.x = spawnPoints.attribute("xSpawn").as_int();
-		tmpPtr->spawnPosition.y = spawnPoints.attribute("ySpawn").as_int();
-	}
+	//for (spawnPoints = spawnPoints.first_child(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
+	//	tmpPtr = (Enemy*)CreateEntity(entity_type::ENEMY, (enemy_type)spawnPoints.attribute("type").as_int());
+	//	tmpPtr->spawnPosition.x = spawnPoints.attribute("xSpawn").as_int();
+	//	tmpPtr->spawnPosition.y = spawnPoints.attribute("ySpawn").as_int();
+	//}
 }
 
 // Destructor
@@ -51,6 +51,7 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 {
 	bool ret = false;
 
+	active = config.child("start").attribute("active").as_bool();
 	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
 
 	pugi::xml_node entities_node;

@@ -55,17 +55,21 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 public:
-	bool CameraFree() const {
+	bool CameraFree() const {	//IMPROVE: MOVE TO CPP
 		return freeCamera;
 	}
 	bool IsGod() const {
 		return godMode;
 	}
+	uint LifeToStart() {
+		life = startLife;
+		return life;
+	}
 	iPoint GetActivationRadius() const {
 		return activationRadius;
 	}
 	void ReturnToSpawn() {
-		position = respawnPosition;
+		position = lastGroundPosition = respawnPosition;
 	}
 
 private:	// @Carles
@@ -123,12 +127,12 @@ private:	// @Carles
 	// Movement and final changes
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
-	fPoint LimitSpeed();
 
 public:
 	bool debugMode;		// Flag that marks if debug functionalities are available
 
 private:
+	uint startLife;
 	player_state status;
 	Collider* attackCollider = nullptr;
 	SDL_Rect attackOffset;
@@ -154,10 +158,7 @@ private:
 	uint deadTimer = 0;		// Timer used for player death
 	ushort deathDelay;		// Time delay between death and start FadeToBlack
 
-	bool fading = false;	// Flag used to mark fade starting
-	float fadeDelay;		// FadeToBlack duration
-
-	bool mustReset = false;		// Flag used to restart animations when needed (skipping workflow steps)
+	bool mustReset = false;		// Flag used to restart animations when needed (skipping workflow steps)	//CHANGE/FIX: This for more entities?
 	bool godMode;				// Flag used to mark player invencibility
 	bool freeCamera;			// Flag used to mark free camera movement
 

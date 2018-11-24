@@ -18,6 +18,7 @@
 j1Scene::j1Scene() : j1Module()
 {
 	name.create("scene");
+	loading = true;
 }
 
 // Destructor
@@ -48,11 +49,11 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 {
 	bool ret = true;
 
-	switch (scene) {
+	switch (scene) {	//CHANGE/FIX: Make function?
 	case scene_type::LEVEL_1:
-		App->map->Load(maps.At(0)->data.GetString());	//CHANGE/FIX: Make function?
+		App->map->Load(maps.At(0)->data.GetString());
 		App->audio->PlayMusic(App->audio->musicMap1.GetString());
-		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;
+		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;	//CHANGE/FIX: Get points close to the ground
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
 		break;
 	case scene_type::LEVEL_2:
@@ -78,11 +79,9 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 }
 
 // Called each loop iteration
-bool j1Scene::PreUpdate()
+bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 {
 	BROFILER_CATEGORY("Module Scene PreUpdate", Profiler::Color::DarkOrange);
-
-	//IMPROVE: Debug input here?
 
 	return true;
 }
@@ -98,8 +97,19 @@ bool j1Scene::UpdateTick(float dt)
 	if (App->entityManager->player->debugMode == true) {
 		CameraInput(dt);
 
-		if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
-			NextLevel();
+		if (App->fade->GetStep() == fade_step::NONE) {
+			if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_GAME);
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::NEXT_LEVEL);
+			}
+		}
 	}
 
 	return true;
@@ -126,14 +136,39 @@ bool j1Scene::PostUpdate()
 
 	bool ret = true;
 
-	if(App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
 		ret = false;
+	}															// @Carles
+	else if (App->fade->GetStep() == fade_step::FULLY_FADED) {	// When game is fully faded, start game load and disable all entities for the next frame, then enable them.
+		App->entityManager->active = false;						// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
+
+		switch (App->fade->GetType()) {
+		case fade_type::NEXT_LEVEL:
+			NextLevel();
+			break;
+		case fade_type::RESTART_LEVEL:
+			RestartLevel();
+			break;
+		case fade_type::RESTART_GAME:
+			RestartGame();
+			break;
+		default:
+			break;
+		}
+
+		App->fade->ResetType();
+		loading = true;
+	}
+	else if (loading) {
+		App->entityManager->active = true;
+		loading = false;
+	}
 
 	return ret;
 }
 
 // Called before quitting
-bool j1Scene::CleanUp()
+bool j1Scene::CleanUp()	//CHANGE/FIX: HEAVY MEMORY LEAKS WHEN CHANGING SCENE, FIRST SUSPECT: COLLIDER LIST, MAPS, AND TEXTURES
 {
 	LOG("Freeing scene");
 	App->map->CleanUp();
@@ -198,6 +233,7 @@ void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full
 {
 	//App->entityManager->ReloadEnemies();
 	App->entityManager->player->CleanUp();
+	App->entityManager->player->LifeToStart();
 	App->entityManager->player->Start();
 }
 
@@ -207,6 +243,7 @@ void j1Scene::RestartGame()	//Restart at the first level
 
 	CleanUp();
 	App->entityManager->player->CleanUp();
+	App->entityManager->player->LifeToMax();
 	Start();
 	App->entityManager->player->Start();
 }

@@ -105,6 +105,7 @@ public:
 
 	//Living Entity
 	virtual uint GetLife() const;
+	virtual uint LifeToMax();
 	virtual void Kill();
 	virtual void Hurt();
 	virtual bool IsDead() const;
@@ -135,6 +136,7 @@ public:
 
 protected:	//IMPROVE: Entity is pretty full, future subdivision of classes would be better, specially if using a component-based format
 	//Entity
+	fPoint prevPosition;	//IMPROVE: NEW COLLISION SYSTEM
 	fPoint position;
 	fPoint centerPosition;
 	movement_input input;

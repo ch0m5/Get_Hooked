@@ -4,6 +4,24 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
+enum class fade_type
+{
+	NONE = -1,
+	NEXT_LEVEL,
+	RESTART_LEVEL,
+	RESTART_GAME,
+
+	MAX_TYPES
+};
+
+enum class fade_step
+{
+	NONE = -1,
+	FADING,
+	FULLY_FADED,
+	UNFADING
+};
+
 class j1FadeScene : public j1Module	//CHANGE/FIX: FadeToBlack has parameters that do nothing, needs rework
 {
 public:
@@ -21,23 +39,31 @@ public:
 	// Called each loop iteration (graphic)
 	bool Update();
 
-	bool FadeToBlack(j1Module* map_off, j1Module* map_on, float time = 2.0f);
+	bool FadeToBlack(float time = 2.0f, fade_type = fade_type::NONE);
+
+public:
+	fade_step GetStep() const {	//IMPROVE: PUT ON CPP
+		return step;
+	}
+	fade_type GetType() const {
+		return type;
+	}
+	fade_type ResetType() {
+		type = fade_type::NONE;
+		return type;
+	}
+	float GetDelay() const {
+		return delay;
+	}
 
 private:
-
-	enum fade_step
-	{
-		none,
-		fade_to_black,
-		fade_from_black
-	} current_step = fade_step::none;
+	float delay;
+	fade_step step = fade_step::NONE;
+	fade_type type;
 
 	Uint32 start_time = 0;
 	Uint32 total_time = 0;
 	SDL_Rect screen;
-
-	j1Module* fade_out = nullptr;
-	j1Module* fade_in = nullptr;
 
 };
 

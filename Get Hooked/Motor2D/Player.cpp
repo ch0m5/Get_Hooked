@@ -49,6 +49,9 @@ bool Player::Awake(pugi::xml_node& entities)
 	playedSlideSfx = entities.child("audio").child("slideSfx").attribute("played").as_bool();
 	playedHurtSfx = entities.child("audio").child("hurtSfx").attribute("played").as_bool();
 
+	//First start definition
+	life = maxLife;
+
 	return ret;
 }
 
@@ -57,8 +60,8 @@ bool Player::Start()
 {
 	bool ret = true;
 
+	startLife = life;
 	dead = false;
-	life = maxLife;
 	speed = { 0, 0 };
 	acceleration.x = normalAcceleration;
 	hitboxOffset = idleSprite.colliderOffset;
@@ -123,12 +126,11 @@ bool Player::Update()
 bool Player::CleanUp()
 {
 	bool ret = true;
-	
+
 	LOG("Unloading player");
 
 	App->tex->UnLoad(graphics);
 	graphics = nullptr;
-	position = respawnPosition;
 
 	if (hitbox != nullptr) {
 		hitbox->to_delete = true;
@@ -144,7 +146,7 @@ bool Player::CleanUp()
 }
 
 // Called when colliding
-collision_type Player::OnCollision(Collider* c1, Collider* c2)
+collision_type Player::OnCollision(Collider* c1, Collider* c2)	//IMPROVE: REWORK ON COLLISION SYSTEM TO TAKE INTO ACCOUNT REVIOUS POSITION
 {
 	collision_type ret = collision_type::NONE;
 
@@ -336,7 +338,6 @@ void Player::ImportAllStates(pugi::xml_node& config)
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
 	attackDelay = config.child("attackDelay").attribute("miliseconds").as_uint();
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
-	fadeDelay = config.child("fadeDelay").attribute("seconds").as_float();
 	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
 	freeCamera = config.child("freeCamera").attribute("value").as_bool();
@@ -463,6 +464,9 @@ void Player::PlayerReset()
 
 	attack1Sprite.anim.Reset();
 
+	//deadSprite.anim.Reset();	//IMPROVE: Check if really needed here
+	//playedHurtSfx = false;
+
 	if (attackCollider != nullptr) {
 		attackCollider->to_delete = true;
 		attackCollider = nullptr;
@@ -482,16 +486,6 @@ void Player::DeathByPit()
 //Check debug input
 void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 {
-	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-	{
-		App->scene->RestartGame();
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
-	{
-		App->scene->RestartLevel();
-	}
-
 	if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == false) {	// Free camera
 		freeCamera = true;
 	}
@@ -988,19 +982,12 @@ void Player::HurtEffects()
 }
 
 void Player::DeadEffects() {
-	if (fading == false && deadTimer < SDL_GetTicks() - deathDelay) {
-		App->fade->FadeToBlack(App->scene, App->scene, fadeDelay);
-		fading = true;
+	if (App->fade->GetStep() == fade_step::NONE && deadTimer < SDL_GetTicks() - deathDelay) {
+		App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_GAME);	//CHANGE/FIX: Hardcoded values
 	}
-	else if (fading == true && deadTimer < SDL_GetTicks() - deathDelay - fadeDelay * 1000 / 2) {
+	else if (App->fade->GetStep() == fade_step::FULLY_FADED) {
 		deadSprite.anim.Reset();
 		playedHurtSfx = false;
-		dead = false;
-		fading = false;
-		
-		App->scene->RestartLevel();
-
-		position = respawnPosition;
 	}
 	else {
 		input.wantMoveUp = false;
@@ -1049,7 +1036,7 @@ void Player::Move(float dt)
 	}
 
 	// Max Speeds
-	LimitSpeed();
+	speed = LimitSpeed();
 
 	// New position
 	position.x += speed.x * dt;
@@ -1105,21 +1092,6 @@ fPoint Player::NormalMovement(float dt)
 	if (airborne) {
 		Fall(dt);
 	}
-
-	return speed;
-}
-
-fPoint Player::LimitSpeed()
-{
-	if (speed.x > 0)
-		speed.x = MIN(speed.x, maxSpeed.x);
-	else if (speed.x < 0)
-		speed.x = MAX(speed.x, -maxSpeed.x);
-
-	if (speed.y > 0)
-		speed.y = MIN(speed.y, maxSpeed.y);
-	else if (speed.y < 0)
-		speed.y = MAX(speed.y, -maxSpeed.y);
 
 	return speed;
 }

@@ -5,6 +5,7 @@
 
 struct SDL_Window;
 struct SDL_Surface;
+struct SDL_Rect;
 
 class j1Window : public j1Module
 {
@@ -25,7 +26,7 @@ public:
 	void SetTitle(const char* new_title);
 
 	// Retrive window size
-	void GetWindowSize(uint& width, uint& height) const;
+	SDL_Rect GetWindowSize();
 
 	// Retrieve window scale
 	uint GetScale() const;

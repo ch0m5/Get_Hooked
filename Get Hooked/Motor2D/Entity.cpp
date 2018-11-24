@@ -54,6 +54,12 @@ uint Entity::GetLife() const
 	return life;
 }
 
+uint Entity::LifeToMax()
+{
+	life = maxLife;
+	return life;
+}
+
 void Entity::Kill()
 {
 	life = 0;

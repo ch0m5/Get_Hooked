@@ -45,30 +45,25 @@ public:
 	bool CleanUp();
 
 public:
-	// Changes to next scene
+	// Scene changes
 	void NextLevel();
 	void RestartLevel();
 	void RestartGame();
 
-public:	// CHANGE/FIX: Check the need for public
 	// Inputs
-	SDL_Rect LimitCameraPos(fPoint playerPos);
-	void CameraInput(float dt);
 	void AudioInput();
+	void CameraInput(float dt);
+	SDL_Rect LimitCameraPos(fPoint playerPos);
+	
+public:	// CHANGE/FIX: Check the need for public
 	scene_type scene;
 	fPoint playerStart;
 	fPoint playerFinish;
 
-	// Sam
-	bool active = true;
-	fPoint playerPos;
-
 private:
+	bool loading = false;
 	fPoint cameraSpeed;
 	p2List<p2SString> maps;	//CHANGE/FIX: Should be in module map maybe?
-
-	//Sam
-	p2SString map;
 };
 
 #endif // __j1SCENE_H__
