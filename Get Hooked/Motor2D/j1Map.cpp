@@ -208,7 +208,6 @@ bool j1Map::Load(const char* file_name)
 		data.layers.add(set);
 	}
 
-
 	//Load ImageLayer Info-------------------------------------------
 	pugi::xml_node Image_Layer;
 	for (Image_Layer = map_file.child("map").child("imagelayer"); Image_Layer && ret; Image_Layer = Image_Layer.next_sibling("imagelayer"))
@@ -387,18 +386,51 @@ bool j1Map::LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set)
 
 bool j1Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 {
-	bool ret = true;
+	/*bool ret = true;
+
 	layer->name = node.attribute("name").as_string();
 	layer->width = node.attribute("width").as_uint();
 	layer->height = node.attribute("height").as_uint();
+	pugi::xml_node layer_data = node.child("data");
+
+	LoadProperties(node, layer->properties);
+
 	layer->data = new uint[layer->height*layer->width];
 	memset(layer->data, 0, sizeof(uint)*layer->width*layer->height);
-	
-	int i = 0;
 
+	int i = 0;
 	for (node = map_file.child("map").child("layer").child("data").child("tile"); node && ret; node = node.next_sibling("tile"))
 	{
 		layer->data[i++] = node.attribute("gid").as_uint();
+	}
+
+	return ret;*/
+
+	bool ret = true;
+
+	layer->name = node.attribute("name").as_string();
+	layer->width = node.attribute("width").as_int();
+	layer->height = node.attribute("height").as_int();
+	LoadProperties(node, layer->properties);
+	pugi::xml_node layer_data = node.child("data");
+
+	if (layer_data == NULL)
+	{
+		LOG("Error parsing map xml file: Cannot find 'layer/data' tag.");
+		ret = false;
+		RELEASE(layer);
+	}
+
+	else
+	{
+		layer->data = new uint[layer->width*layer->height];
+		memset(layer->data, 0, layer->width*layer->height);
+
+		int i = 0;
+		for (pugi::xml_node tile = layer_data.child("tile"); tile; tile = tile.next_sibling("tile"))
+		{
+			layer->data[i++] = tile.attribute("gid").as_int(0);
+		}
 	}
 
 	return ret;

@@ -90,11 +90,13 @@ struct ImageLayer {
 };
 
 struct MapLayer {
-	p2SString name;
-	uint width;
-	uint height;
-	uint* data = nullptr;
+	p2SString	name;
+	uint		width;
+	uint		height;
+	uint*		data = nullptr;
 	inline uint Get(int x, int y) const;
+
+	Properties	properties;
 };
 
 // ----------------------------------------------------
