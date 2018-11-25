@@ -15,6 +15,7 @@ class j1Textures;
 class j1Audio;
 class j1Scene;
 class j1Map;
+class j1PathFinding;
 class j1EntityManager;
 class j1Collision;	// @Carles
 class j1FadeScene;	// @Carles
@@ -104,6 +105,7 @@ public:
 	j1Audio*			audio;
 	j1Scene*			scene;
 	j1Map*				map;
+	j1PathFinding*		pathfinding;
 	j1EntityManager*	entityManager;
 	j1Collision*		collision;	// @Carles
 	j1FadeScene*		fade;		// @Carles
