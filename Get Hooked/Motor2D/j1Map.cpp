@@ -47,7 +47,7 @@ void j1Map::Draw()
 
 		App->render->Blit(data.imagelayers[x]->texture,
 			Image->SpeedBack, data.imagelayers[x]->OffsetY,
-			&data.imagelayers[x]->GetImageLayerRect());
+			&data.imagelayers[x]->GetImageLayerRect(), SDL_FLIP_NONE, 0U, data.imagelayers[x]->speed);
 
 	}
 
@@ -447,9 +447,17 @@ bool j1Map::LoadImageLayer(pugi::xml_node& node, ImageLayer* Image) {
 
 	LoadProperties(node, Image->PropImg);
 
+	p2List_item<Properties::Property*>* prop = Image->PropImg.Propertieslist.start;
+	while (prop != NULL)
+	{
+		if (prop->data->name == "Speed")
+			Image->speed = prop->data->value;
+
+		prop = prop->next;
+	}
+
 	if (node.attribute("offsetx").as_int() != NULL)
 		Image->OffsetX = node.attribute("offsetx").as_float();
-
 
 	if (node.attribute("offsety").as_int() != NULL)
 		Image->OffsetY = node.attribute("offsety").as_float();
@@ -472,7 +480,7 @@ bool j1Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 			Properties::Property* property_aux = new Properties::Property();
 
 			property_aux->name = prop.attribute("name").as_string();
-			property_aux->value = prop.attribute("value").as_int();
+			property_aux->value = prop.attribute("value").as_float();
 
 			properties.Propertieslist.add(property_aux);
 		}

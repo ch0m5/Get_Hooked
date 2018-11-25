@@ -80,6 +80,7 @@ struct ImageLayer {
 	p2SString name;
 	int Width, Height;
 	float OffsetX, OffsetY = 0.0f;
+	float speed;
 
 	SDL_Texture*texture;
 
