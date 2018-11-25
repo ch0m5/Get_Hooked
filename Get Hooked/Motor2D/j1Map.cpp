@@ -38,7 +38,7 @@ void j1Map::Draw()
 
 	ImageLayer*Image;
 
-	for (int x = 0; x < data.imagelayers.count(); ++x) {
+	for (uint x = 0; x < data.imagelayers.count(); ++x) {
 
 		Image = data.imagelayers.At(x)->data;
 
@@ -534,7 +534,7 @@ int Properties::Get(const char* value, int default_value) const
 	while (item)
 	{
 		if (item->data->name == value)
-			return item->data->value;
+			return (int)item->data->value;
 		item = item->next;
 	}
 
