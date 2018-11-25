@@ -108,7 +108,7 @@ SDL_Rect ImageLayer::GetImageLayerRect() const {
 }
 
 // Called before quitting
-bool j1Map::CleanUp()
+bool j1Map::CleanUp()	//CHANGE/FIX: The first two scene changes bump the memory up, find where and why to prevent memory leaks.
 {
 	LOG("Unloading map");
 
