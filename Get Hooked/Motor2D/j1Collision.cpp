@@ -44,14 +44,14 @@ bool j1Collision::Awake(pugi::xml_node& config)
 bool j1Collision::PreUpdate()	// @Carles
 {
 	bool ret = true;
-	p2List_item<Collider>* tmpCollider;
-	p2List_item<Collider>* nextCollider;
+	p2List_item<Collider*>* tmpCollider;
+	p2List_item<Collider*>* nextCollider;
 
 	// Remove all colliders scheduled for deletion
 	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = nextCollider) {
 		nextCollider = tmpCollider->next;
 
-		if (tmpCollider->data.to_delete == true) {
+		if (tmpCollider->data->to_delete == true) {
 			colliders.del(tmpCollider);
 		}
 	}
@@ -61,11 +61,11 @@ bool j1Collision::PreUpdate()	// @Carles
 	Collider* c2;
 
 	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
-		c1 = &tmpCollider->data;
+		c1 = tmpCollider->data;
 
 		// Avoid checking already checked collisions
 		for (nextCollider = tmpCollider->next; nextCollider != nullptr; nextCollider = nextCollider->next) {
-			c2 = &nextCollider->data;
+			c2 = nextCollider->data;
 
 			if (c1->CheckCollision(c2->rect) == true) {
 				if (matrix[c1->type][c2->type] && c1->callback)
@@ -94,7 +94,12 @@ bool j1Collision::CleanUp()
 {
 	LOG("Freeing all colliders");
 
-	colliders.clear();	// @Carles, empty collider list
+	p2List_item<Collider*>* item;
+
+	for (item = colliders.start; item != nullptr; item = item->next) {
+		RELEASE(item->data);
+	}
+	colliders.clear();
 
 	return true;
 }
@@ -130,7 +135,7 @@ void j1Collision::DebugDraw()
 	Uint8 alpha = 80;
 	Uint8 alphaHard = 130;
 
-	p2List_item<Collider>* tmpCollider;
+	p2List_item<Collider*>* tmpCollider;
 	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next)
 	{
 		/* COLORS
@@ -145,31 +150,31 @@ void j1Collision::DebugDraw()
 		Brown: 160, 128, 96
 		*/
 
-		switch (tmpCollider->data.GetType())
+		switch (tmpCollider->data->GetType())
 		{
 		case COLLIDER_NONE: // white
-			App->render->DrawQuad(tmpCollider->data.rect, 255, 255, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 255, 255, 255, alpha);
 			break;
 		case COLLIDER_WALL: // green
-			App->render->DrawQuad(tmpCollider->data.rect, 0, 255, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 0, 255, 0, alpha);
 			break;
 		case COLLIDER_PLATFORM: // magenta
-			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 255, 0, 255, alpha);
 			break;
 		case COLLIDER_FALLING_PLATFORM: // brown
-			App->render->DrawQuad(tmpCollider->data.rect, 160, 128, 96, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 160, 128, 96, alpha);
 			break;
 		case COLLIDER_PLAYER: // blue
-			App->render->DrawQuad(tmpCollider->data.rect, 0, 0, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 0, 0, 255, alpha);
 			break;
 		case COLLIDER_PLAYER_ATTACK: // cyan
-			App->render->DrawQuad(tmpCollider->data.rect, 0, 255, 255, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 0, 255, 255, alpha);
 			break;
 		case COLLIDER_ENEMY: // red
-			App->render->DrawQuad(tmpCollider->data.rect, 255, 0, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 255, 0, 0, alpha);
 			break;
 		case COLLIDER_ENEMY_ATTACK: // yellow
-			App->render->DrawQuad(tmpCollider->data.rect, 255, 255, 0, alpha);
+			App->render->DrawQuad(tmpCollider->data->rect, 255, 255, 0, alpha);
 			break;
 		}
 	}
@@ -177,21 +182,26 @@ void j1Collision::DebugDraw()
 
 Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, Entity* callback)	//@Carles
 {
-	Collider tmpCollider;
-	Collider* tmpPtr;
-
-	tmpCollider.rect = rect;
-	tmpCollider.type = type;
-	tmpCollider.callback = callback;
-	tmpPtr = &colliders.add(tmpCollider)->data;
+	Collider* tmpPtr = new Collider(rect, type, callback);
+	colliders.add(tmpPtr);
 
 	return tmpPtr;
 }
 
 void j1Collision::DestroyCollider(Collider* collider)
 {
-	p2List_item<Collider> item = *collider;
-	colliders.del(&item);
+	int indexPos = colliders.find(collider);
+	
+	if (indexPos > -1) {
+		p2List_item<Collider*>* item;
+		item = colliders.At(indexPos);
+
+		RELEASE(item->data);
+		colliders.del(item);
+	}
+	else {
+		LOG("Collider not found inside list!");
+	}
 }
 
 // -----------------------------------------------------
@@ -205,17 +215,12 @@ bool j1Collision::CheckGroundCollision(Collider* hitbox) const
 {
 	bool ret = false;
 
-	Collider tmpHitbox = *hitbox;
+	Collider* tmpHitbox = hitbox;
+	tmpHitbox->rect.y++;
 
-	tmpHitbox.rect.y++;
+	for (p2List_item<Collider*>* tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
 
-	for (p2List_item<Collider>* tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
-		Collider* nextCollider = &tmpCollider->data;
-
-		if (tmpHitbox.CheckCollision(nextCollider->rect) == true) {
-			if (matrix[tmpHitbox.type][nextCollider->type] && tmpHitbox.callback)
-				ret = true;
-			if (matrix[nextCollider->type][tmpHitbox.type] && nextCollider->callback)
+		if (tmpHitbox->CheckCollision(tmpCollider->data->rect) == true && matrix[tmpHitbox->type][tmpCollider->data->type] && tmpHitbox->callback) {
 				ret = true;
 		}
 	}

@@ -94,7 +94,7 @@ public:
 
 private:
 	bool matrix[COLLIDER_MAX][COLLIDER_MAX];
-	p2List<Collider> colliders;
+	p2List<Collider*> colliders;
 	SDL_Rect screen;
 };
 
