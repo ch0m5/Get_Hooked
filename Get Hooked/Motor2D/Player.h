@@ -162,7 +162,7 @@ private:
 	bool godMode;				// Flag used to mark player invencibility
 	bool freeCamera;			// Flag used to mark free camera movement
 
-	//Character sprites
+	//Character sprites	//IMPROVE: Make list?
 	sprite_data idleSprite;
 
 	sprite_data runSprite;
