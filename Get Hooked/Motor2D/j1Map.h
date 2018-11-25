@@ -21,7 +21,6 @@ struct Objects {
 
 	};
 
-
 	~Objects()
 	{
 		p2List_item<Object*>* itemP;
@@ -36,9 +35,6 @@ struct Objects {
 		Objectlist.clear();
 	}
 
-
-
-
 	p2List<Object*>	Objectlist;
 
 };
@@ -50,7 +46,6 @@ struct Properties
 		p2SString name;
 		float value;
 	};
-
 
 	~Properties()
 	{
@@ -73,8 +68,8 @@ struct Properties
 	p2List<Property*>	Propertieslist;
 };
 
-struct ImageLayer {
-
+struct ImageLayer
+{
 	SDL_Rect GetImageLayerRect() const;
 
 	p2SString name;
@@ -82,19 +77,18 @@ struct ImageLayer {
 	float OffsetX, OffsetY = 0.0f;
 	float speed;
 
-	SDL_Texture*texture;
+	SDL_Texture* texture;
 
 	float SpeedBack;
 
 	Properties PropImg;
-
 };
 
 struct MapLayer {
 	p2SString	name;
 	uint		width;
 	uint		height;
-	uint*		data = nullptr;
+	uint*		data = nullptr;	//CHANGE/FIX: Destructor needed?
 	inline uint Get(int x, int y) const;
 
 	Properties	properties;

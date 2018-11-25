@@ -122,6 +122,11 @@ bool j1Map::CleanUp()
 
 	while(item != NULL)
 	{
+		if (item->data->texture != nullptr) {
+			App->tex->UnLoad(item->data->texture);
+			item->data->texture = nullptr;
+		}
+
 		RELEASE(item->data);
 		item = item->next;
 	}
@@ -138,14 +143,30 @@ bool j1Map::CleanUp()
 	}
 	data.layers.clear();
 
-	// Remove all enemies	//SCENE_UPDATE
-	p2List_item<Enemy*>* item3;
-	item3 = data.enemies.start;
+	// Remove all image layers
+	p2List_item<ImageLayer*>* item3;
+	item3 = data.imagelayers.start;
 
 	while (item3 != NULL)
 	{
+		if (item3->data->texture != nullptr) {
+			App->tex->UnLoad(item3->data->texture);
+			item3->data->texture = nullptr;
+		}
+
 		RELEASE(item3->data);
 		item3 = item3->next;
+	}
+	data.imagelayers.clear();
+
+	// Remove all enemies
+	p2List_item<Enemy*>* item4;
+	item4 = data.enemies.start;
+
+	while (item4 != NULL)
+	{
+		RELEASE(item4->data);
+		item4 = item4->next;
 	}
 	data.enemies.clear();
 
