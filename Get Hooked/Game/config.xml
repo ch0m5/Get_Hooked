@@ -114,7 +114,7 @@
             <dead column="0" row="23" frames="7" animSpeed ="8" loop="false">
               <offset x="14" y="6" w="22" h="31"/>
             </dead>
-            <attack_1 column="0" row="9" frames="6" animSpeed ="14" loop="false">
+            <attack_1 column="0" row="9" frames="6" animSpeed ="18" loop="false">
               <offset x="14" y="6" w="22" h="31"/>
               <attackRightOffset x="22" y="1" w="27" h="32"/>
               <attackLeftOffset x="1" y="1" w="27" h="32"/>
@@ -135,7 +135,7 @@
           <airborne value="false"/>
           <looking right="true"/>
           <somersault used="false"/>
-          <attackDelay miliseconds="500"/>
+          <attackDelay miliseconds="300"/>
           <deathDelay miliseconds="1000"/>
           <debugMode value="true" />
           <godMode value="false"/>
