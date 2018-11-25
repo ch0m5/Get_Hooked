@@ -13,6 +13,9 @@
   <image source="background2.png" width="4800" height="960"/>
  </imagelayer>
  <layer name="map" width="300" height="60">
+  <properties>
+   <property name="MustDraw" type="int" value="1"/>
+  </properties>
   <data>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -18017,6 +18020,9 @@
   </data>
  </layer>
  <layer name="collision" width="300" height="60">
+  <properties>
+   <property name="MustDraw" type="int" value="0"/>
+  </properties>
   <data>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -36021,6 +36027,9 @@
   </data>
  </layer>
  <layer name="pathfinding" width="300" height="60">
+  <properties>
+   <property name="MustDraw" type="int" value="0"/>
+  </properties>
   <data>
    <tile gid="209"/>
    <tile gid="209"/>

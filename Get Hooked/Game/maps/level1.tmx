@@ -17,6 +17,9 @@
   </properties>
  </imagelayer>
  <layer name="map" width="300" height="60">
+  <properties>
+   <property name="MustDraw" type="int" value="1"/>
+  </properties>
   <data>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -18022,7 +18025,7 @@
  </layer>
  <layer name="collision" width="300" height="60" opacity="0.55">
   <properties>
-   <property name="MustDraw" value="1"/>
+   <property name="MustDraw" value="0"/>
   </properties>
   <data>
    <tile gid="0"/>
@@ -36028,6 +36031,9 @@
   </data>
  </layer>
  <layer name="pathfinding" width="300" height="60">
+  <properties>
+   <property name="MustDraw" type="int" value="0"/>
+  </properties>
   <data>
    <tile gid="209"/>
    <tile gid="209"/>

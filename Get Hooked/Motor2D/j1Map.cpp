@@ -50,23 +50,31 @@ void j1Map::Draw()
 	p2List_item<TileSet*>* item; //Sprites_Layer
 	item = data.tilesets.start;
 
-	p2List_item<MapLayer*>* layer; //Map
-	layer = data.layers.start;
+	//p2List_item<MapLayer*>* layer; //Map
+	//layer = data.layers.start;
 
-	for (int y = 0; y < data.height; ++y) {
-		for (int x = 0; x < data.width; ++x) {
+	for (p2List_item<MapLayer*>* layer = data.layers.start; layer != NULL; layer = layer->next)
+	{
+		if (layer->data->properties.Get("MustDraw") != 0)
+		{
+			for (int y = 0; y < data.height; ++y) {
+				for (int x = 0; x < data.width; ++x) {
 
-			uint id = layer->data->Get(x, y);
+					uint id = layer->data->Get(x, y);
 
-			id = layer->data->data[id];
+					id = layer->data->data[id];
 
-			if (id != 0) {
-				SDL_Rect *rect = &item->data->GetTileRect(id);
-				iPoint pos = MapToWorld(x, y);
-				App->render->Blit(item->data->texture, pos.x, pos.y, rect);
+					if (id != 0) {
+						SDL_Rect *rect = &item->data->GetTileRect(id);
+						iPoint pos = MapToWorld(x, y);
+						App->render->Blit(item->data->texture, pos.x, pos.y, rect);
+					}
+				}
 			}
 		}
+		item = item->next;
 	}
+			
 }
 
 
