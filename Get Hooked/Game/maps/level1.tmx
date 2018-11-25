@@ -7,10 +7,10 @@
   <image source="collider_tileset.png" width="64" height="64"/>
  </tileset>
  <imagelayer name="Image Layer 1">
-  <image source="level1_back.png" width="4800" height="960"/>
+  <image source="background1.png" width="4800" height="960"/>
   <properties>
    <property name="Movement" type="int" value="1"/>
-   <property name="Speed" type="float" value="0.25"/>
+   <property name="Speed" type="float" value="0.5"/>
   </properties>
  </imagelayer>
  <layer name="map" width="300" height="60">
