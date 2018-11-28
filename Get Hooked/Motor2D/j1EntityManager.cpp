@@ -12,7 +12,7 @@
 #include "Slime.h"
 
 // Constructor
-j1EntityManager::j1EntityManager()
+j1EntityManager::j1EntityManager() : j1Module()
 {
 	name.create("entityManager");
 	player = (Player*)CreateEntity(entity_type::PLAYER);

@@ -7,9 +7,9 @@
 #include "j1Input.h"
 #include "j1UserInterface.h"
 
-j1UserInterface::j1UserInterface()
+j1UserInterface::j1UserInterface() : j1Module()
 {
-	name.create("UserInterface");
+	name.create("userInterface");
 }
 
 // Destructor

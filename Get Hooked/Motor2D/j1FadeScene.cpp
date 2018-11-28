@@ -9,7 +9,7 @@
 #include "SDL/include/SDL_timer.h"
 
 
-j1FadeScene::j1FadeScene()
+j1FadeScene::j1FadeScene() : j1Module()
 {
 	name.create("fade");
 }

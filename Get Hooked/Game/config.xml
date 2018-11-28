@@ -81,9 +81,9 @@
     
   </fonts>
   
-  <UserInterface>
+  <userInterface>
     
-  </UserInterface>
+  </userInterface>
   
   <entityManager>
     <start active="false" />
