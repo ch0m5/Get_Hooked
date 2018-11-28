@@ -6,7 +6,7 @@
 #include "j1Render.h"
 #include "j1Collision.h"
 #include "Player.h"
-#include "Entity.h"
+#include "PhysicalElement.h"
 
 j1Collision::j1Collision()
 {
@@ -63,16 +63,19 @@ bool j1Collision::PreUpdate()	// @Carles
 	for (tmpCollider = colliders.start; tmpCollider != nullptr; tmpCollider = tmpCollider->next) {
 		c1 = tmpCollider->data;
 
-		// Avoid checking already checked collisions
-		for (nextCollider = tmpCollider->next; nextCollider != nullptr; nextCollider = nextCollider->next) {
-			c2 = nextCollider->data;
+		if (c1->active) {
+			for (nextCollider = tmpCollider->next; nextCollider != nullptr; nextCollider = nextCollider->next) {
+				c2 = nextCollider->data;
 
-			if (c1->CheckCollision(c2->rect) == true) {
-				if (matrix[c1->type][c2->type] && c1->callback)
-					c1->callback->OnCollision(c1, c2);
+				if (c2->active) {
+					if (c1->CheckCollision(c2->rect) == true) {
+						if (matrix[c1->type][c2->type] && c1->callback)
+							c1->callback->OnCollision(c1, c2);
 
-				if (matrix[c2->type][c1->type] && c2->callback)
-					c2->callback->OnCollision(c2, c1);
+						if (matrix[c2->type][c1->type] && c2->callback)
+							c2->callback->OnCollision(c2, c1);
+					}
+				}
 			}
 		}
 	}
@@ -180,7 +183,7 @@ void j1Collision::DebugDraw()
 	}
 }
 
-Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, Entity* callback)	//@Carles
+Collider* j1Collision::AddCollider(SDL_Rect rect, collider_type type, PhysicalElement* callback)	//@Carles
 {
 	Collider* tmpPtr = new Collider(rect, type, callback);
 	colliders.add(tmpPtr);

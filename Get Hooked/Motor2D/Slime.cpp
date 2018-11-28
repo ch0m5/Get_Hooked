@@ -16,7 +16,7 @@
 #include "Player.h"
 #include "Slime.h"
 
-Slime::Slime() : Enemy(enemy_type::SLIME)
+Slime::Slime() : Enemy(entity_type::SLIME)
 {
 	name.create("slime");
 }

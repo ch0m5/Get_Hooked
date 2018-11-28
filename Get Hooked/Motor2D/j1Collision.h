@@ -4,7 +4,7 @@
 #include "j1Module.h"
 #include "SDL\include\SDL_rect.h"
 
-class Entity;
+class PhysicalElement;
 
 enum collider_type {	// @Carles, collider types
 	COLLIDER_NONE = -1,
@@ -32,10 +32,10 @@ enum class collision_type {	//@Carles, enumerates collision types
 struct Collider
 {
 	SDL_Rect rect;
+	bool active = true;	//CHANGE/FIX: IMPLEMENT COLLIDER DETECTION RADIUS
 	bool to_delete = false;
 	collider_type type;
-	Entity* callback = nullptr;
-	//bool active = true;	CHANGE/FIX: IMPLEMENT COLLIDER DETECTION RADIUS
+	PhysicalElement* callback = nullptr;
 
 	Collider() :
 		rect({ 0,0 }),
@@ -43,7 +43,7 @@ struct Collider
 		callback(nullptr)
 	{}
 
-	Collider(SDL_Rect rectangle, collider_type type, Entity* callback = nullptr) :
+	Collider(SDL_Rect rectangle, collider_type type, PhysicalElement* callback = nullptr) :
 		rect(rectangle),
 		type(type),
 		callback(callback)
@@ -81,7 +81,7 @@ public:
 	bool Load(pugi::xml_document& map_file);
 	//bool Save(pugi::xml_node&) const;
 
-	Collider* AddCollider(SDL_Rect rect, collider_type type, Entity* callback);	//@Carles
+	Collider* AddCollider(SDL_Rect rect, collider_type type, PhysicalElement* callback);	//@Carles
 	void DestroyCollider(Collider* collider);
 
 	void DebugDraw();

@@ -1,15 +1,7 @@
 #ifndef __ENEMY_H__
 #define __ENEMY_H__	// @CarlesHoms
 
-#include "Entity.h"
-
-enum class enemy_type {	//IMPROVE: Sub-Entities Flying enemy & Ground enemy
-	NONE = -1,
-	BAT,
-	SLIME,
-
-	MAX_TYPES
-};
+#include "Creature.h"
 
 enum class enemy_state {
 	IDLE,
@@ -20,10 +12,10 @@ enum class enemy_state {
 	HURT
 };
 
-class Enemy : public Entity
+class Enemy : public Creature
 {
 public:
-	Enemy(enemy_type enemyType) : Entity(entity_type::ENEMY), enemyType(enemyType) {}
+	Enemy(entity_type enemyType) : Creature(enemyType) {};
 
 	//Destructor
 	virtual ~Enemy() {};
@@ -47,7 +39,7 @@ public:
 	virtual bool Update();
 
 	// Called each loop iteration
-	//virtual bool PostUpdate();
+	virtual bool PostUpdate();
 
 	// Called before quitting
 	bool CleanUp();
@@ -96,9 +88,6 @@ protected:
 	ushort deathDelay;	//Time before despawn
 
 	bool mustReset = false;	// Flag used to restart animations when needed (skipping workflow steps)
-
-private:
-	enemy_type enemyType;
 };
 
 #endif //__ENEMY_H__

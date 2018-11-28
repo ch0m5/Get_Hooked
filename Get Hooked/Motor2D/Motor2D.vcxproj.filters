@@ -79,23 +79,23 @@
     <ClCompile Include="Button.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button</Filter>
     </ClCompile>
-    <ClCompile Include="Item.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Items</Filter>
-    </ClCompile>
-    <ClCompile Include="Environment.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Environment</Filter>
-    </ClCompile>
     <ClCompile Include="InputText.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button\Input Text</Filter>
     </ClCompile>
     <ClCompile Include="CheckBox.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button\Check Box</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicalElement.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
+    </ClCompile>
     <ClCompile Include="Text.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Text</Filter>
+      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Image</Filter>
+      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -198,23 +198,23 @@
     <ClInclude Include="Button.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button</Filter>
     </ClInclude>
-    <ClInclude Include="Item.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Items</Filter>
-    </ClInclude>
-    <ClInclude Include="Environment.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Environment</Filter>
-    </ClInclude>
     <ClInclude Include="InputText.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button\Input Text</Filter>
     </ClInclude>
     <ClInclude Include="CheckBox.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Button\Check Box</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicalElement.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
+    </ClInclude>
     <ClInclude Include="Text.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Text</Filter>
+      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements</Filter>
     </ClInclude>
     <ClInclude Include="Image.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements\Image</Filter>
+      <Filter>Desenvolupament  ========\Entities System\Entities\UI Elements</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,12 +268,6 @@
     </Filter>
     <Filter Include="Desenvolupament  ========\Entities System\Entities\UI Elements\Button">
       <UniqueIdentifier>{20cabf54-f1ac-41e3-831c-8aeb3cd5649a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Desenvolupament  ========\Entities System\Entities\UI Elements\Text">
-      <UniqueIdentifier>{ea387fba-693e-4457-ac4e-e4fe825a7bba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Desenvolupament  ========\Entities System\Entities\UI Elements\Image">
-      <UniqueIdentifier>{890a4bc3-e26d-4876-9e4d-6e15a86bae79}</UniqueIdentifier>
     </Filter>
     <Filter Include="Desenvolupament  ========\Entities System\Entities\Physical\Items">
       <UniqueIdentifier>{2ce0b83e-642c-4796-bd74-811c22411b25}</UniqueIdentifier>

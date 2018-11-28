@@ -5,10 +5,24 @@
 #include "p2List.h"
 
 class Entity;
+
+class PhysicalElement;
+class Creature;
 class Player;
 class Enemy;
+
+class UIElement;
+
 enum class entity_type;
-enum class enemy_type;
+
+enum class entity_lists {	//@Carles, all entities are on the entities list. However, some are also registered in other lists for easier localization
+	NONE = -1,
+	ENTITIES,
+	ENEMIES,
+	ITEMS,
+
+	MAX_TYPES
+};
 
 class j1EntityManager : public j1Module
 {
@@ -43,18 +57,16 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 public:
-	Entity* CreateEntity(entity_type type, enemy_type enemy = (enemy_type)-1);
-	Enemy* CreateEnemy(enemy_type type);
+	Entity* CreateEntity(entity_type type);
 	void DestroyEntity(p2List_item<Entity*>* item);
 
 private:
 	bool UpdateEntities(float dt, bool mustCheckLogic);
-
-	// Load config file
-	pugi::xml_node LoadConfig(pugi::xml_document&) const;
 	
 public:
 	p2List<Entity*> entities;
+	p2List<Enemy*>	enemies;
+	//p2List<Entity*>	items;
 	Player* player;
 
 private:
@@ -62,6 +74,7 @@ private:
 	float accumulatedTime;
 	bool mustCheckLogic = false;
 
+	pugi::xml_node entitiesNode;
 };
 
 #endif //__j1ENTITYMANAGER__

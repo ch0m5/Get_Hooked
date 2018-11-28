@@ -16,7 +16,7 @@
 #include "Player.h"
 #include "Enemy.h"
 
-Player::Player() : Entity(entity_type::PLAYER)
+Player::Player() : Creature(entity_type::PLAYER)
 {
 	name.create("player");
 }
@@ -156,7 +156,7 @@ collision_type Player::OnCollision(Collider* c1, Collider* c2)	//IMPROVE: REWORK
 		}
 		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY) {
 
-			if (c2->callback->IsDead() == false && status != player_state::HURT) {
+			if (c2->callback->GetCollisionIgnore() == false && status != player_state::HURT) {
 				Hurt();
 				status = player_state::HURT;
 				ret = collision_type::UNDEFINED;

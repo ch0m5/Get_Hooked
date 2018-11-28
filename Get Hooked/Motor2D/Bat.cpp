@@ -16,7 +16,7 @@
 #include "Player.h"
 #include "Bat.h"
 
-Bat::Bat() : Enemy(enemy_type::BAT)
+Bat::Bat() : Enemy(entity_type::BAT)
 {
 	name.create("bat");
 }

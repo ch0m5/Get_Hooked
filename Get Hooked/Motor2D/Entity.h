@@ -1,57 +1,44 @@
-#ifndef __j1ENTITY_H__
-#define __j1ENTITY_H__	// @CarlesHoms	//IMPROVE: Make better class classification instead of having Entity be this generally big, comments tip possible classification.
+#ifndef __ENTITY_H__
+#define __ENTITY_H__
 
 #include "p2Animation.h"
 
-enum class collision_type;
-struct Collider;
 struct SDL_Texture;
-
-//Components
-struct movement_flags {	//Dynamic Entity
-	bool movingUp;
-	bool movingRight;
-	bool movingLeft;
-	bool movingDown;
-};
-
-struct movement_input {	//Dynamic Entity
-	bool wantMoveUp;
-	bool wantMoveRight;
-	bool wantMoveLeft;
-	bool wantMoveDown;
-};
-
-struct sprite_data {	// @Carles, struct used to store xml data of the first sprite of an animation to then automatize the animation allocation process
-	//p2SString id;	//IMPROVE: Make sprite_data lists and use this to mark them
-	iPoint sheetPosition;
-	SDL_Rect colliderOffset;
-	uint numFrames;
-	Animation anim;
-};
 
 enum class entity_type
 {
 	NONE = -1,
+
+	//Creatures
 	NPC,
 	PLAYER,
-	PLAYER_ATTACK,
 	ENEMY,
-	ENEMY_ATTACK,
+
+	//Enemies
+	BAT,
+	SLIME,
+
+	//Projectiles
+	PLAYER_PROJECTILE,
+	ENEMY_PROJECTILE,
+
+	//Items
 	ITEM,
+
+	//Environment
 	CHECKPOINT,
 
 	MAX_TYPES
 };
 
-class Entity
+class Entity	//IMPROVE: Change all entity class and file names to j2EntityName
 {
 public:
 	//Constructor
-	Entity(entity_type type) : type(type) {}
+	Entity(entity_type type) : type(type) {};
 
 	//Destructor
-	virtual ~Entity();
+	virtual ~Entity() {};
 
 	// Called on entity creation
 	virtual void Init()
@@ -88,45 +75,12 @@ public:
 	virtual bool Save(pugi::xml_node&) const { return true; };
 
 public:
-	//Entity
 	virtual entity_type GetType() const;
 	virtual fPoint GetPosition() const;
-	virtual fPoint Entity::GetCenterPosition() const;
-	virtual bool InsideRadius(fPoint targetPosition, iPoint radius);
-
-	//Dynamic Entity
-	virtual fPoint GetSpeed() const;
-	virtual fPoint GetAcceleration() const;
-	//virtual state GetState() const;
-
-	//Physical Entity
-	virtual Collider* GetCollider();
-	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }
-
-	//Living Entity
-	virtual uint GetLife() const;
-	virtual uint LifeToMax();
-	virtual void Kill();
-	virtual void Hurt();
-	virtual bool IsDead() const;
+	virtual fPoint GetCenterPosition() const;
 
 protected:
-	//Entity
-	virtual void CheckInput() {};
 	virtual void Draw(SDL_Rect* animRect) const;
-	virtual void ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node&);	// Import sprite data from config.xml
-
-	//Dynamic Entity
-	virtual void CheckMovement();		// Check player current movement
-	virtual void CheckState() {};		// Check player state
-	virtual void ApplyState() {};		// Add state effects like movement restrictions, animation and sounds
-	virtual void Move(float dt) {};		// Move player position and decide/calculate other movement related factors
-	virtual void UpdateHitbox() {};		// Transform player collider depending on new position and state
-	virtual bool CheckOrientation();
-	virtual fPoint LimitSpeed();
-
-	//Physical Entity
-	SDL_Rect ReshapeCollider(sprite_data sprite);
 
 public:
 	p2SString name;
@@ -134,42 +88,16 @@ public:
 	bool active;
 	bool mustDestroy = false;
 
-protected:	//IMPROVE: Entity is pretty full, future subdivision of classes would be better, specially if using a component-based format
-	//Entity
-	fPoint prevPosition;	//IMPROVE: NEW COLLISION SYSTEM
+protected:
 	fPoint position;
 	fPoint centerPosition;
-	movement_input input;
-	movement_flags movement;
+	bool lookingRight;	// IMPROVE: Change to an enum "orientation" for more blitting parameters
 
 	p2SString textureName;
 	SDL_Texture* graphics = nullptr;
-	iPoint spriteSize;
-	Animation* animPtr = nullptr;
-	SDL_Rect animRect;
-	//p2List<sprite_data*> spriteList;
-
-	//Dynamic Entity
-	fPoint speed;
-	fPoint maxSpeed;
-	fPoint acceleration;
-	float gravity;
-	//state status;
-	bool lookingRight;	// Flag for blit flipping and hurt speed x direction
-
-	//Physical Entity
-	Collider* hitbox;
-	SDL_Rect hitboxOffset;
-
-	//Living Entity
-	//p2List<Collider*> attackColliders;
-	int life;
-	uint maxLife;
-	fPoint hurtSpeed;
-	bool dead;
 
 private:
 	entity_type type;
 };
 
-#endif //__j1ENTITY_H__
+#endif //__ENTITY_H__

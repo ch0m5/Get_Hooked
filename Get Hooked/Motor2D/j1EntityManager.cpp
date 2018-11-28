@@ -39,6 +39,7 @@ j1EntityManager::~j1EntityManager()
 
 	while (item != NULL)
 	{
+		item->data->CleanUp();
 		RELEASE(item->data);
 		item = item->prev;
 	}
@@ -54,11 +55,9 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 	active = config.child("start").attribute("active").as_bool();
 	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
 
-	pugi::xml_node entities_node;
+	entitiesNode = config.child("entities");
 
-	entities_node = config.child("entities");
-
-	if (entities_node.empty() == false)
+	if (entitiesNode.empty() == false)
 	{
 		ret = true;
 
@@ -67,7 +66,7 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 
 		while (item != NULL && ret == true)
 		{
-			ret = item->data->Awake(entities_node.child(item->data->name.GetString()));
+			ret = item->data->Awake(entitiesNode.child(item->data->name.GetString()));
 			item = item->next;
 		}
 	}
@@ -98,7 +97,6 @@ bool j1EntityManager::PreUpdate()
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
-	Entity* tmpEntity = NULL;
 
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
@@ -119,6 +117,15 @@ bool j1EntityManager::PreUpdate()
 		}
 
 		ret = item->data->PreUpdate();
+	}
+
+	p2List_item<Enemy*>* item2;
+
+	for (item2 = enemies.start; item != NULL && ret == true; item = item->next)
+	{
+		if (item2->data->active == false && item2->data->IsDead() == true) {
+			item2->data->mustDestroy = true;
+		}
 	}
 
 	return ret;
@@ -214,9 +221,10 @@ bool j1EntityManager::CleanUp()
 	for (item = entities.end; item != NULL && ret == true; item = item->prev)
 	{
 		ret = item->data->CleanUp();
+		RELEASE(item->data);
 	}
-
 	entities.clear();
+	enemies.clear();
 
 	return ret;
 }
@@ -225,31 +233,15 @@ bool j1EntityManager::CleanEnemies()
 {
 	bool ret = true;
 
-	p2List_item<Entity*>* item;
-	p2List_item<Entity*>* prevItem;
+	p2List_item<Enemy*>* item;
 
-	for (item = entities.end; item != NULL && ret == true; item = prevItem)
+	for (item = enemies.end; item != NULL && ret == true; item = item->prev)
 	{
-		prevItem = item->prev;
-
-		if (item->data->GetType() == entity_type::ENEMY) {
-			ret = item->data->CleanUp();
-			entities.del(item);
-		}
+		ret = item->data->CleanUp();
+		RELEASE(item->data);
+		entities.del((p2List_item<Entity*>*)item);	//CHANGE/FIX: Possible room for mistakes
 	}
-
-	return ret;
-}
-
-pugi::xml_node j1EntityManager::LoadConfig(pugi::xml_document& config_file) const
-{
-	pugi::xml_node ret;
-	pugi::xml_parse_result result = config_file.load_file("config.xml");
-
-	if (result == NULL)
-		LOG("Could not load map xml file config.xml. pugi error: %s", result.description());
-	else
-		ret = config_file.child("config");
+	enemies.clear();
 
 	return ret;
 }
@@ -281,68 +273,47 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 	return true;
 }
 
-Entity* j1EntityManager::CreateEntity(entity_type type, enemy_type enemy)
+Entity* j1EntityManager::CreateEntity(entity_type type)
 {
-	static_assert((int)entity_type::MAX_TYPES == 7, "Entity enum is not accurate");
+	static_assert((int)entity_type::MAX_TYPES == 9, "Entity enum is not accurate");
 
 	Entity* ret = nullptr;
+	entity_lists list = entity_lists::ENTITIES;
+
 	switch (type) {
-	//case entity_type::NPC:
-	//	ret = new NPC();
-	//	break;¡
 	case entity_type::PLAYER:
 		ret = new Player();
 		break;
-	//case entity_type::PLAYER_ATTACK:
-	//	ret = new PlayerAttack();
-	//	break;
-	case entity_type::ENEMY:
-		ret = CreateEnemy(enemy);
+	case entity_type::BAT:
+		ret = new Bat();
+		list = entity_lists::ENEMIES;
 		break;
-	//case entity_type::ENEMY_ATTACK:
-	//	ret = new Enemy_Attack();
-	//	break;
-	//case entity_type::ITEM:
-	//	ret = new Item();
-	//	break;
-	//case entity_type::CHECKPOINT:
-	//	ret = new Checkpoint();
-	//	break;
+	case entity_type::SLIME:
+		ret = new Slime();
+		list = entity_lists::ENEMIES;
+		break;
 	}
 
 	if (ret != nullptr) {
 		entities.add(ret);
 		ret->Init();
+
+		switch (list) {
+		case entity_lists::ENEMIES:
+			enemies.add((Enemy*)ret);
+			ret->Awake(entitiesNode.child(ret->name.GetString()));
+			break;
+		default:
+			break;
+		}
 	}
 
 	return ret;
 }
 
-Enemy* j1EntityManager::CreateEnemy(enemy_type enemy)
-{
-	static_assert((int)enemy_type::MAX_TYPES == 2, "Entity enum is not accurate");
-
-	Enemy* ret = nullptr;
-	switch (enemy) {
-		case enemy_type::BAT:
-			ret = new Bat();
-			break;
-		case enemy_type::SLIME:
-			ret = new Slime();
-			break;
-		default:
-			break;
-	}
-
-	pugi::xml_document config_file;	//IMPROVE: Make function?
-	pugi::xml_node config = LoadConfig(config_file);
-	ret->Awake(config.child("EntityManager").child("entities").child(ret->name.GetString()));
-
-	return (Enemy*)ret;
-}
-
 void j1EntityManager::DestroyEntity(p2List_item<Entity*>* item)
 {
 	item->data->CleanUp();
+	RELEASE(item->data);
 	entities.del(item);
 }

@@ -79,12 +79,11 @@
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CheckBox.cpp" />
+    <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="InputText.cpp" />
-    <ClCompile Include="Item.cpp" />
     <ClCompile Include="j1Collision.cpp" />
     <ClCompile Include="j1EntityManager.cpp" />
     <ClCompile Include="j1FadeScene.cpp" />
@@ -97,6 +96,7 @@
     <ClCompile Include="j1Pathfinding.cpp" />
     <ClCompile Include="j1PerfTimer.cpp" />
     <ClCompile Include="j1UserInterface.cpp" />
+    <ClCompile Include="PhysicalElement.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="j1Scene.cpp" />
     <ClCompile Include="j1Timer.cpp" />
@@ -113,12 +113,11 @@
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CheckBox.h" />
+    <ClInclude Include="Creature.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="Environment.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="InputText.h" />
-    <ClInclude Include="Item.h" />
     <ClInclude Include="j1Collision.h" />
     <ClInclude Include="j1EntityManager.h" />
     <ClInclude Include="j1FadeScene.h" />
@@ -129,6 +128,7 @@
     <ClInclude Include="j1UserInterface.h" />
     <ClInclude Include="p2Animation.h" />
     <ClInclude Include="j1Map.h" />
+    <ClInclude Include="PhysicalElement.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="j1Scene.h" />
     <ClInclude Include="p2DynArray.h" />

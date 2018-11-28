@@ -1,7 +1,7 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__	// @CarlesHoms
 
-#include "Entity.h"
+#include "Creature.h"
 
 //Components
 enum class player_state {	// @Carles, enum that groups all possible player states that will decide how the player behaves
@@ -23,7 +23,7 @@ struct attack_data {	//IMPROVE: Make function that automatically "flips" the col
 	ushort finishAttackFrame;
 };
 
-class Player : public Entity
+class Player : public Creature
 {
 public:
 

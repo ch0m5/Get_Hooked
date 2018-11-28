@@ -5,7 +5,7 @@
 #include "SDL_mixer\include\SDL_mixer.h"
 #include "p2List.h"
 
-#define DEFAULT_MUSIC_FADE_TIME 2.0f	// IMPROVE: On xml?
+#define DEFAULT_MUSIC_FADE_TIME 0.0f	//CHANGE/FIX: Was 2.0f, but mantained the screen loading for too long	// IMPROVE: On xml?
 
 struct _Mix_Music;
 struct Mix_Chunk;
@@ -42,7 +42,7 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 	// Play a music file
-	bool PlayMusic(const char* path, float fade_time = DEFAULT_MUSIC_FADE_TIME);
+	bool PlayMusic(const char* path, float fade_time = 0.0f);
 
 	// Load a WAV in memory
 	unsigned int LoadFx(const char* path);

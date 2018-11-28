@@ -91,6 +91,16 @@ bool Enemy::Update()
 	return ret;
 }
 
+// Called each loop iteration
+bool Enemy::PostUpdate()
+{
+	BROFILER_CATEGORY("Entity Enemy PostUpdate", Profiler::Color::OrangeRed);
+
+	bool ret = true;
+
+	return ret;
+}
+
 bool Enemy::CleanUp()
 {
 	bool ret = true;
@@ -211,6 +221,7 @@ void Enemy::Hurt()
 	airborne = true;
 
 	if (--life == 0) {
+		onlyMapCollisions = true;
 		dead = true;
 		deadTimer = SDL_GetTicks();
 	}
