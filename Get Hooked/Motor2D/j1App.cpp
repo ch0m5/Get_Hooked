@@ -12,6 +12,7 @@
 #include "j1Audio.h"
 #include "j1Scene.h"
 #include "j1Map.h"
+#include "j1Pathfinding.h"
 #include "j1EntityManager.h"
 #include "Player.h"			// CHANGE/FIX: Should be here?
 #include "j1Collision.h"	// @Carles
@@ -32,6 +33,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new j1Audio();
 	scene = new j1Scene();
 	map = new j1Map();
+	pathfinding = new j1PathFinding();
 	entityManager = new j1EntityManager();
 	collision = new j1Collision();	// @Carles
 	fade = new j1FadeScene();
@@ -43,6 +45,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(tex);
 	AddModule(audio);
 	AddModule(map);
+	AddModule(pathfinding);
 	AddModule(scene);
 	AddModule(entityManager);
 	AddModule(collision);
