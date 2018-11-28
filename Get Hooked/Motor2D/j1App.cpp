@@ -57,7 +57,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(collision);
 	AddModule(fade);
 
-	//CHANGE/GIX: Scene should go last, right before render
+	//CHANGE/GIX: Scene should go last, right before render, making this change breaks the game currently
 	//AddModule(scene);
 
 	// Render last to swap buffer
