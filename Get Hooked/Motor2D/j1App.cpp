@@ -14,6 +14,8 @@
 #include "j1Map.h"
 #include "j1Pathfinding.h"
 #include "j1EntityManager.h"
+#include "j1UserInterface.h"
+#include "j1Fonts.h"
 #include "Player.h"			// CHANGE/FIX: Should be here?
 #include "j1Collision.h"	// @Carles
 #include "j1FadeScene.h"	// @Carles
@@ -34,8 +36,10 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	scene = new j1Scene();
 	map = new j1Map();
 	pathfinding = new j1PathFinding();
+	font = new j1Fonts();
+	ui = new j1UserInterface();
 	entityManager = new j1EntityManager();
-	collision = new j1Collision();	// @Carles
+	collision = new j1Collision();
 	fade = new j1FadeScene();
 
 	// Ordered for awake / Start / Update
@@ -46,10 +50,15 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(map);
 	AddModule(pathfinding);
+	AddModule(font);
+	AddModule(ui);
 	AddModule(scene);
 	AddModule(entityManager);
 	AddModule(collision);
 	AddModule(fade);
+
+	//CHANGE/GIX: Scene should go last, right before render
+	//AddModule(scene);
 
 	// Render last to swap buffer
 	AddModule(render);

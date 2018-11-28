@@ -76,6 +76,14 @@
       <level2>level2.tmx</level2>
     </maps>
   </scene>
+
+  <fonts>
+    
+  </fonts>
+  
+  <UserInterface>
+    
+  </UserInterface>
   
   <entityManager>
     <start active="false" />

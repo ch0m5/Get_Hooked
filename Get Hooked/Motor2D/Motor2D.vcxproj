@@ -77,11 +77,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bat.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="CheckBox.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Environment.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="InputText.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="j1Collision.cpp" />
     <ClCompile Include="j1EntityManager.cpp" />
     <ClCompile Include="j1FadeScene.cpp" />
+    <ClCompile Include="j1Fonts.cpp" />
     <ClCompile Include="j1Main.cpp" />
     <ClCompile Include="j1App.cpp" />
     <ClCompile Include="j1Audio.cpp" />
@@ -89,6 +96,7 @@
     <ClCompile Include="j1Map.cpp" />
     <ClCompile Include="j1Pathfinding.cpp" />
     <ClCompile Include="j1PerfTimer.cpp" />
+    <ClCompile Include="j1UserInterface.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="j1Scene.cpp" />
     <ClCompile Include="j1Timer.cpp" />
@@ -98,17 +106,27 @@
     <ClCompile Include="j1Window.cpp" />
     <ClCompile Include="PugiXml\src\pugixml.cpp" />
     <ClCompile Include="Slime.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="UIElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bat.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="CheckBox.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Environment.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="InputText.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="j1Collision.h" />
     <ClInclude Include="j1EntityManager.h" />
     <ClInclude Include="j1FadeScene.h" />
+    <ClInclude Include="j1Fonts.h" />
     <ClInclude Include="j1Pathfinding.h" />
     <ClInclude Include="j1PerfTimer.h" />
     <ClInclude Include="j1Timer.h" />
+    <ClInclude Include="j1UserInterface.h" />
     <ClInclude Include="p2Animation.h" />
     <ClInclude Include="j1Map.h" />
     <ClInclude Include="Player.h" />
@@ -129,17 +147,12 @@
     <ClInclude Include="PugiXml\src\pugiconfig.hpp" />
     <ClInclude Include="PugiXml\src\pugixml.hpp" />
     <ClInclude Include="Slime.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="UIElement.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Game\maps\level1.tmx" />
     <None Include="..\Game\maps\level2.tmx" />
-    <None Include="..\Game\maps\map1.tmx">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\Game\maps\map2.tmx" />
-    <None Include="..\Game\maps\parallax1.tmx" />
-    <None Include="..\Game\maps\parallax2.tmx" />
-    <None Include="..\Game\maps\testmap.tmx" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Game\config.xml">
