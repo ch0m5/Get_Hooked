@@ -2,12 +2,14 @@
 #define __j1USERINTERFACE_H__
 
 #include "j1Module.h"
+#include "p2List.h"
 
 #define CURSOR_WIDTH 2
 
-// TODO 1: Create your structure of classes
+class UIElement;
+struct SDL_Rect;
+struct SDL_Texture;
 
-// ---------------------------------------------------
 class j1UserInterface : public j1Module
 {
 public:
@@ -26,6 +28,9 @@ public:
 	// Called before all Updates
 	bool PreUpdate();
 
+	// Called each frame
+	bool UpdateTick(float dt);
+
 	// Called after all Updates
 	bool PostUpdate();
 
@@ -35,9 +40,15 @@ public:
 	// TODO 2: Create the factory methods
 	// Gui creation functions
 
-	const SDL_Texture* GetAtlas() const;
+public:
+	SDL_Texture* GetAtlas() const;
+
+	UIElement* CreateScreenElement() {};
 
 private:
+	pugi::xml_node configNode;
+	p2List<UIElement*> screenElements;
+	p2List<SDL_Rect*> imageRects;
 
 	SDL_Texture* atlas;
 	p2SString atlas_file_name;

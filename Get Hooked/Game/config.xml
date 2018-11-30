@@ -82,7 +82,18 @@
   </fonts>
   
   <userInterface>
-    
+    <textures>
+      <normalButton x="" y="" w="" h="" />
+    </textures>
+    <image>
+      
+    </image>
+    <text>
+      
+    </text>
+    <button>
+      
+    </button>
   </userInterface>
   
   <entityManager>
