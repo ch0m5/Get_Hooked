@@ -83,7 +83,7 @@ bool j1Collision::PreUpdate()	// @Carles
 	return ret;
 }
 
-bool j1Collision::Update()
+bool j1Collision::Draw()
 {
 	bool ret = true;
 

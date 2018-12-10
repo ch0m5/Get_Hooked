@@ -10,10 +10,14 @@
 #include "j1Map.h"
 #include "j1FadeScene.h"
 #include "j1Scene.h"
-#include "Player.h"	// @Carles
+#include "Player.h"
 #include "j1Collision.h"
 #include "j1Timer.h"
 #include "j1EntityManager.h"
+#include "j1UserInterface.h"
+#include "Image.h"
+#include "Button.h"
+#include "Text.h"
 
 j1Scene::j1Scene() : j1Module()
 {
@@ -75,6 +79,13 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 
 	App->audio->SetMusicVolume();
 
+	//CHANGE/FIX: TEST
+	//App->ui->CreateImage({ 500, 500 }, NULL, NULL, &Text("patata"), NULL);
+	SDL_Rect pop = { 5, 112, 220, 63 };
+	App->ui->CreateImage({ 500, 300 }, &pop);
+	App->ui->CreateImage({ 500, 400 }, NULL, NULL, new Text("patata"));
+	App->ui->CreateImage({ 500, 500 }, &pop, NULL, new Text("patata"));
+
 	return ret;
 }
 
@@ -124,7 +135,11 @@ bool j1Scene::Update()
 		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
 
+	// All blitting in order
 	App->map->Draw();
+	App->entityManager->Draw();
+	App->collision->Draw();
+	App->ui->Draw();
 
 	return true;
 }
@@ -150,7 +165,7 @@ bool j1Scene::PostUpdate()
 			RestartLevel();
 			break;
 		case fade_type::RESTART_GAME:
-			RestartGame();
+			ChangeScene(scene_type::LEVEL_1);
 			break;
 		default:
 			break;
@@ -218,14 +233,12 @@ void j1Scene::NextLevel()
 {
 	scene = (scene_type)((int)scene + 1);
 
-	if (scene == scene_type::MAX_SCENES) {
-		RestartGame();
+	if (scene == scene_type::MAX_SCENES) {	//Restart Game
+		ChangeScene(scene_type::LEVEL_1);
+		App->entityManager->player->LifeToMax();
 	}
 	else {
-		CleanUp();
-		App->entityManager->player->CleanUp();
-		Start();
-		App->entityManager->player->Start();
+		ChangeScene(scene);
 	}
 }
 
@@ -237,15 +250,30 @@ void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full
 	App->entityManager->player->Start();
 }
 
-void j1Scene::RestartGame()	//Restart at the first level
+bool j1Scene::SwapValue(bool* value)
 {
-	scene = scene_type::LEVEL_1;
+	*value = !(*value);
+	return *value;
+}
+
+void j1Scene::ChangeScene(scene_type scene)
+{
+	this->scene = scene;
 
 	CleanUp();
 	App->entityManager->player->CleanUp();
-	App->entityManager->player->LifeToMax();
 	Start();
 	App->entityManager->player->Start();
+}
+
+void j1Scene::PrepareInputText()
+{
+
+}
+
+void j1Scene::CloseGame()
+{
+	App->mustShutDown = true;
 }
 
 SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)

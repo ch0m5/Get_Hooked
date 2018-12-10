@@ -78,22 +78,26 @@
   </scene>
 
   <fonts>
-    
+    <defaultFont file="fonts/open_sans/OpenSans-Regular.ttf" size="12" />
   </fonts>
   
   <userInterface>
-    <textures>
-      <normalButton x="" y="" w="" h="" />
-    </textures>
-    <image>
-      
-    </image>
-    <text>
-      
-    </text>
-    <button>
-      
-    </button>
+    <atlas file="ui/atlas.png" />
+    <screenElements>
+      <button>
+        
+      </button>
+      <window>
+        
+      </window>
+      <checkBox>
+        
+      </checkBox>
+      <inputText>
+        
+      </inputText>
+    </screenElements>
+    
   </userInterface>
   
   <entityManager>

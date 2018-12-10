@@ -160,8 +160,6 @@ bool j1EntityManager::UpdateTick(float dt)
 
 bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 {
-	BROFILER_CATEGORY("Update Entities", Profiler::Color::LawnGreen);
-
 	bool ret = true;
 
 	p2List_item<Entity*>* item;
@@ -177,9 +175,25 @@ bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
 
 		if (ret)
 			ret = item->data->UpdateTick(dt);	//Update dependant of framerate
+	}
 
-		if (ret)
-			ret = item->data->Update();	//Update independant of framerate
+	return ret;
+}
+
+bool j1EntityManager::Draw()
+{
+	BROFILER_CATEGORY("Module EntityManager Update", Profiler::Color::LawnGreen);
+
+	bool ret = true;
+
+	p2List_item<Entity*>* item;
+	for (item = entities.start; item != nullptr && ret == true; item = item->next)
+	{
+		if (item->data->active == false) {
+			continue;
+		}
+
+		ret = item->data->Update();	//Update independant of framerate
 	}
 
 	return ret;

@@ -70,12 +70,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClCompile>
-    <ClCompile Include="UIElement.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button</Filter>
-    </ClCompile>
     <ClCompile Include="InputText.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\InputText</Filter>
     </ClCompile>
@@ -91,14 +85,17 @@
     <ClCompile Include="Text.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
     </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClCompile>
     <ClCompile Include="j1UserInterface.cpp">
       <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleBox.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\SimpleBox</Filter>
+    <ClCompile Include="ActionBox.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,9 +189,6 @@
     <ClInclude Include="Enemy.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClInclude>
-    <ClInclude Include="UIElement.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Button</Filter>
     </ClInclude>
@@ -213,14 +207,17 @@
     <ClInclude Include="Text.h">
       <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClInclude>
     <ClInclude Include="j1UserInterface.h">
       <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleBox.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\SimpleBox</Filter>
+    <ClInclude Include="ActionBox.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -293,7 +290,7 @@
     <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\InputText">
       <UniqueIdentifier>{7418f606-6af5-41cc-86b2-7157c2793265}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\SimpleBox">
+    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox">
       <UniqueIdentifier>{e4e146df-e958-4dce-a40d-1578baaf084f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

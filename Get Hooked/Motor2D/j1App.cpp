@@ -53,6 +53,7 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(font);
 	AddModule(ui);
 	AddModule(scene);
+	//AddModule(ui);
 	AddModule(entityManager);
 	AddModule(collision);
 	AddModule(fade);
@@ -158,6 +159,7 @@ bool j1App::Start()
 bool j1App::Update()
 {
 	bool ret = true;
+
 	PrepareUpdate();
 
 	if(input->GetWindowEvent(WE_QUIT) == true)
@@ -173,6 +175,10 @@ bool j1App::Update()
 		ret = PostUpdate();
 
 	FinishUpdate();
+
+	if (mustShutDown)
+		ret = false;
+
 	return ret;
 }
 

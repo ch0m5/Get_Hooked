@@ -111,8 +111,10 @@ public:
 	j1Fonts*			font;
 	j1UserInterface*	ui;
 	j1EntityManager*	entityManager;
-	j1Collision*		collision;	// @Carles
-	j1FadeScene*		fade;		// @Carles
+	j1Collision*		collision;
+	j1FadeScene*		fade;
+
+	bool mustShutDown = false;
 
 private:
 

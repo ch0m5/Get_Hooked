@@ -8,14 +8,13 @@
 #include "j1Fonts.h"
 #include "Text.h"
 
-Text::Text(const char* content, fPoint position, SDL_Color color, _TTF_Font* paramFont) : UIElement(ui_element_type::TEXT, position), color(color), font(paramFont)
+Text::Text(const char* content,
+	SDL_Color color,
+	_TTF_Font* font,
+	fPoint position,
+	Image* parent) : Image(image_type::TEXT, position, &LoadText(content, color, font), App->font->Print(content, color, font), NULL, parent), color(color), font(font)
 {
-	ChangeText(content, color, font);
-}
-
-Text::~Text()
-{
-	SDL_Texture* Print(const char* text, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL);
+	this->content.create(content);	//@Carles: p2SString constructor restarts the string otherwise
 }
 
 const char* Text::GetText() const
@@ -33,20 +32,40 @@ _TTF_Font* Text::GetFont() const
 	return font;
 }
 
-const char* Text::ChangeText(const char* string, SDL_Color color, _TTF_Font* font)
+SDL_Rect Text::LoadText(const char* string, SDL_Color color, _TTF_Font* font)
 {
+	SDL_Rect tmpRect = { 0, 0, 0, 0 };
 	content.create(string);
 	graphics = App->font->Print(string, color, font);
-	App->tex->GetSize(graphics, (uint&)size.x, (uint&)size.y);
-	return content.GetString();
+	App->tex->GetSize(graphics, (uint&)tmpRect.w, (uint&)tmpRect.h);
+	return tmpRect;
 }
 
-p2SString Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
+SDL_Rect Text::ChangeText(const char* string, SDL_Color color, _TTF_Font* font)
 {
+	if (graphics != nullptr) {
+		App->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
+	content.create(string);
+	graphics = App->font->Print(string, color, font);
+	App->tex->GetSize(graphics, (uint&)this->texRect.w, (uint&)this->texRect.h);
+	return texRect;
+}
+
+SDL_Rect Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
+{
+	if (graphics != nullptr) {
+		App->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
 	content = string;
 	graphics = App->font->Print(string.GetString(), color, font);
-	App->tex->GetSize(graphics, (uint&)size.x, (uint&)size.y);
-	return content;
+	App->tex->GetSize(graphics, (uint&)this->texRect.w, (uint&)this->texRect.h);
+	texRect.x = texRect.y = 0;
+	return texRect;
 }
 
 void Text::ChangeColor(SDL_Color color)

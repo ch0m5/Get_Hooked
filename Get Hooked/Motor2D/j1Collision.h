@@ -72,7 +72,10 @@ public:
 
 	// Called each loop iteration
 	bool PreUpdate();
-	bool Update();
+	
+	// Called each loop iteration (graphic)
+	bool Draw();
+	void DebugDraw();
 
 	// Called before quitting
 	bool CleanUp();
@@ -83,8 +86,6 @@ public:
 
 	Collider* AddCollider(SDL_Rect rect, collider_type type, PhysicalElement* callback);	//@Carles
 	void DestroyCollider(Collider* collider);
-
-	void DebugDraw();
 
 public:	// @Carles
 	bool CheckGroundCollision(Collider* hitbox) const;

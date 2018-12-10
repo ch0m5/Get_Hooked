@@ -11,7 +11,7 @@ class Creature;
 class Player;
 class Enemy;
 
-class UIElement;
+class Image;
 
 enum class entity_type;
 
@@ -44,6 +44,9 @@ public:
 
 	// Called each frame (logic)
 	bool UpdateTick(float dt);
+
+	// Called each frame (graphic)
+	bool Draw();
 
 	// Called each loop iteration
 	bool PostUpdate();
