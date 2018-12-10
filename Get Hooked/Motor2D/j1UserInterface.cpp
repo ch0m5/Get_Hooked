@@ -187,43 +187,31 @@ void j1UserInterface::DestroyElement(Image* element)
 	}
 }
 
-Image* j1UserInterface::CreateText(fPoint position, const char* content, SDL_Color color, _TTF_Font* font, Image* parent)
-{
-	Image* ret = nullptr;
-
-	ret = new Image(image_type::TEXT, position, NULL, NULL, &Text(content, color, font, { 0, 0 }, parent), NULL);
-	AddElement(ret);
-
-	return ret;
-}
-
-Image* j1UserInterface::CreateImage(fPoint position, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
+Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
 {
 	Image* ret = nullptr;
 
 	if (texRect == NULL) {
 		SDL_Rect tmpRect = { 0, 0, 0, 0 };
+		App->tex->GetSize(tex, (uint&)tmpRect.w, (uint&)tmpRect.h);
 		texRect = &tmpRect;
-
-		if (tex != NULL) {
-			App->tex->GetSize(tex, (uint&)texRect->w, (uint&)texRect->h);
-		}
-		else if (label != NULL) {
-			tex = App->font->Print(label->GetText(), label->GetColor(), label->GetFont());
-			App->tex->GetSize(tex, (uint&)texRect->w, (uint&)texRect->h);
-			label = NULL;	//@Carles: If text forms the image, the image IS the label, therefore it has no label property
-		}
 	}
 	else if (tex == NULL) {
 		tex = GetAtlas();
 	}
 
-	ret = new Image(image_type::IMAGE, position, texRect, tex, label, parent);
+	ret = new Image(image_type::IMAGE, center, texRect, tex, label, parent);
 	AddElement(ret);
 
-	/*if (label != NULL) {
-		AddElement(label);
-	}*/
+	return ret;
+}
+
+Image* j1UserInterface::CreateTextBox(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, Image* parent)
+{
+	Image* ret = nullptr;
+
+	ret = new Text(content, color, font, center, parent);
+	AddElement(ret);
 
 	return ret;
 }

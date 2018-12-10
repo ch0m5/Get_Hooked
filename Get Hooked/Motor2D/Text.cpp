@@ -11,10 +11,22 @@
 Text::Text(const char* content,
 	SDL_Color color,
 	_TTF_Font* font,
-	fPoint position,
-	Image* parent) : Image(image_type::TEXT, position, &LoadText(content, color, font), App->font->Print(content, color, font), NULL, parent), color(color), font(font)
+	fPoint center,
+	Image* parent) : Image(image_type::TEXT, center, &LoadText(content, color, font), App->font->Print(content, color, font), this, parent), color(color), font(font)
 {
 	this->content.create(content);	//@Carles: p2SString constructor restarts the string otherwise
+}
+
+Text::~Text()
+{}
+
+bool Text::Update()
+{
+	bool ret = true;
+
+	Draw(currentSprite);
+
+	return ret;
 }
 
 const char* Text::GetText() const

@@ -24,7 +24,7 @@ class Image	//IMPROVE: Change all ui class and file names to j2UiName
 {
 public:
 	//Constructor
-	Image(image_type type, fPoint position, SDL_Rect* texRect, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
+	Image(image_type type, fPoint center, SDL_Rect* texRect, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
 
 	//Destructor
 	virtual ~Image();
@@ -62,11 +62,14 @@ public:
 public:
 	virtual image_type GetType() const;
 	virtual fPoint GetPosition() const;
-	virtual fPoint GetCenterPosition() const;
+	virtual fPoint GetCenter() const;
 	virtual iPoint GetSize() const;
 
 	virtual fPoint RelocateCenterByPos();
 	virtual fPoint RelocatePosByCenter();
+
+	//virtual fPoint UpdatePositionsFrom(fPoint reference);
+
 	virtual fPoint MatchPosition(fPoint reference);
 	virtual fPoint MatchCenter(fPoint reference);
 
@@ -81,7 +84,7 @@ public:
 	bool lookingRight = true;	// IMPROVE: Change to an enum "orientation" for more blitting parameters
 
 	fPoint position;
-	fPoint centerPosition;
+	fPoint center;
 
 protected:
 	SDL_Rect* currentSprite;

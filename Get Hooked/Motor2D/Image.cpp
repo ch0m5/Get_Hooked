@@ -7,16 +7,20 @@
 #include "Image.h"
 #include "Text.h"
 
-Image::Image(image_type type, fPoint position, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent) : type(type), position(position), texRect(*texRect), graphics(tex), parent(parent)
+Image::Image(image_type type, fPoint center, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent) : type(type), center(center), texRect(*texRect), graphics(tex), parent(parent)
 {
+	if (texRect)
 	currentSprite = &this->texRect;
-	RelocateCenterByPos();
+	
+	RelocatePosByCenter();
 
 	if (label != NULL) {
 		this->label = label;
-		this->label->MatchCenter(centerPosition);
-		this->label->RelocatePosByCenter();
-		this->label->parent = this;
+
+		if (label != this) {
+			this->label->MatchCenter(center);
+			this->label->parent = this;
+		}
 	}
 
 	Init();
@@ -24,7 +28,8 @@ Image::Image(image_type type, fPoint position, SDL_Rect* texRect, SDL_Texture* t
 
 Image::~Image()
 {
-	RELEASE(label);
+	if (label != this)
+		RELEASE(label);
 }
 
 bool Image::Update()
@@ -59,9 +64,9 @@ fPoint Image::GetPosition() const
 	return position;
 }
 
-fPoint Image::GetCenterPosition() const
+fPoint Image::GetCenter() const
 {
-	return centerPosition;
+	return center;
 }
 
 iPoint Image::GetSize() const
@@ -73,22 +78,22 @@ iPoint Image::GetSize() const
 void Image::Draw(SDL_Rect* spriteRect) const
 {
 	if (lookingRight) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_NONE);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_NONE, false);
 	}
 	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_HORIZONTAL);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_HORIZONTAL, false);
 	}
 }
 
 fPoint Image::RelocateCenterByPos()
 {
-	centerPosition = { position.x + (texRect.w / 2), position.y + (texRect.h / 2) };
-	return centerPosition;
+	center = { position.x + (texRect.w / 2), position.y + (texRect.h / 2) };
+	return center;
 }
 
 fPoint Image::RelocatePosByCenter()
 {
-	position = { centerPosition.x - (texRect.w / 2), centerPosition.y - (texRect.h / 2) };
+	position = { center.x - (texRect.w / 2), center.y - (texRect.h / 2) };
 	return position;
 }
 
@@ -101,7 +106,7 @@ fPoint Image::MatchPosition(fPoint reference)
 
 fPoint Image::MatchCenter(fPoint reference)
 {
-	centerPosition = reference;
+	center = reference;
 	RelocatePosByCenter();
-	return centerPosition;
+	return center;
 }

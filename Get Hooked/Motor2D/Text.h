@@ -12,6 +12,11 @@ public:
 	//Constructor
 	Text(const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, fPoint position = { 0, 0 }, Image* parent = NULL);
 
+	~Text();
+
+	// Called each loop iteration (graphic)
+	bool Update();
+
 public:
 	void operator+ (const char* addition) {
 		content += addition;

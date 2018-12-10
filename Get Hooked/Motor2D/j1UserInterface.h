@@ -50,16 +50,15 @@ public:
 	void AddElement(Image* element);
 	void DestroyElement(Image* element);
 
-	Image* CreateText(fPoint position, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
-	Image* CreateImage(fPoint position, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
-	Image* CreateTextBox(fPoint position, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
+	Image* CreateImage(fPoint center, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
+	Image* CreateTextBox(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
+	//Image* CreateButton();
 
-
-	Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
+	/*Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
 	Image* CreateWindowBox(fPoint position, iPoint size, SDL_Rect texRect, p2List<Image*> elemList, SDL_Texture* tex = NULL, Image* parent = NULL);
 	Image* CreateActionBox(Button<void>::buttonAction action, fPoint position, Text* label, SDL_Rect* spriteList[4], image_type type, SDL_Texture* tex = NULL, Image* parent = NULL);
 	Image* CreateCheckBox();
-	Image* CreateInputText();
+	Image* CreateInputText();*/
 	
 private:
 	pugi::xml_node configNode;
