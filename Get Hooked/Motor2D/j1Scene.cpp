@@ -244,6 +244,7 @@ void j1Scene::NextLevel()
 
 void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full map reloading)
 {
+	App->entityManager->player->DeadReset();
 	//App->entityManager->ReloadEnemies();
 	App->entityManager->player->CleanUp();
 	App->entityManager->player->LifeToStart();

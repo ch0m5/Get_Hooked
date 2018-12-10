@@ -464,9 +464,6 @@ void Player::PlayerReset()
 
 	attack1Sprite.anim.Reset();
 
-	//deadSprite.anim.Reset();	//IMPROVE: Check if really needed here
-	//playedHurtSfx = false;
-
 	if (attackCollider != nullptr) {
 		attackCollider->to_delete = true;
 		attackCollider = nullptr;
@@ -983,11 +980,7 @@ void Player::HurtEffects()
 
 void Player::DeadEffects() {
 	if (App->fade->GetStep() == fade_step::NONE && deadTimer < SDL_GetTicks() - deathDelay) {
-		App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_GAME);	//CHANGE/FIX: Hardcoded values
-	}
-	else if (App->fade->GetStep() == fade_step::FULLY_FADED) {
-		deadSprite.anim.Reset();
-		playedHurtSfx = false;
+		App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);	//CHANGE/FIX: Hardcoded values
 	}
 	else {
 		input.wantMoveUp = false;
