@@ -20,6 +20,21 @@ Text::Text(const char* content,
 Text::~Text()
 {}
 
+bool Text::UpdateTick(float dt)
+{
+	bool ret = true;
+
+	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
+		iPoint mouseMov;
+		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);
+		position.x += mouseMov.x;
+		position.y += mouseMov.y;
+		RelocateCenterByPos();
+	}
+		
+	return ret;
+}
+
 bool Text::Update()
 {
 	bool ret = true;

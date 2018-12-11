@@ -2,6 +2,8 @@
 #define __BUTTON_H__
 
 #include "Image.h"
+
+#include "j1App.h"
 #include "j1Input.h"
 
 class Text;
@@ -30,29 +32,35 @@ enum class button_state
 	MAX_TYPES
 };
 
-template <class Ret, class... Args>
+//template <class Ret, class... Args>
 class Button : public Image	//IMPROVE: Change all entity class and file names to j2EntityName
 {
 public:
-	typedef Ret(*buttonAction)(Args...);
+	//typedef Ret(*buttonAction)(Args...);
 
 	//Constructor	//IMPROVE: Create a paralel "AnimatedButton" class holding an animation (or several)
-	Button(buttonAction action,
-		fPoint position,
-		SDL_Rect* spriteList[4],
+	Button(void(*action)(void),
 		image_type type,
+		fPoint center,
+		SDL_Rect spriteList[4],
+		Text* label = NULL,
 		SDL_Texture* tex = NULL,
-		Image* parent = NULL) : Image(type, position, spriteList[0], SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL), action(action), label(label)
+		Image* parent = NULL) : Image(type, center, &spriteList[0], tex, label, parent), action(action), status(button_state::IDLE)
 	{
 		for (int i = 0; i < 4; i++) {
-			stateSprites[i] = spriteList[i];
+			stateSprites[i] = &spriteList[i];
 		}
 	};
 
 	//Operators
-	void operator() (Args&... args) const
+	/*void operator() (Args&... args) const
 	{
 		(m_funcPtr)(args...);
+	}*/
+
+	void operator() () const
+	{
+		(action)();
 	}
 
 	// Called each frame (framerate dependant)
@@ -69,19 +77,11 @@ public:
 	}
 
 protected:
-	virtual bool MouseOnButton()
-	{
-		iPoint mousePos;
-		App->input->GetMousePosition(mousePos.x, mousePos.y);
-
-		return !(position.y + texRect.h < mousePos.y || position.y > mousePos.y || position.x + texRect.w < mousePos.x || position.x > mousePos.x);
-	}
-
 	virtual button_state CheckCurrentState()
 	{
 		switch (status) {
 		case button_state::IDLE:
-			if (MouseOnButton() == true) {
+			if (MouseOnImage() == true) {
 				OnHover();
 				status = button_state::HOVERING;
 			}
@@ -91,13 +91,13 @@ protected:
 				OnPress();
 				status = button_state::PRESSING;
 			}
-			else if (MouseOnButton() == false) {
+			else if (MouseOnImage() == false) {
 				OnIdle();
 				status = button_state::IDLE;
 			}
 			break;
 		case button_state::PRESSING:
-			if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP || MouseOnButton() == false) {
+			if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP || MouseOnImage() == false) {
 				OnIdle();
 				status = button_state::IDLE;
 			}
@@ -137,6 +137,7 @@ protected:
 	virtual void OnPress()
 	{
 		texRect = *stateSprites[3];
+		action();
 	}
 
 	virtual void WhileIdle() {}
@@ -163,7 +164,7 @@ protected:
 	//p2SString stateTexts[4];
 
 private:
-	buttonAction action;
+	void(*action)(void);
 	button_state status;
 	
 };

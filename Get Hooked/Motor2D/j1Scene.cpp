@@ -82,10 +82,17 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	//CHANGE/FIX: TEST
 	//App->ui->CreateImage({ 500, 500 }, NULL, NULL, &Text("patata"), NULL);
 	SDL_Rect pop = { 5, 112, 220, 63 };
+	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
 	App->ui->CreateImage({ 100, 50 }, &pop);
 	App->ui->CreateImage({ 100, 150 }, &pop, NULL, new Text("patata"));
 	App->ui->CreateTextBox({ 100, 250 }, "patatatatata");
-	//App->ui->CreateButton();
+	//App->ui->CreateButton(&RestartLevel, { 100, 50 }, arr);
+
+	//p2List<Image*> imageList;
+	//imageList.add(&Image(image_type::IMAGE, { 100, 50 }, &pop));
+	//imageList.add(&Image(image_type::IMAGE, { 200, 100 }, &pop, NULL, new Text("patata")));
+	//imageList.add(&Text("patata2", { 250, 150 }));
+	//App->ui->CreateWindowBox({ 50, 20 }, imageList, &pop, NULL);
 
 	return ret;
 }

@@ -8,20 +8,54 @@
 #include "Window.h"
 #include "Text.h"
 
-Window::Window(fPoint position, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent) : Image(image_type::WINDOW, position, texRect, tex, label, parent)
+Window::Window(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent) : Image(image_type::WINDOW, center, texRect, tex, label, parent)
 {
+	dynamic = true;
+
 	if (children.start != nullptr) {
 		for (p2List_item<Image*>* item = children.start; item != nullptr; item = item->next) {
+			item->data->parent = this;
 			this->children.add(item->data);
 		}
 	}
-
-	if (label != NULL) {
-		MoveToTitlePos(label);
-	}
 };
 
-iPoint Window::MoveToTitlePos(Text* label)
+bool Window::UpdateTick(float dt)
 {
-	return { 0, 0 };
+	bool ret = true;
+
+	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
+		iPoint mouseMov;
+		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);
+		position.x += mouseMov.x;
+		position.y += mouseMov.y;
+		RelocateCenterByPos();
+
+		for (p2List_item<Image*>* item = children.start; item != nullptr; item = item->next) {
+			item->data->position.x += mouseMov.x;
+			item->data->position.y += mouseMov.y;
+			item->data->RelocateCenterByPos();
+		}
+	}
+
+	return ret;
+}
+
+bool Window::Update()
+{
+	bool ret = true;
+
+	Draw(currentSprite);
+
+	for (p2List_item<Image*>* item = children.start; item != nullptr; item = item->next) {
+		Draw(item->data->GetSprite());
+	}
+
+	return ret;
+}
+
+fPoint Window::DefaultLabelPos()
+{
+	this->label->MatchCenter(center);
+	return center;
 }

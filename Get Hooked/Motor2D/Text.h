@@ -10,9 +10,12 @@ class Text : public Image	//IMPROVE: Change all entity class and file names to j
 {
 public:
 	//Constructor
-	Text(const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, fPoint position = { 0, 0 }, Image* parent = NULL);
+	Text(const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, fPoint center = { 0, 0 }, Image* parent = NULL);
 
 	~Text();
+
+	// Called each loop iteration (logic)
+	bool UpdateTick(float dt);
 
 	// Called each loop iteration (graphic)
 	bool Update();

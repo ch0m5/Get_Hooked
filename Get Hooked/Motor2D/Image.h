@@ -44,7 +44,7 @@ public:
 	virtual bool PreUpdate() { return true; }
 
 	// Called each frame (framerate dependant)
-	virtual bool UpdateTick(float dt) { return true; }
+	virtual bool UpdateTick(float dt);
 
 	// Called each loop iteration (graphic)
 	virtual bool Update();
@@ -64,14 +64,16 @@ public:
 	virtual fPoint GetPosition() const;
 	virtual fPoint GetCenter() const;
 	virtual iPoint GetSize() const;
+	virtual SDL_Rect* GetSprite() const;
+
+	virtual fPoint DefaultLabelPos();
 
 	virtual fPoint RelocateCenterByPos();
 	virtual fPoint RelocatePosByCenter();
-
-	//virtual fPoint UpdatePositionsFrom(fPoint reference);
-
 	virtual fPoint MatchPosition(fPoint reference);
 	virtual fPoint MatchCenter(fPoint reference);
+
+	virtual bool MouseOnImage();
 
 protected:
 	virtual void Draw(SDL_Rect* animRect) const;
@@ -79,6 +81,7 @@ protected:
 public:
 	p2SString name;
 	p2SString folder;
+
 	bool active;
 	bool mustDestroy = false;
 	bool lookingRight = true;	// IMPROVE: Change to an enum "orientation" for more blitting parameters
@@ -86,14 +89,16 @@ public:
 	fPoint position;
 	fPoint center;
 
+	bool dynamic = false;
+
+	Image* parent = nullptr;
+
 protected:
 	SDL_Rect* currentSprite;
 	SDL_Rect texRect;
+	SDL_Texture* graphics = nullptr;
 
 	Text* label = nullptr;
-	Image* parent = nullptr;
-
-	SDL_Texture* graphics = nullptr;
 
 private:
 	image_type type;

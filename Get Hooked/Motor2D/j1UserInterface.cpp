@@ -206,26 +206,40 @@ Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect* texRect, SDL_Textur
 	return ret;
 }
 
-Image* j1UserInterface::CreateTextBox(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, Image* parent)
+Text* j1UserInterface::CreateTextBox(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, Image* parent)
 {
-	Image* ret = nullptr;
+	Text* ret = nullptr;
 
 	ret = new Text(content, color, font, center, parent);
-	AddElement(ret);
+	AddElement((Image*)ret);
 
 	return ret;
 }
 
-//Image* j1UserInterface::CreateWindowBox(fPoint position, iPoint size, SDL_Rect texRect, p2List<Image*> elemList, SDL_Texture* tex, Image* parent)
-//{
-//	Image* ret = nullptr;
-//
-//	ret = new Window(position, size, texRect, elemList, tex, parent);
-//	screenElements.add(ret);
-//
-//	return ret;
-//}
-//
+Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label, SDL_Texture* tex, Image* parent)
+{
+	Button* ret = nullptr;
+
+	if (tex == NULL) {
+		tex = GetAtlas();
+	}
+
+	ret = new Button(action, image_type::BUTTON_ACTION, center, spriteList, label, tex, parent);
+	AddElement((Image*)ret);
+
+	return ret;
+}
+
+Window* j1UserInterface::CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
+{
+	Window* ret = nullptr;
+
+	ret = new Window(center, children, texRect, tex, label, parent);
+	AddElement((Image*)ret);
+
+	return ret;
+}
+
 //Image* j1UserInterface::CreateActionBox(buttonAction action, fPoint position, Text* label, SDL_Rect* spriteList[4], image_type type, SDL_Texture* tex, Image* parent)
 //{
 //	Image* ret = nullptr;

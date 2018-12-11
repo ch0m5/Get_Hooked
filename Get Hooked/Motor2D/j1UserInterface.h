@@ -7,9 +7,10 @@
 
 #define CURSOR_WIDTH 2
 
+enum class image_type;
 class Image;
 class Text;
-enum class image_type;
+class Window;
 struct _TTF_Font;
 struct SDL_Rect;
 struct SDL_Texture;
@@ -51,8 +52,9 @@ public:
 	void DestroyElement(Image* element);
 
 	Image* CreateImage(fPoint center, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
-	Image* CreateTextBox(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
-	//Image* CreateButton();
+	Text* CreateTextBox(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
+	Button* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label = NULL, SDL_Texture* tex = NULL, Image* parent = NULL);
+	Window* CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
 
 	/*Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
 	Image* CreateWindowBox(fPoint position, iPoint size, SDL_Rect texRect, p2List<Image*> elemList, SDL_Texture* tex = NULL, Image* parent = NULL);
