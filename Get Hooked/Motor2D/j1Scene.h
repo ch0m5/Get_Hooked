@@ -48,12 +48,7 @@ public:
 	// Scene changes
 	void NextLevel();
 	void RestartLevel();
-
-	// Button Methods
-	bool SwapValue(bool* value);
 	void ChangeScene(scene_type scene);
-	void PrepareInputText();
-	void CloseGame();
 
 	// Inputs
 	void AudioInput();

@@ -16,9 +16,18 @@
 #include "j1EntityManager.h"
 #include "j1UserInterface.h"
 #include "Image.h"
-#include "Button.h"
 #include "Text.h"
+#include "Button.h"
 
+//Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is very dirty
+void CloseGame()
+{
+	App->mustShutDown = true;
+}
+
+// ------------------------------------------------------------------------------
+
+//Constructor
 j1Scene::j1Scene() : j1Module()
 {
 	name.create("scene");
@@ -83,10 +92,11 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	//App->ui->CreateImage({ 500, 500 }, NULL, NULL, &Text("patata"), NULL);
 	SDL_Rect pop = { 5, 112, 220, 63 };
 	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
-	App->ui->CreateImage({ 100, 50 }, &pop);
-	App->ui->CreateImage({ 100, 150 }, &pop, NULL, new Text("patata"));
-	App->ui->CreateTextBox({ 100, 250 }, "patatatatata");
-	//App->ui->CreateButton(&RestartLevel, { 100, 50 }, arr);
+	
+	//App->ui->CreateImage({ 100, 50 }, &pop);
+	//App->ui->CreateImage({ 100, 150 }, &pop, NULL, new Text("patata"));
+	//App->ui->CreateTextBox({ 100, 250 }, "patatatatata");
+	App->ui->CreateButton(&CloseGame, { 100, 50 }, arr);
 
 	//p2List<Image*> imageList;
 	//imageList.add(&Image(image_type::IMAGE, { 100, 50 }, &pop));
@@ -104,7 +114,6 @@ bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 
 	return true;
 }
-
 
 // Called each frame (logic)
 bool j1Scene::UpdateTick(float dt)
@@ -259,12 +268,6 @@ void j1Scene::RestartLevel()	//Restart enemies and values, nothing else (no full
 	App->entityManager->player->Start();
 }
 
-bool j1Scene::SwapValue(bool* value)
-{
-	*value = !(*value);
-	return *value;
-}
-
 void j1Scene::ChangeScene(scene_type scene)
 {
 	this->scene = scene;
@@ -273,16 +276,6 @@ void j1Scene::ChangeScene(scene_type scene)
 	App->entityManager->player->CleanUp();
 	Start();
 	App->entityManager->player->Start();
-}
-
-void j1Scene::PrepareInputText()
-{
-
-}
-
-void j1Scene::CloseGame()
-{
-	App->mustShutDown = true;
 }
 
 SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)

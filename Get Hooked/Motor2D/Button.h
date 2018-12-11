@@ -48,7 +48,7 @@ public:
 		Image* parent = NULL) : Image(type, center, &spriteList[0], tex, label, parent), action(action), status(button_state::IDLE)
 	{
 		for (int i = 0; i < 4; i++) {
-			stateSprites[i] = &spriteList[i];
+			stateSprites[i] = spriteList[i];
 		}
 	};
 
@@ -126,17 +126,17 @@ protected:
 
 	virtual void OnIdle()
 	{
-		texRect = *stateSprites[1];
+		texRect = stateSprites[1];
 	}
 
 	virtual void OnHover()
 	{
-		texRect = *stateSprites[2];
+		texRect = stateSprites[2];
 	}
 
 	virtual void OnPress()
 	{
-		texRect = *stateSprites[3];
+		texRect = stateSprites[3];
 		action();
 	}
 
@@ -150,17 +150,17 @@ protected:
 	virtual void Enable()
 	{
 		status = button_state::IDLE;
-		texRect = *stateSprites[1];
+		texRect = stateSprites[1];
 	}
 
 	virtual void Disable()
 	{
 		status = button_state::DISABLED;
-		texRect = *stateSprites[0];
+		texRect = stateSprites[0];
 	}
 
 protected:
-	SDL_Rect* stateSprites[4];	//Disabled, Idle, Hover, Pressed
+	SDL_Rect stateSprites[4];	//Disabled, Idle, Hover, Pressed
 	//p2SString stateTexts[4];
 
 private:
