@@ -93,10 +93,9 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	SDL_Rect pop = { 5, 112, 220, 63 };
 	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
 	
-	//App->ui->CreateImage({ 100, 50 }, &pop);
-	//App->ui->CreateImage({ 100, 150 }, &pop, NULL, new Text("patata"));
-	//App->ui->CreateTextBox({ 100, 250 }, "patatatatata");
-	App->ui->CreateButton(&CloseGame, { 100, 50 }, arr);
+	App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 });
+	App->ui->CreateText({ 200, 100 }, "patatatatata");
+	App->ui->CreateButton(&CloseGame, { 200, 150 }, arr);
 
 	//p2List<Image*> imageList;
 	//imageList.add(&Image(image_type::IMAGE, { 100, 50 }, &pop));

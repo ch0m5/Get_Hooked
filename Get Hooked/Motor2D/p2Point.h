@@ -8,6 +8,9 @@
 #include "p2Defs.h"
 #include <math.h>
 
+// Default position
+#define DEFAULT_POINT { 0, 0 }
+
 template<class TYPE>
 class p2Point
 {

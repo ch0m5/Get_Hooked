@@ -7,7 +7,8 @@
 
 #define CURSOR_WIDTH 2
 
-enum class image_type;
+enum class ui_type;
+class UIElement;
 class Image;
 class Text;
 class Window;
@@ -48,13 +49,13 @@ public:
 public:
 	SDL_Texture* GetAtlas() const;
 	
-	void AddElement(Image* element);
-	void DestroyElement(Image* element);
+	void AddElement(UIElement* element);
+	void DestroyElement(p2List_item<UIElement*>* element);
 
-	Image* CreateImage(fPoint center, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
-	Text* CreateTextBox(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
-	Button* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label = NULL, SDL_Texture* tex = NULL, Image* parent = NULL);
-	Window* CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
+	Image* CreateImage(fPoint center, SDL_Rect texRect = { 0, 0, 0, 0 }, SDL_Texture* tex = NULL, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Text* CreateText(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Button* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label = NULL, SDL_Texture* tex = NULL, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Window* CreateWindowPanel(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, UIElement* parent = NULL);
 
 	/*Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);
 	Image* CreateWindowBox(fPoint position, iPoint size, SDL_Rect texRect, p2List<Image*> elemList, SDL_Texture* tex = NULL, Image* parent = NULL);
@@ -64,7 +65,7 @@ public:
 	
 private:
 	pugi::xml_node configNode;
-	p2List<Image*> screenElements;
+	p2List<UIElement*> screenElements;
 
 	SDL_Texture* atlas;
 	p2SString atlas_file_name;

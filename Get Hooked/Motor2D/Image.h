@@ -1,38 +1,16 @@
 #ifndef __IMAGE_H_
 #define __IMAGE_H_
 
-#include "p2Animation.h"
-#include "p2SString.h"
+#include "UIElement.h"
 
-class Text;
-struct SDL_Texture;
-
-enum class image_type
-{
-	NONE = -1,
-	BUTTON_ACTION,
-	BUTTON_CHECK,
-	BUTTON_INPUT,
-	TEXT,
-	IMAGE,
-	WINDOW,
-
-	MAX_TYPES
-};
-
-class Image	//IMPROVE: Change all ui class and file names to j2UiName
+class Image	: public UIElement
 {
 public:
 	//Constructor
-	Image(image_type type, fPoint center, SDL_Rect* texRect, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
+	Image(ui_type type, fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 
 	//Destructor
 	virtual ~Image();
-
-	// Called on entity creation
-	virtual void Init() {
-		active = true;
-	}
 
 	// Called before render is available
 	virtual bool Awake(pugi::xml_node&) { return true; }
@@ -52,21 +30,13 @@ public:
 	// Called each loop iteration
 	virtual bool PostUpdate() { return true; }
 
-	// Called before quitting
-	virtual bool CleanUp();
-
 	// Save and Load
 	virtual bool Load(pugi::xml_node&) { return true; }
 	virtual bool Save(pugi::xml_node&) const { return true; };
 
 public:
-	virtual image_type GetType() const;
-	virtual fPoint GetPosition() const;
-	virtual fPoint GetCenter() const;
 	virtual iPoint GetSize() const;
 	virtual SDL_Rect* GetSprite() const;
-
-	virtual fPoint DefaultLabelPos();
 
 	virtual fPoint RelocateCenterByPos();
 	virtual fPoint RelocatePosByCenter();
@@ -75,33 +45,16 @@ public:
 
 	virtual bool MouseOnImage();
 
-protected:
-	virtual void Draw(SDL_Rect* animRect) const;
+	virtual void Draw() const;
 
 public:
-	p2SString name;
 	p2SString folder;
 
-	bool active;
-	bool mustDestroy = false;
 	bool lookingRight = true;	// IMPROVE: Change to an enum "orientation" for more blitting parameters
 
-	fPoint position;
-	fPoint center;
-
-	bool dynamic = false;
-
-	Image* parent = nullptr;
-
 protected:
-	SDL_Rect* currentSprite;
-	SDL_Rect texRect;
+	SDL_Rect* sprite = nullptr;
 	SDL_Texture* graphics = nullptr;
-
-	Text* label = nullptr;
-
-private:
-	image_type type;
 };
 
 #endif //__IMAGE_H__

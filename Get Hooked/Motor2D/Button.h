@@ -6,7 +6,6 @@
 #include "j1App.h"
 #include "j1Input.h"
 
-class Text;
 struct SDL_Texture;
 
 //enum class button_action
@@ -24,7 +23,7 @@ struct SDL_Texture;
 
 enum class button_state
 {
-	DISABLED = -1,
+	DISABLED = 0,
 	IDLE,
 	HOVERING,
 	PRESSING,
@@ -39,18 +38,21 @@ public:
 	//typedef Ret(*buttonAction)(Args...);
 
 	//Constructor	//IMPROVE: Create a paralel "AnimatedButton" class holding an animation (or several)
-	Button(void(*action)(void),
-		image_type type,
-		fPoint center,
-		SDL_Rect spriteList[4],
-		Text* label = NULL,
-		SDL_Texture* tex = NULL,
-		Image* parent = NULL) : Image(type, center, &spriteList[0], tex, label, parent), action(action), status(button_state::IDLE)
+	Button(void(*action)(void), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
+		: Image(type, center, spriteList[(int)button_state::IDLE], tex, parent, children), action(action), status(button_state::IDLE)
 	{
+		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
+
 		for (int i = 0; i < 4; i++) {
 			stateSprites[i] = spriteList[i];
 		}
 	};
+
+	virtual ~Button()
+	{
+		RELEASE(sprite);
+		RELEASE_ARRAY(stateSprites);
+	}
 
 	//Operators
 	/*void operator() (Args&... args) const
@@ -126,17 +128,17 @@ protected:
 
 	virtual void OnIdle()
 	{
-		texRect = stateSprites[1];
+		*sprite = stateSprites[(int)button_state::IDLE];
 	}
 
 	virtual void OnHover()
 	{
-		texRect = stateSprites[2];
+		*sprite = stateSprites[(int)button_state::HOVERING];
 	}
 
 	virtual void OnPress()
 	{
-		texRect = stateSprites[3];
+		*sprite = stateSprites[(int)button_state::PRESSING];
 		action();
 	}
 
@@ -150,21 +152,20 @@ protected:
 	virtual void Enable()
 	{
 		status = button_state::IDLE;
-		texRect = stateSprites[1];
+		*sprite = stateSprites[(int)button_state::IDLE];
 	}
 
 	virtual void Disable()
 	{
 		status = button_state::DISABLED;
-		texRect = stateSprites[0];
+		*sprite = stateSprites[(int)button_state::DISABLED];
 	}
 
 protected:
-	SDL_Rect stateSprites[4];	//Disabled, Idle, Hover, Pressed
-	//p2SString stateTexts[4];
+	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
 
 private:
-	void(*action)(void);
+	void(*action)(void) = nullptr;
 	button_state status;
 	
 };

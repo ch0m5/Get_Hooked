@@ -7,29 +7,20 @@
 #include "Image.h"
 #include "Text.h"
 
-Image::Image(image_type type, fPoint center, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent) : type(type), center(center), texRect(*texRect), graphics(tex), parent(parent)
+Image::Image(ui_type type, fPoint center, SDL_Rect sprite, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children) : UIElement(type, center, parent, children), graphics(tex)
 {
-	if (texRect)
-	currentSprite = &this->texRect;
-	
+	this->sprite = new SDL_Rect;
+	*this->sprite = sprite;
 	RelocatePosByCenter();
 
-	if (label != NULL) {
-		this->label = label;
-
-		if (label != this) {
-			this->label->parent = this;
-			DefaultLabelPos();
-		}
+	if (parent != NULL) {
+		MatchCenter(parent->GetCenter());
 	}
-
-	Init();
 }
 
 Image::~Image()
 {
-	if (label != this)
-		RELEASE(label);
+	RELEASE(sprite);
 }
 
 bool Image::UpdateTick(float dt)
@@ -42,12 +33,6 @@ bool Image::UpdateTick(float dt)
 		position.x += mouseMov.x;
 		position.y += mouseMov.y;
 		RelocateCenterByPos();
-
-		if (label != NULL) {
-			label->position.x += mouseMov.x;
-			label->position.y += mouseMov.y;
-			label->RelocateCenterByPos();
-		}
 	}
 
 	return ret;
@@ -57,75 +42,45 @@ bool Image::Update()
 {
 	bool ret = true;
 
-	Draw(currentSprite);
+	Draw();
 
-	if (label != NULL) {
-		label->Draw(label->currentSprite);
+	for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
+		item->data->Draw();
 	}
 
 	return ret;
 }
 
-bool Image::CleanUp()
-{
-	bool ret = true;
-
-	App->ui->DestroyElement(this);	//CHANGE/FIX: Implement dynamic memory}
-
-	return ret;
-}
-
-image_type Image::GetType() const
-{
-	return type;
-}
-
-fPoint Image::GetPosition() const
-{
-	return position;
-}
-
-fPoint Image::GetCenter() const
-{
-	return center;
-}
-
 iPoint Image::GetSize() const
 {
-	iPoint size = { texRect.w, texRect.h };
+	iPoint size = { sprite->w, sprite->h };
 	return size;
 }
 
 SDL_Rect* Image::GetSprite() const
 {
-	return currentSprite;
+	return sprite;
 }
 
-void Image::Draw(SDL_Rect* spriteRect) const
+void Image::Draw() const
 {
 	if (lookingRight) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_NONE, false);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_NONE, false);
 	}
 	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, spriteRect, SDL_FLIP_HORIZONTAL, false);
+		App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_HORIZONTAL, false);
 	}
-}
-
-fPoint Image::DefaultLabelPos()
-{
-	this->label->MatchCenter(center);
-	return center;
 }
 
 fPoint Image::RelocateCenterByPos()
 {
-	center = { position.x + (texRect.w / 2), position.y + (texRect.h / 2) };
+	center = { position.x + (sprite->w / 2), position.y + (sprite->h / 2) };
 	return center;
 }
 
 fPoint Image::RelocatePosByCenter()
 {
-	position = { center.x - (texRect.w / 2), center.y - (texRect.h / 2) };
+	position = { center.x - (sprite->w / 2), center.y - (sprite->h / 2) };
 	return position;
 }
 
@@ -143,9 +98,9 @@ fPoint Image::MatchCenter(fPoint reference)
 	return center;
 }
 
-bool Image::MouseOnImage() {
-	iPoint mousePos;
+bool Image::MouseOnImage() {	//IMPROVE: USEFUL SDL ALTERNATIVE ??? -> SDL_bool ret = SDL_PointInRect(&mousePos, sprite);
+	SDL_Point mousePos;
 	App->input->GetMousePosition(mousePos.x, mousePos.y);
 
-	return !(position.y + texRect.h < mousePos.y || position.y > mousePos.y || position.x + texRect.w < mousePos.x || position.x > mousePos.x);
+	return !(position.y + sprite->h < mousePos.y || position.y > mousePos.y || position.x + sprite->w < mousePos.x || position.x > mousePos.x);
 }

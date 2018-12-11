@@ -57,7 +57,7 @@ bool j1UserInterface::Start()
 
 	atlas = App->tex->Load(atlas_file_name.GetString());
 
-	p2List_item<Image*>* item;
+	p2List_item<UIElement*>* item;
 
 	for (item = screenElements.start; item != NULL && ret == true; item = item->next)
 	{
@@ -74,7 +74,7 @@ bool j1UserInterface::PreUpdate()
 
 	bool ret = true;
 
-	p2List_item<Image*>* item;
+	p2List_item<UIElement*>* item;
 
 	for (item = screenElements.start; item != NULL && ret == true; item = item->next)
 	{
@@ -95,7 +95,7 @@ bool j1UserInterface::UpdateTick(float dt)
 	
 	bool ret = true;
 
-	p2List_item<Image*>* item;
+	p2List_item<UIElement*>* item;
 	for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
 	{
 		if (item->data->active == false) {
@@ -116,7 +116,7 @@ bool j1UserInterface::Draw()
 
 	bool ret = true;
 
-	p2List_item<Image*>* item;
+	p2List_item<UIElement*>* item;
 	for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
 	{
 		if (item->data->active == false) {
@@ -137,13 +137,20 @@ bool j1UserInterface::PostUpdate()
 
 	bool ret = true;
 
-	p2List_item<Image*>* item;
-	p2List_item<Image*>* nextItem;
+	p2List_item<UIElement*>* item;
+	p2List_item<UIElement*>* nextItem;
 
 	for (item = screenElements.start; item != NULL && ret == true; item = nextItem)
 	{
 		nextItem = item->next;
-		ret = item->data->PostUpdate();
+
+		if (item->data->mustDestroy) {
+			item->data->CleanUp();
+			DestroyElement(item);
+		}
+		else {
+			ret = item->data->PostUpdate();
+		}
 	}
 
 	return ret;
@@ -154,7 +161,7 @@ bool j1UserInterface::CleanUp()
 {
 	bool ret = true;
 
-	p2List_item<Image*>* item;
+	p2List_item<UIElement*>* item;
 	for (item = screenElements.end; item != NULL && ret == true; item = item->prev)
 	{
 		ret = item->data->CleanUp();
@@ -171,52 +178,47 @@ SDL_Texture* j1UserInterface::GetAtlas() const
 	return atlas;
 }
 
-void j1UserInterface::AddElement(Image* element)
+void j1UserInterface::AddElement(UIElement* element)
 {
 	screenElements.add(element);
 }
 
-void j1UserInterface::DestroyElement(Image* element)
+void j1UserInterface::DestroyElement(p2List_item<UIElement*>* element)
 {
-	int pos = screenElements.find(element);
-	
-	if (pos > -1) {
-		p2List_item<Image*>* item = screenElements.At(pos);
-		RELEASE(item->data);
-		screenElements.del(item);
-	}
+	RELEASE(element->data);
+	screenElements.del(element);
 }
 
-Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
+Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children)
 {
 	Image* ret = nullptr;
 
-	if (texRect == NULL) {
-		SDL_Rect tmpRect = { 0, 0, 0, 0 };
-		App->tex->GetSize(tex, (uint&)tmpRect.w, (uint&)tmpRect.h);
-		texRect = &tmpRect;
-	}
-	else if (tex == NULL) {
+	if (tex == NULL) {
 		tex = GetAtlas();
 	}
-
-	ret = new Image(image_type::IMAGE, center, texRect, tex, label, parent);
+	else if (SDL_RectEmpty(&texRect)) {
+		SDL_Rect tmpRect = { 0, 0, 0, 0 };
+		App->tex->GetSize(tex, (uint&)tmpRect.w, (uint&)tmpRect.h);
+		texRect = tmpRect;
+	}
+	
+	ret = new Image(ui_type::IMAGE, center, texRect, tex, parent, children);
 	AddElement(ret);
 
 	return ret;
 }
 
-Text* j1UserInterface::CreateTextBox(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, Image* parent)
+Text* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, UIElement* parent, p2List<UIElement*>* children)
 {
 	Text* ret = nullptr;
 
-	ret = new Text(content, color, font, center, parent);
+	ret = new Text(content, color, font, center, parent, children);
 	AddElement((Image*)ret);
 
 	return ret;
 }
 
-Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label, SDL_Texture* tex, Image* parent)
+Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children)
 {
 	Button* ret = nullptr;
 
@@ -224,21 +226,21 @@ Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Re
 		tex = GetAtlas();
 	}
 
-	ret = new Button(action, image_type::BUTTON_ACTION, center, spriteList, label, tex, parent);
+	ret = new Button(action, ui_type::BUTTON_ACTION, center, spriteList, tex, parent, children);
 	AddElement((Image*)ret);
 
 	return ret;
 }
 
-Window* j1UserInterface::CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
-{
-	Window* ret = nullptr;
-
-	ret = new Window(center, children, texRect, tex, label, parent);
-	AddElement((Image*)ret);
-
-	return ret;
-}
+//Window* j1UserInterface::CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
+//{
+//	Window* ret = nullptr;
+//
+//	ret = new Window(center, children, texRect, tex, label, parent);
+//	AddElement((Image*)ret);
+//
+//	return ret;
+//}
 
 //Image* j1UserInterface::CreateActionBox(buttonAction action, fPoint position, Text* label, SDL_Rect* spriteList[4], image_type type, SDL_Texture* tex, Image* parent)
 //{

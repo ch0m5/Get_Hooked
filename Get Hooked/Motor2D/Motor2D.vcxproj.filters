@@ -70,32 +70,35 @@
     <ClCompile Include="Player.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClCompile>
-    <ClCompile Include="InputText.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\InputText</Filter>
-    </ClCompile>
-    <ClCompile Include="CheckBox.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\CheckBox</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicalElement.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
     </ClCompile>
     <ClCompile Include="Creature.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClCompile>
     <ClCompile Include="j1UserInterface.cpp">
       <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClCompile>
-    <ClCompile Include="ActionBox.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    <ClCompile Include="UIElement.cpp">
+      <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionBox.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckBox.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="InputText.cpp">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -189,35 +192,38 @@
     <ClInclude Include="Enemy.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="InputText.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\InputText</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckBox.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\CheckBox</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicalElement.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
     </ClInclude>
     <ClInclude Include="Creature.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
-    </ClInclude>
     <ClInclude Include="j1UserInterface.h">
       <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClInclude>
-    <ClInclude Include="ActionBox.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    <ClInclude Include="UIElement.h">
+      <Filter>Desenvolupament  ========\User Interface</Filter>
     </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>Desenvolupament  ========\User Interface\UI Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionBox.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckBox.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="InputText.h">
+      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,20 +284,14 @@
     <Filter Include="Desenvolupament  ========\User Interface\UI Elements">
       <UniqueIdentifier>{38fe4935-a547-482a-ba90-2ab003912fde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button">
-      <UniqueIdentifier>{20cabf54-f1ac-41e3-831c-8aeb3cd5649a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Desenvolupament  ========\Entities System\Entities\Particle">
       <UniqueIdentifier>{2bd696a0-a408-4989-848b-2c794b38f520}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\CheckBox">
-      <UniqueIdentifier>{43513386-3d94-4f7d-9ae1-6ae33e3de978}</UniqueIdentifier>
+    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Images">
+      <UniqueIdentifier>{ded91a84-634e-44e4-8696-06ef6f14b7fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\InputText">
-      <UniqueIdentifier>{7418f606-6af5-41cc-86b2-7157c2793265}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Button\ActionBox">
-      <UniqueIdentifier>{e4e146df-e958-4dce-a40d-1578baaf084f}</UniqueIdentifier>
+    <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Images\Buttons">
+      <UniqueIdentifier>{35ae5b14-9717-4848-8f26-fc4dfa32972f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -8,40 +8,10 @@
 #include "j1Fonts.h"
 #include "Text.h"
 
-Text::Text(const char* content,
-	SDL_Color color,
-	_TTF_Font* font,
-	fPoint center,
-	Image* parent) : Image(image_type::TEXT, center, &LoadText(content, color, font), App->font->Print(content, color, font), this, parent), color(color), font(font)
+Text::Text(const char* content, SDL_Color color, _TTF_Font* font, fPoint center, UIElement* parent, p2List<UIElement*>* children)
+	: Image(ui_type::TEXT, center, LoadText(content, color, font), App->font->Print(content, color, font), parent, children), color(color), font(font)
 {
 	this->content.create(content);	//@Carles: p2SString constructor restarts the string otherwise
-}
-
-Text::~Text()
-{}
-
-bool Text::UpdateTick(float dt)
-{
-	bool ret = true;
-
-	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
-		iPoint mouseMov;
-		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);
-		position.x += mouseMov.x;
-		position.y += mouseMov.y;
-		RelocateCenterByPos();
-	}
-		
-	return ret;
-}
-
-bool Text::Update()
-{
-	bool ret = true;
-
-	Draw(currentSprite);
-
-	return ret;
 }
 
 const char* Text::GetText() const
@@ -61,11 +31,11 @@ _TTF_Font* Text::GetFont() const
 
 SDL_Rect Text::LoadText(const char* string, SDL_Color color, _TTF_Font* font)
 {
-	SDL_Rect tmpRect = { 0, 0, 0, 0 };
+	SDL_Rect tmp = { 0, 0, 0, 0 };
 	content.create(string);
 	graphics = App->font->Print(string, color, font);
-	App->tex->GetSize(graphics, (uint&)tmpRect.w, (uint&)tmpRect.h);
-	return tmpRect;
+	App->tex->GetSize(graphics, (uint&)tmp.w, (uint&)tmp.h);
+	return tmp;
 }
 
 SDL_Rect Text::ChangeText(const char* string, SDL_Color color, _TTF_Font* font)
@@ -77,8 +47,8 @@ SDL_Rect Text::ChangeText(const char* string, SDL_Color color, _TTF_Font* font)
 
 	content.create(string);
 	graphics = App->font->Print(string, color, font);
-	App->tex->GetSize(graphics, (uint&)this->texRect.w, (uint&)this->texRect.h);
-	return texRect;
+	App->tex->GetSize(graphics, (uint&)this->sprite->w, (uint&)this->sprite->h);
+	return *sprite;
 }
 
 SDL_Rect Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
@@ -90,9 +60,8 @@ SDL_Rect Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
 
 	content = string;
 	graphics = App->font->Print(string.GetString(), color, font);
-	App->tex->GetSize(graphics, (uint&)this->texRect.w, (uint&)this->texRect.h);
-	texRect.x = texRect.y = 0;
-	return texRect;
+	App->tex->GetSize(graphics, (uint&)this->sprite->w, (uint&)this->sprite->h);
+	return *sprite;
 }
 
 void Text::ChangeColor(SDL_Color color)

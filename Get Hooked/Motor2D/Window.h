@@ -9,26 +9,17 @@ class Window : public Image	//IMPROVE: Change all ui class and file names to j2U
 {
 public:
 	//Constructor
-	Window(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, Image* parent = NULL);
-	
+	Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL, p2List<iPoint>* childPositions = NULL);
+
 	//Destructor
-	virtual ~Window() {};
+	~Window();
 
 	// Called each loop iteration (logic)
 	virtual bool UpdateTick(float dt);
 
-	// Called each loop iteration (graphic)
-	virtual bool Update();
-
-public:
-	virtual fPoint DefaultLabelPos();
-
 protected:
-	p2List<Image*> children;
+	p2List<iPoint> childPositions;
 	//Button* closeWindow;
-
-protected:
-
 };
 
 #endif //__WINDOW_H__
