@@ -10,10 +10,11 @@
 #include "j1Map.h"
 #include "j1FadeScene.h"
 #include "j1Scene.h"
-#include "Player.h"
 #include "j1Collision.h"
 #include "j1Timer.h"
 #include "j1EntityManager.h"
+#include "Player.h"
+#include "j1Fonts.h"
 #include "j1UserInterface.h"
 #include "Image.h"
 #include "Text.h"
@@ -93,9 +94,10 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	SDL_Rect pop = { 5, 112, 220, 63 };
 	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
 	
-	App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 });
-	App->ui->CreateText({ 200, 100 }, "patatatatata");
-	App->ui->CreateButton(&CloseGame, { 200, 150 }, arr);
+	Image* parentImage = App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 });
+	App->ui->CreateText(DEFAULT_POINT, "patatatatata", DEFAULT_COLOR, NULL, (UIElement*)parentImage);
+	Button* parentButton = App->ui->CreateButton(&CloseGame, { 200, 150 }, arr);
+	App->ui->CreateText(DEFAULT_POINT, "patatathesequel", DEFAULT_COLOR, NULL, (UIElement*)parentButton);
 
 	//p2List<Image*> imageList;
 	//imageList.add(&Image(image_type::IMAGE, { 100, 50 }, &pop));

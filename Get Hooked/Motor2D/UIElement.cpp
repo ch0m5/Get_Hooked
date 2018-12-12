@@ -12,6 +12,10 @@ UIElement::UIElement(ui_type type, fPoint position, UIElement* parent, p2List<UI
 		this->children = *children;
 	}
 
+	if (parent != NULL) {
+		parent->AddChild(this);
+	}
+
 	Init();
 }
 
@@ -55,4 +59,17 @@ fPoint UIElement::MatchCenter(fPoint reference)
 {
 	center = reference;
 	return center;
+}
+
+p2List_item<UIElement*>* UIElement::AddChild(UIElement* child)
+{
+	return children.add(child);
+}
+
+void UIElement::RemoveChild(UIElement* child)
+{
+	int pos = children.find(child);
+
+	if (pos > -1)
+		children.del(children.At(pos));
 }

@@ -63,8 +63,12 @@ public:
 	virtual ui_type GetType() const;
 	virtual fPoint GetPosition() const;
 	virtual fPoint GetCenter() const;
+
 	virtual fPoint MatchPosition(fPoint reference);
 	virtual fPoint MatchCenter(fPoint reference);
+
+	virtual p2List_item<UIElement*>* AddChild(UIElement* child);
+	virtual void RemoveChild(UIElement* child);
 
 	virtual void Draw() const = 0;
 
