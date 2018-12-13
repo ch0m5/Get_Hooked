@@ -107,7 +107,7 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	
 	Image* parentImage = App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 }, NULL, true);
 	App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, (UIElement*)parentImage);
-	Button* parentButton = App->ui->CreateButton(&CloseGame, { 200, 150 }, arr, NULL, true);
+	Button<void>* parentButton = App->ui->CreateButton(&CloseGame, { 200, 150 }, arr, NULL, true);
 	App->ui->CreateText(DEFAULT_POINT, "walop the second", DEFAULT_COLOR, NULL, false, (UIElement*)parentButton);
 	App->ui->CreateText({ 200, 200 }, "walop the third", DEFAULT_COLOR, NULL, true);
 

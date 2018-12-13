@@ -8,19 +8,6 @@
 
 struct SDL_Texture;
 
-//enum class button_action
-//{
-//	NONE = -1,
-//	CHANGE_SCENE,
-//	SWITCH_VALUE,
-//	ENTER_TEXT,
-//	SAVE_GAME,
-//	LOAD_GAME,
-//	CLOSE_GAME,
-//
-//	MAX_TYPES
-//};
-
 enum class button_state
 {
 	DISABLED = 0,
@@ -31,14 +18,14 @@ enum class button_state
 	MAX_TYPES
 };
 
-//template <class Ret, class... Args>
+template <class Ret, class... Args>
 class Button : public Image	//IMPROVE: Change all entity class and file names to j2EntityName
 {
 public:
-	//typedef Ret(*buttonAction)(Args...);
+	//typedef Ret(*buttonAction)(Args...);	//IMPROVE: Add this typedef instead of directly Ret(*action)(Args...)
 
 	//Constructor	//IMPROVE: Create a paralel "AnimatedButton" class holding an animation (or several)
-	Button(void(*action)(void), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
+	template<class Ret, class... Args> Button(Ret(*action)(Args...), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
 		: Image(type, center, spriteList[(int)button_state::IDLE], tex, dynamic, parent, children), action(action), status(button_state::IDLE)
 	{
 		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
@@ -54,15 +41,14 @@ public:
 		RELEASE_ARRAY(stateSprites);
 	}
 
-	//Operators
-	/*void operator() (Args&... args) const
+	//Button action calling
+	Ret operator() (Args&... args) const
 	{
-		(m_funcPtr)(args...);
-	}*/
+		return (action)(args...);
+	}
 
-	void operator() () const
-	{
-		(action)();
+	Ret DoAction(Args&... args) const{
+		return (action)(args...);
 	}
 
 	// Called each frame (framerate dependant)
@@ -139,7 +125,7 @@ protected:
 	virtual void OnPress()
 	{
 		*sprite = stateSprites[(int)button_state::PRESSING];
-		action();
+		DoAction(Args...);
 	}
 
 	virtual void WhileIdle() {}
@@ -165,7 +151,7 @@ protected:
 	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
 
 private:
-	void(*action)(void) = nullptr;
+	Ret(*action)(Args...);
 	button_state status;
 	
 };

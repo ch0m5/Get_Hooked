@@ -231,15 +231,15 @@ Text* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color 
 	return ret;
 }
 
-Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
+Button<void>* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
-	Button* ret = nullptr;
+	Button<void>* ret = nullptr;
 
 	if (tex == NULL) {
 		tex = GetAtlas();
 	}
 
-	ret = new Button(action, ui_type::BUTTON_ACTION, center, spriteList, tex, dynamic, parent, children);
+	ret = new Button<void>(action, ui_type::BUTTON_ACTION, center, spriteList, tex, dynamic, parent, children);
 	AddElement((Image*)ret);
 
 	return ret;

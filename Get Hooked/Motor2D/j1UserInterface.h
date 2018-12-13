@@ -54,7 +54,7 @@ public:
 
 	Image* CreateImage(fPoint center, SDL_Rect texRect = { 0, 0, 0, 0 }, SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 	Text* CreateText(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
-	Button* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Button<void>* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 	//Window* CreateWindowPanel(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, UIElement* parent = NULL);
 
 	/*Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);

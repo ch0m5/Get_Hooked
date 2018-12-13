@@ -10,34 +10,4 @@
 
 Window::Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children, p2List<iPoint>* childPositions)
 	: Image(ui_type::WINDOW, center, texRect, tex, dynamic, parent, children)
-{
-	if (childPositions != NULL) {
-		this->childPositions = *childPositions;
-	}
-};
-
-Window::~Window()
-{}
-
-bool Window::UpdateTick(float dt)
-{
-	bool ret = true;
-
-	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
-		iPoint mouseMov;
-		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);	//IMPROVE: Use coordinate values, mouse motion is not very good
-		position.x += mouseMov.x;
-		position.y += mouseMov.y;
-		RelocateCenterByPos();
-
-		for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
-			item->data->position.x += mouseMov.x;
-			item->data->position.y += mouseMov.y;
-			item->data->center.x += mouseMov.x;
-			item->data->center.y += mouseMov.y;
-		}
-
-	}
-
-	return ret;
-}
+{};
