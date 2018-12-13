@@ -103,7 +103,6 @@
     <ClCompile Include="j1Textures.cpp" />
     <ClCompile Include="j1Window.cpp" />
     <ClCompile Include="PugiXml\src\pugixml.cpp" />
-    <ClCompile Include="ActionBox.cpp" />
     <ClCompile Include="Slime.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Image.cpp" />

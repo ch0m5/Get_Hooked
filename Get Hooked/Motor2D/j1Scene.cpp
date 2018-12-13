@@ -105,10 +105,10 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	SDL_Rect pop = { 5, 112, 220, 63 };
 	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
 	
-	Image* parentImage = App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 }, NULL, true);
-	App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, (UIElement*)parentImage);
-	Button<void>* parentButton = App->ui->CreateButton(&CloseGame, { 200, 150 }, arr, NULL, true);
-	App->ui->CreateText(DEFAULT_POINT, "walop the second", DEFAULT_COLOR, NULL, false, (UIElement*)parentButton);
+	UIElement* parentImage = App->ui->CreateImage({ 200, 50 }, { 5, 112, 220, 63 }, NULL, true);
+	App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, parentImage);
+	UIElement* parentButton = App->ui->CreateActionBox(&CloseGame, { 200, 150 }, arr, NULL, true);
+	App->ui->CreateText(DEFAULT_POINT, "walop the second", DEFAULT_COLOR, NULL, false, parentButton);
 	App->ui->CreateText({ 200, 200 }, "walop the third", DEFAULT_COLOR, NULL, true);
 
 	//p2List<Image*> imageList;

@@ -9,11 +9,11 @@
 #include "j1Input.h"
 
 #include "j1UserInterface.h"
-#include "Image.h"
+#include "UIElement.h"
 #include "Image.h"
 #include "Text.h"
 #include "Button.h"
-#include "Window.h"
+#include "ActionBox.h"
 
 j1UserInterface::j1UserInterface() : j1Module()
 {
@@ -202,7 +202,7 @@ void j1UserInterface::DestroyElement(p2List_item<UIElement*>* element)
 	screenElements.del(element);
 }
 
-Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
+UIElement* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
 	Image* ret = nullptr;
 
@@ -216,34 +216,36 @@ Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture
 	}
 	
 	ret = new Image(ui_type::IMAGE, center, texRect, tex, dynamic, parent, children);
-	AddElement(ret);
+	AddElement((UIElement*)ret);
 
-	return ret;
+	return (UIElement*)ret;
 }
 
-Text* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
+UIElement* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
 	Text* ret = nullptr;
 
 	ret = new Text(content, color, font, center, dynamic, parent, children);
-	AddElement((Image*)ret);
+	AddElement((UIElement*)ret);
 
-	return ret;
+	return (UIElement*)ret;
 }
 
-Button<void>* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
+UIElement* j1UserInterface::CreateActionBox(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
-	Button<void>* ret = nullptr;
+	UIElement* ret = nullptr;
 
 	if (tex == NULL) {
 		tex = GetAtlas();
 	}
 
-	ret = new Button<void>(action, ui_type::BUTTON_ACTION, center, spriteList, tex, dynamic, parent, children);
-	AddElement((Image*)ret);
+	ret = new ActionBox<void>(action, center, spriteList, tex, dynamic, parent, children);
+	AddElement(ret);
 
 	return ret;
 }
+
+//void(*action)(...), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL
 
 //Window* j1UserInterface::CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
 //{

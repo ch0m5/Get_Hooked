@@ -6,12 +6,12 @@
 struct SDL_Texture;
 
 template <class Ret, class... Args>
-class ActionBox : public Button<Ret, Args>
+class ActionBox : public Button<Ret, Args...>
 {
 public:
 	//Constructor
 	template<class Ret, class... Args> ActionBox(Ret(*action)(Args...), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
-		: Button(action, ui_type::BUTTON_ACTION, center, spriteList, tex, dynamic, parent, children)
+		: Button<Ret, Args...>(action, ui_type::BUTTON_ACTION, center, spriteList[(int)button_state::IDLE], tex, dynamic, parent, children)
 	{
 		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
 
@@ -132,13 +132,8 @@ protected:
 		*sprite = stateSprites[(int)button_state::DISABLED];
 	}
 
-protected:
-	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
-
 private:
-	Ret(*action)(Args...);
-	button_state status;
-
+	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
 };
 
 #endif //__ACTION_BOX_H__

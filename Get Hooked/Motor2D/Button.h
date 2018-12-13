@@ -25,20 +25,13 @@ public:
 	//typedef Ret(*buttonAction)(Args...);	//IMPROVE: Add this typedef instead of directly Ret(*action)(Args...)
 
 	//Constructor	//IMPROVE: Create a paralel "AnimatedButton" class holding an animation (or several)
-	template<class Ret, class... Args> Button(Ret(*action)(Args...), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
-		: Image(type, center, spriteList[(int)button_state::IDLE], tex, dynamic, parent, children), action(action), status(button_state::IDLE)
-	{
-		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
-
-		for (int i = 0; i < 4; i++) {
-			stateSprites[i] = spriteList[i];
-		}
-	};
+	template<class Ret, class... Args> Button(Ret(*action)(Args...), ui_type type, fPoint center, SDL_Rect spriteRect, SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
+		: Image(type, center, spriteRect, tex, dynamic, parent, children), action(action), status(button_state::IDLE)
+	{};
 
 	virtual ~Button()
 	{
 		RELEASE(sprite);
-		RELEASE_ARRAY(stateSprites);
 	}
 
 	//Button action calling
@@ -113,18 +106,13 @@ protected:
 	}
 
 	virtual void OnIdle()
-	{
-		*sprite = stateSprites[(int)button_state::IDLE];
-	}
+	{}
 
 	virtual void OnHover()
-	{
-		*sprite = stateSprites[(int)button_state::HOVERING];
-	}
+	{}
 
 	virtual void OnPress()
 	{
-		*sprite = stateSprites[(int)button_state::PRESSING];
 		DoAction(Args...);
 	}
 
@@ -138,19 +126,14 @@ protected:
 	virtual void Enable()
 	{
 		status = button_state::IDLE;
-		*sprite = stateSprites[(int)button_state::IDLE];
 	}
 
 	virtual void Disable()
 	{
 		status = button_state::DISABLED;
-		*sprite = stateSprites[(int)button_state::DISABLED];
 	}
 
 protected:
-	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
-
-private:
 	Ret(*action)(Args...);
 	button_state status;
 	

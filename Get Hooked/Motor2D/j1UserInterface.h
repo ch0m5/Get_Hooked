@@ -3,7 +3,6 @@
 
 #include "j1Module.h"
 #include "p2List.h"
-#include "Button.h"
 
 #define CURSOR_WIDTH 2
 
@@ -52,9 +51,13 @@ public:
 	void AddElement(UIElement* element);
 	void DestroyElement(p2List_item<UIElement*>* element);
 
-	Image* CreateImage(fPoint center, SDL_Rect texRect = { 0, 0, 0, 0 }, SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
-	Text* CreateText(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
-	Button<void>* CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	UIElement* CreateImage(fPoint center, SDL_Rect texRect = { 0, 0, 0, 0 }, SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	UIElement* CreateText(fPoint center, const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+
+	UIElement* CreateActionBox(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	//UIElement* CreateCheckBox();
+	//UIElement* CreateInputText();
+
 	//Window* CreateWindowPanel(fPoint center, p2List<Image*> children, SDL_Rect* texRect = NULL, SDL_Texture* tex = NULL, Text* label = NULL, UIElement* parent = NULL);
 
 	/*Image* CreateText(const char* content, fPoint position, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, Image* parent = NULL);

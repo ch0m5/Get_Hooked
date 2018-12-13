@@ -91,9 +91,6 @@
     <ClCompile Include="Window.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Images</Filter>
     </ClCompile>
-    <ClCompile Include="ActionBox.cpp">
-      <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
-    </ClCompile>
     <ClCompile Include="CheckBox.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
     </ClCompile>
