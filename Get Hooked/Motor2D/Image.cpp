@@ -6,8 +6,9 @@
 #include "j1UserInterface.h"
 #include "Image.h"
 #include "Text.h"
+#include "j1Window.h"
 
-Image::Image(ui_type type, fPoint center, SDL_Rect sprite, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children) : UIElement(type, center, parent, children), graphics(tex)
+Image::Image(ui_type type, fPoint center, SDL_Rect sprite, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children) : UIElement(type, center, dynamic, parent, children), graphics(tex)
 {
 	this->sprite = new SDL_Rect;
 	*this->sprite = sprite;
@@ -27,12 +28,34 @@ bool Image::UpdateTick(float dt)
 {
 	bool ret = true;
 
-	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
-		iPoint mouseMov;
-		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);
-		position.x += mouseMov.x;
-		position.y += mouseMov.y;
-		RelocateCenterByPos();
+	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Kinda shitty method to follow mouse
+		iPoint mousePos;
+		App->input->GetMousePosition(mousePos.x, mousePos.y);
+
+		if (setMouseGrabPos == false) {
+			grabOffset = { (float)mousePos.x - position.x, (float)mousePos.y - position.y };
+			setMouseGrabPos = true;
+		}
+		else {
+			fPoint newGrabOffset;
+			newGrabOffset = { (float)mousePos.x - position.x, (float)mousePos.y - position.y };
+
+			fPoint mouseMov = { newGrabOffset.x - grabOffset.x, newGrabOffset.y - grabOffset.y };
+			position.x += mouseMov.x;
+			position.y += mouseMov.y;
+			center.x += mouseMov.x;
+			center.y += mouseMov.y;
+
+			for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
+				item->data->position.x += mouseMov.x;
+				item->data->position.y += mouseMov.y;
+				item->data->center.x += mouseMov.x;
+				item->data->center.y += mouseMov.y;
+			}
+		}
+	}
+	else {
+		setMouseGrabPos = false;
 	}
 
 	return ret;
@@ -62,14 +85,44 @@ SDL_Rect* Image::GetSprite() const
 	return sprite;
 }
 
-void Image::Draw() const
+bool Image::Draw() const
 {
+	bool ret = true;
+
 	if (lookingRight) {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_NONE, false);
+		ret = App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_NONE, false);
 	}
 	else {
-		App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_HORIZONTAL, false);
+		ret = App->render->Blit(graphics, (int)position.x, (int)position.y, sprite, SDL_FLIP_HORIZONTAL, false);
 	}
+
+	return ret;
+}
+
+bool Image::DebugDraw() const
+{
+	bool ret = true;
+
+	/* COLORS
+		Red: 255, 0, 0
+		Green: 0, 255, 0
+		Blue: 0, 0, 255
+		Yellow: 255, 255, 0
+		Magenta: 255, 0, 255
+		Cyan: 0, 255, 255
+		White: 255, 255, 255
+		Black: 0, 0, 0
+		Brown: 160, 128, 96
+	*/
+
+	// Top-Left Corner
+	ret = App->render->DrawLine((int)position.x, (int)position.y, (int)(position.x + sprite->w), (int)position.y, 255, 0, 0, 255, false);	// Right
+	ret = App->render->DrawLine((int)position.x, (int)position.y, (int)position.x, (int)position.y + sprite->h, 255, 0, 0, 255, false);	// Down
+	// Down-Right Corner
+	ret = App->render->DrawLine((int)(position.x + sprite->w), (int)(position.y + sprite->h), (int)position.x, (int)(position.y + sprite->h), 255, 0, 0, 255, false);	// Up
+	ret = App->render->DrawLine((int)(position.x + sprite->w), (int)(position.y + sprite->h), (int)(position.x + sprite->w), (int)position.y, 255, 0, 0, 255, false);	// Left
+
+	return ret;
 }
 
 fPoint Image::RelocateCenterByPos()
@@ -98,7 +151,7 @@ fPoint Image::MatchCenter(fPoint reference)
 	return center;
 }
 
-bool Image::MouseOnImage() {	//IMPROVE: USEFUL SDL ALTERNATIVE ??? -> SDL_bool ret = SDL_PointInRect(&mousePos, sprite);
+bool Image::MouseOnImage() {	//IMPROVE: USEFUL SDL ALTERNATIVE -> SDL_bool ret = SDL_PointInRect(&mousePos, sprite);
 	SDL_Point mousePos;
 	App->input->GetMousePosition(mousePos.x, mousePos.y);
 

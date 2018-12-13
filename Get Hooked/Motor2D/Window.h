@@ -9,7 +9,7 @@ class Window : public Image	//IMPROVE: Change all ui class and file names to j2U
 {
 public:
 	//Constructor
-	Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL, p2List<iPoint>* childPositions = NULL);
+	Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL, p2List<iPoint>* childPositions = NULL);
 
 	//Destructor
 	~Window();

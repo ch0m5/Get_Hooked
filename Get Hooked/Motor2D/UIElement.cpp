@@ -6,7 +6,7 @@
 #include "j1UserInterface.h"
 #include "UIElement.h"
 
-UIElement::UIElement(ui_type type, fPoint position, UIElement* parent, p2List<UIElement*>* children) : type(type), position(position), center(position), parent(parent)
+UIElement::UIElement(ui_type type, fPoint position, bool dynamic, UIElement* parent, p2List<UIElement*>* children) : type(type), position(position), center(position), dynamic(dynamic), parent(parent)
 {
 	if (children != NULL) {
 		this->children = *children;
@@ -37,6 +37,11 @@ bool UIElement::CleanUp()
 ui_type UIElement::GetType() const
 {
 	return type;
+}
+
+UIElement* UIElement::GetParent() const
+{
+	return parent;
 }
 
 fPoint UIElement::GetPosition() const

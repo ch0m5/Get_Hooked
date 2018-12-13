@@ -10,7 +10,7 @@ class Text : public Image	//IMPROVE: Change all entity class and file names to j
 {
 public:
 	//Constructor
-	Text(const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, fPoint center = { 0, 0 }, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Text(const char* content, SDL_Color color = { 255, 255, 255, 255 }, _TTF_Font* font = NULL, fPoint center = { 0, 0 }, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 
 public:
 	void operator+ (const char* addition) {
@@ -25,7 +25,8 @@ public:
 	SDL_Color GetColor() const;
 	_TTF_Font* GetFont() const;
 
-	SDL_Rect LoadText(const char* string, SDL_Color color, _TTF_Font* font);
+	SDL_Rect LoadRectSize(const char* string, SDL_Color color, _TTF_Font* font);
+	SDL_Texture* LoadTex(const char* string, SDL_Color color, _TTF_Font* font);
 	SDL_Rect ChangeText(const char* string, SDL_Color color, _TTF_Font* font);
 	SDL_Rect ChangeText(p2SString string, SDL_Color color, _TTF_Font* font);
 	void ChangeColor(SDL_Color color);

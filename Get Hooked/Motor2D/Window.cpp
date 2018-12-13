@@ -8,14 +8,12 @@
 #include "Window.h"
 #include "Text.h"
 
-Window::Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children, p2List<iPoint>* childPositions)
-	: Image(ui_type::WINDOW, center, texRect, tex, parent)
+Window::Window(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children, p2List<iPoint>* childPositions)
+	: Image(ui_type::WINDOW, center, texRect, tex, dynamic, parent, children)
 {
 	if (childPositions != NULL) {
 		this->childPositions = *childPositions;
 	}
-
-	dynamic = true;	//CHANGE/FIX: Shouldn't be dynamic by default, needs Awake data
 };
 
 Window::~Window()
@@ -27,7 +25,7 @@ bool Window::UpdateTick(float dt)
 
 	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Make function
 		iPoint mouseMov;
-		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);
+		App->input->GetMouseMotion(mouseMov.x, mouseMov.y);	//IMPROVE: Use coordinate values, mouse motion is not very good
 		position.x += mouseMov.x;
 		position.y += mouseMov.y;
 		RelocateCenterByPos();

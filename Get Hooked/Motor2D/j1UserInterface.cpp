@@ -119,12 +119,25 @@ bool j1UserInterface::Draw()
 	p2List_item<UIElement*>* item;
 	for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
 	{
-		if (item->data->active == false) {
+		if (item->data->active == false || item->data->GetParent() != NULL) {	// All elements are listed, but the parent handles the drawing for layer purposes
 			continue;
 		}
 
 		if (ret)
 			ret = item->data->Update();	//Update independant of framerate
+	}
+
+	if (mustDebugDraw) {
+		p2List_item<UIElement*>* item;
+		for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
+		{
+			if (item->data->active == false) {	// All elements must have debug blitting AFTER standard blitting, no "blitting layers"
+				continue;
+			}
+
+			if (ret)
+				ret = item->data->DebugDraw();	//Update independant of framerate
+		}
 	}
 
 	return true;
@@ -189,7 +202,7 @@ void j1UserInterface::DestroyElement(p2List_item<UIElement*>* element)
 	screenElements.del(element);
 }
 
-Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children)
+Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
 	Image* ret = nullptr;
 
@@ -202,23 +215,23 @@ Image* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture
 		texRect = tmpRect;
 	}
 	
-	ret = new Image(ui_type::IMAGE, center, texRect, tex, parent, children);
+	ret = new Image(ui_type::IMAGE, center, texRect, tex, dynamic, parent, children);
 	AddElement(ret);
 
 	return ret;
 }
 
-Text* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, UIElement* parent, p2List<UIElement*>* children)
+Text* j1UserInterface::CreateText(fPoint center, const char* content, SDL_Color color, _TTF_Font* font, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
 	Text* ret = nullptr;
 
-	ret = new Text(content, color, font, center, parent, children);
+	ret = new Text(content, color, font, center, dynamic, parent, children);
 	AddElement((Image*)ret);
 
 	return ret;
 }
 
-Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], Text* label, SDL_Texture* tex, UIElement* parent, p2List<UIElement*>* children)
+Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
 {
 	Button* ret = nullptr;
 
@@ -226,7 +239,7 @@ Button* j1UserInterface::CreateButton(void(*action)(void), fPoint center, SDL_Re
 		tex = GetAtlas();
 	}
 
-	ret = new Button(action, ui_type::BUTTON_ACTION, center, spriteList, tex, parent, children);
+	ret = new Button(action, ui_type::BUTTON_ACTION, center, spriteList, tex, dynamic, parent, children);
 	AddElement((Image*)ret);
 
 	return ret;

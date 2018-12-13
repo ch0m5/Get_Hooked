@@ -27,7 +27,7 @@ class UIElement	//IMPROVE: Change all ui class and file names to j2UiName
 {
 public:
 	//Constructor
-	UIElement(ui_type type, fPoint position, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	UIElement(ui_type type, fPoint position, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 
 	//Destructor
 	virtual ~UIElement();
@@ -61,6 +61,7 @@ public:
 
 public:
 	virtual ui_type GetType() const;
+	virtual UIElement* GetParent() const;
 	virtual fPoint GetPosition() const;
 	virtual fPoint GetCenter() const;
 
@@ -70,7 +71,8 @@ public:
 	virtual p2List_item<UIElement*>* AddChild(UIElement* child);
 	virtual void RemoveChild(UIElement* child);
 
-	virtual void Draw() const = 0;
+	virtual bool Draw() const = 0;
+	virtual bool DebugDraw() const = 0;
 
 public:
 	p2SString name;

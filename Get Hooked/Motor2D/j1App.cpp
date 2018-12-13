@@ -487,20 +487,6 @@ p2SString j1App::DebugTitle()	// @Carles
 		(int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y,
 		App->render->camera.x, App->render->camera.y);
 
-	// Full debug
-	/*title.create("%s (Position :%dx%d / Speed:%dx%d / Map:%dx%d / Tiles:%dx%d / Tilesets:%d / Av.FPS:%.2f / Last Frame Ms:%02u / Last sec frames:%i / Time since startup:%.3f / Frame Count:%lu)",
-		name.GetString(),
-		(int)App->entityManager->playerGetPosition().x, (int)App->entityManager->playerGetPosition().y,
-		(int)App->entityManager->playerGetSpeed().x, (int)App->entityManager->playerGetSpeed().y,
-		App->map->data.width, App->map->data.height,
-		App->map->data.tile_width, App->map->data.tile_height,
-		App->map->data.tilesets.count(),
-		avgFPS,
-		lastFrameMs,
-		prevFPS,
-		gameTime,
-		totalFrameCount);*/
-
 	return title;
 }
 

@@ -38,8 +38,8 @@ public:
 	//typedef Ret(*buttonAction)(Args...);
 
 	//Constructor	//IMPROVE: Create a paralel "AnimatedButton" class holding an animation (or several)
-	Button(void(*action)(void), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
-		: Image(type, center, spriteList[(int)button_state::IDLE], tex, parent, children), action(action), status(button_state::IDLE)
+	Button(void(*action)(void), ui_type type, fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL)
+		: Image(type, center, spriteList[(int)button_state::IDLE], tex, dynamic, parent, children), action(action), status(button_state::IDLE)
 	{
 		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
 

@@ -7,7 +7,7 @@ class Image	: public UIElement
 {
 public:
 	//Constructor
-	Image(ui_type type, fPoint center, SDL_Rect texRect, SDL_Texture* tex, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
+	Image(ui_type type, fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);
 
 	//Destructor
 	virtual ~Image();
@@ -45,7 +45,8 @@ public:
 
 	virtual bool MouseOnImage();
 
-	virtual void Draw() const;
+	virtual bool Draw() const;
+	virtual bool DebugDraw() const;
 
 public:
 	p2SString folder;
@@ -55,6 +56,9 @@ public:
 protected:
 	SDL_Rect* sprite = nullptr;
 	SDL_Texture* graphics = nullptr;
+
+	fPoint grabOffset;
+	bool setMouseGrabPos = false;
 };
 
 #endif //__IMAGE_H__

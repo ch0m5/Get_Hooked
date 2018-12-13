@@ -11,6 +11,7 @@
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
+#include "j1UserInterface.h"	//CHANGE/FIX: REMOVE ALL DEBUG INPUT FROM PLAYER, PUT IT ON SCENE
 
 #include "j1EntityManager.h"
 #include "Player.h"
@@ -502,6 +503,13 @@ void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 		status = player_state::HURT;
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
+		App->ui->mustDebugDraw = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == true) {
+		App->ui->mustDebugDraw = false;
+	}
+
 	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
 		App->collision->mustDebugDraw = true;
 	}
@@ -575,16 +583,17 @@ void Player::CheckInput()
 		wantAttack = false;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input
-		debugMode = true;
-	}
-	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
-		debugMode = false;
-		godMode = false;
-		freeCamera = false;
-		App->collision->mustDebugDraw = false;
-		App->win->scale = App->win->origScale;
-	}
+	//if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == false) {	// Activate debug mode input	//IMPROVE: Add debug key that enables/disables all debug functionalities
+	//	debugMode = true;
+	//}
+	//else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && debugMode == true) {	// Improve: Turning off debugMode shouldn't the change other flag values, just evaluate debugMode itself when their values are checked
+	//	debugMode = false;
+	//	godMode = false;
+	//	freeCamera = false;
+	//	App->collision->mustDebugDraw = false;
+	//	App->ui->mustDebugDraw = false;
+	//	App->win->scale = App->win->origScale;
+	//}
 }
 
 // Check player state
