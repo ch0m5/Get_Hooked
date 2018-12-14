@@ -29,7 +29,7 @@ bool Image::UpdateTick(float dt)
 {
 	bool ret = true;
 
-	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {	//CHANGE/FIX: Kinda shitty method to follow mouse
+	if (dynamic && MouseOnImage() && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
 		iPoint mousePos;
 		App->input->GetMousePosition(mousePos.x, mousePos.y);
 
@@ -37,22 +37,25 @@ bool Image::UpdateTick(float dt)
 			grabOffset = { (float)mousePos.x - position.x, (float)mousePos.y - position.y };
 			setMouseGrabPos = true;
 		}
-		else {
-			fPoint newGrabOffset;
-			newGrabOffset = { (float)mousePos.x - position.x, (float)mousePos.y - position.y };
+	}
+	else if (setMouseGrabPos == true && App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+		iPoint mousePos;
+		App->input->GetMousePosition(mousePos.x, mousePos.y);
 
-			fPoint mouseMov = { newGrabOffset.x - grabOffset.x, newGrabOffset.y - grabOffset.y };
-			position.x += mouseMov.x;
-			position.y += mouseMov.y;
-			center.x += mouseMov.x;
-			center.y += mouseMov.y;
+		fPoint newGrabOffset;
+		newGrabOffset = { (float)mousePos.x - position.x, (float)mousePos.y - position.y };
 
-			for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
-				item->data->position.x += mouseMov.x;
-				item->data->position.y += mouseMov.y;
-				item->data->center.x += mouseMov.x;
-				item->data->center.y += mouseMov.y;
-			}
+		fPoint mouseMov = { newGrabOffset.x - grabOffset.x, newGrabOffset.y - grabOffset.y };
+		position.x += mouseMov.x;
+		position.y += mouseMov.y;
+		center.x += mouseMov.x;
+		center.y += mouseMov.y;
+
+		for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
+			item->data->position.x += mouseMov.x;
+			item->data->position.y += mouseMov.y;
+			item->data->center.x += mouseMov.x;
+			item->data->center.y += mouseMov.y;
 		}
 	}
 	else {

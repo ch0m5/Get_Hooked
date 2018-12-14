@@ -18,6 +18,10 @@ enum class button_state
 	MAX_TYPES
 };
 
+//normal button <void>
+//check button <void, bool*>
+//input text <void, Text*>
+
 template <class Ret, class... Args>
 class Button : public Image	//IMPROVE: Change all entity class and file names to j2EntityName
 {
