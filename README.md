@@ -11,7 +11,6 @@ No previous installations is required to play the game, just download and execut
 ## Usage
 ### General Controls
 * ESC: Quit the game
-* F8: Enter Debug Mode
 * Shift + Up/Down: Change master volume
 * Shift + Left/Right: Change music volume
 
@@ -35,7 +34,8 @@ No previous installations is required to play the game, just download and execut
 * F5: Save current state
 * F6: Load previously saved state
 * F7: Recieve instant damage (Unless on godmode)
-* F9: Debug view (Colliders/Logic)
+* F8: User Interface Debug view
+* F9: Game debug view (Colliders/Logic)
 * F10: Godmode (No damage, no collisions, and free movement)
 * F11: Activate/Deactivate FPS cap (30)
 * 1/2/3/4/5: Change game scale to number chosen
@@ -43,13 +43,13 @@ No previous installations is required to play the game, just download and execut
 ## Innovation
 * Living entities accelerate and deaccelerate when moving, on ground they deaccelerate automatically.
 * Entities that are outside the player activation radius do not update.
-* Player can attack, a collider is created during the animation between a set "start" and "finish" frames.
+* Player can attack, a collider is created mid-animation when the attack is visually being made, set by a "start" and "finish" frames.
 * Player collider changes shape and position depending on his current animation.
 * Player can crouch to evade things that could hit his head area.
 * Player slides with a different deacceleration when trying to crouch while moving.
 * Player can jump in the air once making a somersault.
-* Enemies have a detection and attack radius which they use to input movement and other special attacks (currently slime only).
-* Enemies are briefly stunned if still alive, backing off from the player. If they die, they despawn after a set time.
+* Enemies have a detection and attack radius which they use to input movement and other special attacks.
+* Enemies are briefly stunned if still alive, backing off from the player. If they die, they dissapear after a set time.
 * Some Original Debug Functionalities.
 
 ## Contributing
@@ -76,23 +76,24 @@ feature'`
 
 ##Tasklist
 * Carles Homs
+	* Scene Module and Logic
 	* Audio Module and Logic
-	* Collisions Module and Logic
-	* Input Interpretation
-	* Debug Functionalities (Except Map ones)
 	* FadeSceneModule and Logic
-	* XML Save, Load and Congif/Awake (Except for map data)
+	* Collisions Module and Logic
+	* XML Management (Save/Load/Config)
+	* Input Interpretation
+	* All Debug Functionalities
 	* Framerate Logic and Limitations
 	* Entitiy System
-	* Player Module and Logic
-	* Enemies Modules and Logic
+	* Player Entity and Logic
+	* Enemies Entities and Logic
+	* User Interface System
+	* All UI Elements and Logic
 	* Brofiler Implementation
 	* Github Webpage and READMEs
 
 * Samuel Kurt:
-	* Map Design and Implementation
-	* Scene Modules and Logic
-	* FadeSceneModule Logic
+	* Map Design and Implementation with Tiled
 
 ## Disclosure
 We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.

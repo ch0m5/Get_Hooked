@@ -46,7 +46,7 @@ public:
 	virtual fPoint GetAcceleration() const;
 
 	virtual Collider* GetCollider();
-	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }
+	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }	//IMPROVE: Should be pure abstract method? (= 0)
 	virtual bool GetCollisionIgnore() const;
 
 protected:

@@ -55,9 +55,6 @@
     <ClCompile Include="j1Pathfinding.cpp">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="j1Fonts.cpp">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClCompile>
@@ -68,12 +65,6 @@
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicalElement.cpp">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClCompile>
     <ClCompile Include="j1UserInterface.cpp">
@@ -96,6 +87,15 @@
     </ClCompile>
     <ClCompile Include="InputText.cpp">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Desenvolupament  ========\Entities System</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicalElement.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,9 +174,6 @@
     <ClInclude Include="j1Pathfinding.h">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="j1Fonts.h">
       <Filter>Desenvolupament  ========\Modules</Filter>
     </ClInclude>
@@ -187,12 +184,6 @@
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicalElement.h">
-      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
-    </ClInclude>
-    <ClInclude Include="Creature.h">
       <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="j1UserInterface.h">
@@ -221,6 +212,15 @@
     </ClInclude>
     <ClInclude Include="InputText.h">
       <Filter>Desenvolupament  ========\User Interface\UI Elements\Images\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Desenvolupament  ========\Entities System</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicalElement.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -275,14 +275,14 @@
     <Filter Include="Desenvolupament  ========\Entities System\Entities\Physical\Environment">
       <UniqueIdentifier>{1ff47e6c-9fd3-4e6f-85b3-b2c72cb1be76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Desenvolupament  ========\Entities System\Entities\Particle">
+      <UniqueIdentifier>{2bd696a0-a408-4989-848b-2c794b38f520}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Desenvolupament  ========\User Interface">
       <UniqueIdentifier>{8a2d281e-be06-453b-98ad-a84dd283f0d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Desenvolupament  ========\User Interface\UI Elements">
       <UniqueIdentifier>{38fe4935-a547-482a-ba90-2ab003912fde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Desenvolupament  ========\Entities System\Entities\Particle">
-      <UniqueIdentifier>{2bd696a0-a408-4989-848b-2c794b38f520}</UniqueIdentifier>
     </Filter>
     <Filter Include="Desenvolupament  ========\User Interface\UI Elements\Images">
       <UniqueIdentifier>{ded91a84-634e-44e4-8696-06ef6f14b7fd}</UniqueIdentifier>

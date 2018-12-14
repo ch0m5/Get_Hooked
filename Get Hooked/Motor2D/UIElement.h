@@ -68,8 +68,11 @@ public:
 	virtual fPoint MatchPosition(fPoint reference);
 	virtual fPoint MatchCenter(fPoint reference);
 
-	virtual p2List_item<UIElement*>* AddChild(UIElement* child);
-	virtual void RemoveChild(UIElement* child);
+	virtual UIElement* AttachParent(UIElement* parent);
+	virtual void DetachParent();
+
+	virtual p2List_item<UIElement*>* AttachChild(UIElement* child);
+	virtual void DetachChild(UIElement* child);
 
 	virtual bool Draw() const = 0;
 	virtual bool DebugDraw() const = 0;

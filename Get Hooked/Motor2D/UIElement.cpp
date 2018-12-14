@@ -66,12 +66,23 @@ fPoint UIElement::MatchCenter(fPoint reference)
 	return center;
 }
 
-p2List_item<UIElement*>* UIElement::AddChild(UIElement* child)
+UIElement* UIElement::AttachParent(UIElement* parent)
+{
+	this->parent = parent;
+	return parent;
+}
+
+void UIElement::DetachParent()
+{
+	parent = NULL;
+}
+
+p2List_item<UIElement*>* UIElement::AttachChild(UIElement* child)
 {
 	return children.add(child);
 }
 
-void UIElement::RemoveChild(UIElement* child)
+void UIElement::DetachChild(UIElement* child)
 {
 	int pos = children.find(child);
 

@@ -74,7 +74,27 @@ SDL_Rect Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
 	return *sprite;
 }
 
-void Text::ChangeColor(SDL_Color color)
+SDL_Rect Text::ChangeColor(SDL_Color color)
 {
+	if (graphics != nullptr) {
+		App->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
+	this->color = color;
 	graphics = App->font->Print(content.GetString(), color, font);
+	return *sprite;
+}
+
+SDL_Rect Text::ChangeFont(_TTF_Font* font)
+{
+	if (graphics != nullptr) {
+		App->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
+	this->font = font;
+	graphics = App->font->Print(content.GetString(), color, font);
+	App->tex->GetSize(graphics, (uint&)this->sprite->w, (uint&)this->sprite->h);
+	return *sprite;
 }
