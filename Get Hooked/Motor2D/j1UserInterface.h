@@ -68,9 +68,9 @@ public:
 	
 public:
 	bool mustDebugDraw = false;
+	//uint defaultScale;	//IMPROVE: Future use
 
 private:
-	pugi::xml_node configNode;
 	p2List<UIElement*> screenElements;
 
 	SDL_Texture* atlas;

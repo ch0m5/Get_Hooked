@@ -84,8 +84,7 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	App->LoadConfig(doc);
 	pugi::xml_node config = doc.child("config");
 
-
-	SDL_Rect pop = { 5, 112, 220, 63 };
+	SDL_Rect pop = { 325, 73, 154, 33 };
 	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
 	UIElement* parentImage;
 	UIElement* parentButton;
@@ -93,7 +92,7 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	switch (scene) {	//CHANGE/FIX: Make function?
 	case scene_type::MAIN_MENU:
 		//App->audio->PlayMusic(App->audio->mainMenuMusic.GetString());
-		parentImage = App->ui->CreateImage({ 100, 50 }, { 5, 112, 220, 63 }, NULL, true);
+		parentImage = App->ui->CreateImage({ 100, 50 }, pop, NULL, true);
 		App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, parentImage);
 		parentButton = App->ui->CreateActionBox(&StartGame, { 100, 150 }, arr, NULL, true);
 		App->ui->CreateText(DEFAULT_POINT, "Start Game", DEFAULT_COLOR, NULL, false, parentButton);
@@ -141,24 +140,6 @@ bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 
 	if (debugMode == true) {
 		DebugInput();	// Check debug input
-
-		if (App->fade->GetStep() == fade_step::NONE) {
-			if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
-				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_GAME);
-			}
-
-			if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) {
-				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
-			}
-
-			if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
-				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::NEXT_LEVEL);
-			}
-
-			if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
-				gamePaused = !gamePaused;
-			}
-		}
 	}
 
 	return true;
@@ -171,7 +152,7 @@ bool j1Scene::UpdateTick(float dt)
 
 	AudioInput();
 
-	if (debugMode == true && scene > scene_type::MAIN_MENU) {
+	if (debugMode == true && scene > scene_type::CREDITS) {
 		CameraInput(dt);
 	}
 
@@ -239,7 +220,7 @@ bool j1Scene::PostUpdate()
 }
 
 // Called before quitting
-bool j1Scene::CleanUp()	//CHANGE/FIX: HEAVY MEMORY LEAKS WHEN CHANGING SCENE, FIRST SUSPECT: COLLIDER LIST, MAPS, AND TEXTURES
+bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is allocated. Memory leaks?
 {
 	LOG("Freeing scene");
 	App->map->CleanUp();
@@ -248,46 +229,73 @@ bool j1Scene::CleanUp()	//CHANGE/FIX: HEAVY MEMORY LEAKS WHEN CHANGING SCENE, FI
 	return true;
 }
 
-void j1Scene::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
+void j1Scene::DebugInput()
 {
+	if (scene > scene_type::CREDITS) {
+		if (App->fade->GetStep() == fade_step::NONE) {
+			if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_GAME);
+			}
 
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Save game
-		App->SaveGame();
-	}
+			if (App->input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
+			}
 
-	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Load game
-		App->LoadGame();
-	}
+			if (App->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN) {
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::NEXT_LEVEL);
+			}
 
-	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
-		App->ui->mustDebugDraw = true;
-	}
-	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == true) {
-		App->ui->mustDebugDraw = false;
-	}
+			if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN) {
+				gamePaused = !gamePaused;
+			}
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
-		App->collision->mustDebugDraw = true;
-	}
-	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == true) {
-		App->collision->mustDebugDraw = false;
-	}
+		if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Save game
+			App->SaveGame();
+		}
 
-	// Change scale
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
-		App->win->scale = 1;
+		if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Load game
+			App->LoadGame();
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
+			App->ui->mustDebugDraw = true;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == true) {
+			App->ui->mustDebugDraw = false;
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
+			App->collision->mustDebugDraw = true;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == true) {
+			App->collision->mustDebugDraw = false;
+		}
+
+		// Change scale
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
+			App->win->scale = 1;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
+			App->win->scale = 2;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) {
+			App->win->scale = 3;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN) {
+			App->win->scale = 4;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_5) == KEY_DOWN) {
+			App->win->scale = 5;
+		}
 	}
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
-		App->win->scale = 2;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) {
-		App->win->scale = 3;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN) {
-		App->win->scale = 4;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_5) == KEY_DOWN) {
-		App->win->scale = 5;
+	else {
+		if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
+			App->ui->mustDebugDraw = true;
+		}
+		else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == true) {
+			App->ui->mustDebugDraw = false;
+		}
 	}
 }
 

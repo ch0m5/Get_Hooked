@@ -11,6 +11,8 @@ struct SDL_Texture;
 enum class scene_type {	//@Carles
 	NONE = -1,
 	MAIN_MENU,
+	CREDITS,
+
 	LEVEL_1,
 	LEVEL_2,
 
@@ -73,6 +75,8 @@ private:
 	bool loading = false;
 	fPoint cameraSpeed;
 	p2List<p2SString> maps;	//CHANGE/FIX: Should be in module map maybe?
+
+	//Default UI data list
 };
 
 #endif // __j1SCENE_H__

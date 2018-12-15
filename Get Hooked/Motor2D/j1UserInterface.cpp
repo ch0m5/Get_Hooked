@@ -32,21 +32,6 @@ bool j1UserInterface::Awake(pugi::xml_node& config)
 	bool ret = true;
 
 	atlas_file_name = config.child("atlas").attribute("file").as_string("");
-	configNode = config.child("screenElements");
-
-	/*if (configNode.empty() == false)
-	{
-		ret = true;
-
-		p2List_item<Image*>* item;
-		item = screenElements.start;
-
-		while (item != NULL && ret == true)
-		{
-			ret = item->data->Awake(entitiesNode.child(item->data->name.GetString()));
-			item = item->next;
-		}
-	}*/
 
 	return ret;
 }
@@ -57,13 +42,6 @@ bool j1UserInterface::Start()
 	bool ret = true;
 
 	atlas = App->tex->Load(atlas_file_name.GetString());
-
-	p2List_item<UIElement*>* item;
-
-	for (item = screenElements.start; item != NULL && ret == true; item = item->next)
-	{
-		ret = item->data->Start();
-	}
 
 	return ret;
 }
