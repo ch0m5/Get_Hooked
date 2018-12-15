@@ -21,7 +21,16 @@
 #include "Text.h"
 #include "Button.h"
 
-//Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is quite dirty, but putting them in a header creates wierd problems (Difficulty level: Rick didn't find the issue)
+//Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is quite dirty, but putting them in a header creates wierd problems (Difficulty level: Rick didn't find the issue.
+void StartGame()
+{
+	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::START_GAME);
+}
+
+void CloseGame()
+{
+	App->mustShutDown = true;
+}
 
 void Save()
 {
@@ -31,11 +40,6 @@ void Save()
 void Load()
 {
 	App->LoadGame();
-}
-
-void CloseGame()
-{
-	App->mustShutDown = true;
 }
 
 // ------------------------------------------------------------------------------
@@ -80,10 +84,22 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	App->LoadConfig(doc);
 	pugi::xml_node config = doc.child("config");
 
+
+	SDL_Rect pop = { 5, 112, 220, 63 };
+	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
+	UIElement* parentImage;
+	UIElement* parentButton;
+
 	switch (scene) {	//CHANGE/FIX: Make function?
 	case scene_type::MAIN_MENU:
 		//App->audio->PlayMusic(App->audio->mainMenuMusic.GetString());
-		
+		parentImage = App->ui->CreateImage({ 100, 50 }, { 5, 112, 220, 63 }, NULL, true);
+		App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, parentImage);
+		parentButton = App->ui->CreateActionBox(&StartGame, { 100, 150 }, arr, NULL, true);
+		App->ui->CreateText(DEFAULT_POINT, "Start Game", DEFAULT_COLOR, NULL, false, parentButton);
+		parentButton = App->ui->CreateActionBox(&CloseGame, { 100, 200 }, arr, NULL, true);
+		App->ui->CreateText(DEFAULT_POINT, "Close Game", DEFAULT_COLOR, NULL, false, parentButton);
+		App->ui->CreateText({ 100, 200 }, "walop the third", DEFAULT_COLOR, NULL, true);
 		break;
 	case scene_type::LEVEL_1:
 		App->map->Load(maps.At(0)->data.GetString());
@@ -114,23 +130,6 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	}
 
 	App->audio->SetMusicVolume();
-
-	//CHANGE/FIX: TEST
-	//App->ui->CreateImage({ 500, 500 }, NULL, NULL, &Text("patata"), NULL);
-	SDL_Rect pop = { 5, 112, 220, 63 };
-	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
-	
-	UIElement* parentImage = App->ui->CreateImage({ 100, 50 }, { 5, 112, 220, 63 }, NULL, true);
-	App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, parentImage);
-	UIElement* parentButton = App->ui->CreateActionBox(&CloseGame, { 100, 150 }, arr, NULL, true);
-	App->ui->CreateText(DEFAULT_POINT, "walop the second", DEFAULT_COLOR, NULL, false, parentButton);
-	App->ui->CreateText({ 100, 200 }, "walop the third", DEFAULT_COLOR, NULL, true);
-
-	//p2List<Image*> imageList;
-	//imageList.add(&Image(image_type::IMAGE, { 100, 50 }, &pop));
-	//imageList.add(&Image(image_type::IMAGE, { 200, 100 }, &pop, NULL, new Text("patata")));
-	//imageList.add(&Text("patata2", { 250, 150 }));
-	//App->ui->CreateWindowBox({ 50, 20 }, imageList, &pop, NULL);
 
 	return ret;
 }
@@ -184,7 +183,7 @@ bool j1Scene::Update()
 {
 	BROFILER_CATEGORY("Module Scene Update", Profiler::Color::Orange);
 
-	if (App->entityManager->player->CameraFree() == false) {
+	if (App->entityManager->player != nullptr && App->entityManager->player->CameraFree() == false) {
 		LimitCameraPos(App->entityManager->player->GetPosition());	// Limit camera position
 	}
 
@@ -211,6 +210,10 @@ bool j1Scene::PostUpdate()
 		App->entityManager->active = false;						// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
 
 		switch (App->fade->GetType()) {
+		case fade_type::START_GAME:
+			App->ui->CleanUp();
+			ChangeScene(scene_type::LEVEL_1);
+			break;
 		case fade_type::NEXT_LEVEL:
 			NextLevel();
 			break;

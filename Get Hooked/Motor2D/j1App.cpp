@@ -484,6 +484,14 @@ void j1App::FramerateLogic() {
 
 p2SString j1App::DebugTitle()	// @Carles
 {
+	iPoint playerPos;
+	if (App->entityManager->player != nullptr) {
+		playerPos = { (int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y, };
+	}
+	else {
+		playerPos = { 0, 0 };
+	}
+
 	title.create("%s (FPS: %i / Av.FPS: %.2f / MsPF: %02u ms / fpsCap: %i / Vsync: %i / Play Time: %.3f / Position: %dx%d / Camera: %dx%d)",
 		name.GetString(),
 		prevFPS,
@@ -492,7 +500,7 @@ p2SString j1App::DebugTitle()	// @Carles
 		(int)mustCapFPS,
 		(int)App->render->Vsync,
 		gameTime,
-		(int)App->entityManager->player->GetPosition().x, (int)App->entityManager->player->GetPosition().y,
+		playerPos.x, playerPos.y,
 		App->render->camera.x, App->render->camera.y);
 
 	return title;

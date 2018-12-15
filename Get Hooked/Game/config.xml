@@ -69,7 +69,7 @@
   <scene>
     <cameraSpeed x="300" y="300"/>
     <debugMode value="true" />
-    <scene start="1" />
+    <scene start="0" />
     <maps>
       <level_1 file="level1.tmx">
         <spawns>
