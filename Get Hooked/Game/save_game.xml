@@ -40,9 +40,9 @@
 		<slime />
 	</entityManager>
 	<collision />
-	<scene />
+  <scene />
 	<fade />
 	<renderer>
-		<camera x="-258" y="-229" />
+		<camera x="-716" y="-744" />
 	</renderer>
 </game_state>

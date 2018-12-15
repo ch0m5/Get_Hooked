@@ -230,6 +230,7 @@ void j1Audio::LoadAllSfx(pugi::xml_node& config) {	// @Carles
 	jumpSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("jump").child_value());
 	slideSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("slide").child_value());
 	hurtSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("hurt").child_value());
+	buttonSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("ui").child("button").child_value());
 
 	LoadFx(runSfx.name.GetString());
 	runSfx.id = SFX_WALK;
@@ -242,4 +243,7 @@ void j1Audio::LoadAllSfx(pugi::xml_node& config) {	// @Carles
 
 	LoadFx(hurtSfx.name.GetString());
 	hurtSfx.id = SFX_HURT;
+
+	LoadFx(buttonSfx.name.GetString());
+	buttonSfx.id = SFX_BUTTON;
 }

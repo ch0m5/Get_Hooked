@@ -5,6 +5,7 @@
 
 #include "j1App.h"
 #include "j1Input.h"
+#include "j1Audio.h"
 
 struct SDL_Texture;
 
@@ -39,12 +40,12 @@ public:
 	}
 
 	//Button action calling
-	Ret operator() (Args&... args) const
+	virtual Ret operator() (Args&... args) const
 	{
 		return (action)(args...);
 	}
 
-	Ret DoAction(Args&... args) const{
+	virtual Ret DoAction(Args&... args) const{
 		return (action)(args...);
 	}
 
@@ -129,6 +130,7 @@ protected:
 
 	virtual void OnPress()
 	{
+		App->audio->PlayFx(App->audio->buttonSfx.id, 0);
 		DoAction(Args...);
 	}
 

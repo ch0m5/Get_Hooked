@@ -8,6 +8,9 @@ enum class fade_type
 {
 	NONE = -1,
 	START_GAME,
+	MAIN_MENU,
+	SETTINGS,
+	CREDITS,
 	NEXT_LEVEL,
 	RESTART_LEVEL,
 	RESTART_GAME,

@@ -15,7 +15,7 @@ public:
 	{
 		stateSprites = new SDL_Rect[(int)button_state::MAX_TYPES];
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < (int)button_state::MAX_TYPES; i++) {
 			stateSprites[i] = spriteList[i];
 		}
 	};
@@ -24,16 +24,6 @@ public:
 	{
 		RELEASE(sprite);
 		RELEASE_ARRAY(stateSprites);
-	}
-
-	//Button action calling
-	Ret operator() (Args&... args) const
-	{
-		return (action)(args...);
-	}
-
-	Ret DoAction(Args&... args) const {
-		return (action)(args...);
 	}
 
 public:
@@ -63,6 +53,7 @@ protected:
 
 	virtual void OnPress()
 	{
+		App->audio->PlayFx(App->audio->buttonSfx.id, 0);
 		*sprite = stateSprites[(int)button_state::PRESSING];
 		DoAction(Args...);
 	}

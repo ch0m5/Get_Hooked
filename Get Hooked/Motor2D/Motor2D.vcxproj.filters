@@ -300,11 +300,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Game\save_game.xml">
-      <Filter>Desenvolupament  ========\XML Files\Saves</Filter>
-    </Xml>
     <Xml Include="..\Game\config.xml">
       <Filter>Desenvolupament  ========\XML Files</Filter>
+    </Xml>
+    <Xml Include="..\Game\save_game.xml">
+      <Filter>Desenvolupament  ========\XML Files\Saves</Filter>
     </Xml>
   </ItemGroup>
 </Project>

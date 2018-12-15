@@ -61,6 +61,16 @@ public:
 	// Load config file		// IMPROVE: Needed in some parts to extract config data, but it feels off for it to be a public method
 	pugi::xml_node LoadConfig(pugi::xml_document&) const;
 
+	uint16 GetFrameCap() const {
+		return fpsCap;
+	}
+	uint32 GetCurrentFPS() const {
+		return currFPS;
+	}
+	bool FramerateCapped() const {
+		return mustCapFPS;
+	}
+
 private:
 
 	// Call modules before each loop iteration
@@ -86,17 +96,6 @@ private:
 	void FramerateLogic();
 	p2SString DefaultTitle();
 	p2SString DebugTitle();
-
-public:
-	uint16 GetFrameCap() const {
-		return fpsCap;
-	}
-	uint32 GetCurrentFPS() const {
-		return currFPS;
-	}
-	bool FramerateCapped() const {
-		return mustCapFPS;
-	}
 
 public:
 

@@ -15,6 +15,7 @@
 #include "Text.h"
 #include "Button.h"
 #include "ActionBox.h"
+#include "CheckBox.h"
 
 j1UserInterface::j1UserInterface() : j1Module()
 {
@@ -225,3 +226,17 @@ UIElement* j1UserInterface::CreateActionBox(void(*action)(void), fPoint center, 
 
 	return ret;
 }
+
+//UIElement* j1UserInterface::CreateCheckBox(void(*action)(bool*), bool* value, fPoint center, SDL_Rect spriteList[3], SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)
+//{
+//	UIElement* ret = nullptr;
+//
+//	if (tex == NULL) {
+//		tex = GetAtlas();
+//	}
+//
+//	ret = new CheckBox(action, value, center, spriteList, tex, dynamic, parent, children);
+//	AddElement(ret);
+//
+//	return ret;
+//}

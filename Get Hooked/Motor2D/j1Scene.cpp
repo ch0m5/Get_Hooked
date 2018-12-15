@@ -20,12 +20,29 @@
 #include "Image.h"
 #include "Text.h"
 #include "Button.h"
+#include "ActionBox.h"
 
 //Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is quite dirty, but putting them in a header creates wierd problems (Difficulty level: Rick didn't find the issue.
 void StartGame()
 {
 	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::START_GAME);
 }
+
+void GoToSettings()
+{
+	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::SETTINGS);
+}
+
+void GoToMenu()
+{
+	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
+}
+
+void GoToCredits()
+{
+	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::CREDITS);
+}
+
 
 void CloseGame()
 {
@@ -42,6 +59,21 @@ void Load()
 	App->LoadGame();
 }
 
+void SwitchValue(bool* value)	//IMPROVE: This should be the function that a CheckBox calls with it's own saved value as the parameter
+{
+	*value = !*value;
+}
+
+void Activate(UIElement* element)
+{
+	element->active = true;
+}
+
+void Deactivate(UIElement* element)
+{
+	element->active = false;
+}
+
 // ------------------------------------------------------------------------------
 
 //Constructor
@@ -55,6 +87,7 @@ j1Scene::j1Scene() : j1Module()
 	exit = new SDL_Rect[4];
 	shutDown = new SDL_Rect[4];
 	settings = new SDL_Rect[4];
+	back = new SDL_Rect[4];
 }
 
 // Destructor
@@ -65,6 +98,7 @@ j1Scene::~j1Scene()
 	RELEASE_ARRAY(exit);
 	RELEASE_ARRAY(shutDown);
 	RELEASE_ARRAY(settings);
+	RELEASE_ARRAY(back);
 }
 
 // Called before render is available
@@ -84,6 +118,8 @@ bool j1Scene::Awake(pugi::xml_node& config)
 		maps.add(item.attribute("file").as_string());
 	}
 
+	menuBackgroundTex.create(config.child("ui").child("menuBackground").child_value());	//CHANGE/FIX: Improvised, not well done
+
 	//UI Data Awake
 	item = config.child("ui").child("panel");
 	panel = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
@@ -101,6 +137,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	RegisterButtonData(config.child("ui").child("exit"), exit);
 	RegisterButtonData(config.child("ui").child("shutDown"), shutDown);
 	RegisterButtonData(config.child("ui").child("settings"), settings);
+	RegisterButtonData(config.child("ui").child("back"), back);
 
 	item = config.child("ui").child("healthBar");
 	healthBar = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
@@ -120,7 +157,7 @@ void j1Scene::RegisterButtonData(pugi::xml_node& node, SDL_Rect* button)
 }
 
 // Called before the first frame
-bool j1Scene::Start()	//TODO: Create enemies in their respective positions using XML
+bool j1Scene::Start()
 {
 	bool ret = true;
 
@@ -129,16 +166,56 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	pugi::xml_node config = doc.child("config");
 
 	UIElement* parent;
+	_TTF_Font* gameText = App->font->textFont;
+
+	pugi::xml_document saveDoc;
+	pugi::xml_parse_result result;
+	ActionBox<void>* continueButton;
 
 	switch (scene) {	//CHANGE/FIX: Make function?
-	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers, but making it based on the screen size gives a lot of problems (TYPE/int)
+	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers and hardcoding, but making it based on the screen size gives a lot of problems (TYPE/int)
 		// iPoint screenCenter = { App->win->GetWindowSize().w / (2 * App->win->GetScale()),  App->win->GetWindowSize().h / (2 * App->win->GetScale()) };
+		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
+		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
+
 		App->ui->CreateText({ 1024 / 4, 100 }, "Get Hooked", DEFAULT_COLOR, App->font->titleFont, false);
-		parent = App->ui->CreateActionBox(&StartGame, { 1024 / 4, 180 }, button, NULL, true);
-		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, NULL, false, parent);
-		parent = App->ui->CreateActionBox(&CloseGame, { 1024 / 4, 225 }, button, NULL, true);
-		App->ui->CreateText(DEFAULT_POINT, "Exit", DEFAULT_COLOR, NULL, false, parent);
+		parent = App->ui->CreateActionBox(&StartGame, { 1024 / 4, 180 }, button, NULL, false);
+		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, gameText, false, parent);
+		parent = App->ui->CreateActionBox(&CloseGame, { 1024 / 4, 225 }, button, NULL, false);
+		App->ui->CreateText(DEFAULT_POINT, "Continue", DEFAULT_COLOR, gameText, false, parent);
+		continueButton = (ActionBox<void>*)parent;
+		parent = App->ui->CreateActionBox(&GoToSettings, { 1024 / 4, 270 }, button, NULL, false);
+		App->ui->CreateText(DEFAULT_POINT, "Settings", DEFAULT_COLOR, gameText, false, parent);
+		parent = App->ui->CreateActionBox(&GoToCredits, { 1024 / 4, 315 }, button, NULL, false);
+		App->ui->CreateText(DEFAULT_POINT, "Credits", DEFAULT_COLOR, gameText, false, parent);
+		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
+
+		result = saveDoc.load_file("save_game.xml");
+		if (result == NULL) {
+			continueButton->Disable();
+		}
+		
 		App->audio->PlayMusic(App->audio->musicMainMenu.GetString());
+		break;
+	case scene_type::SETTINGS:
+		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
+		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
+
+		parent = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
+		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
+		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, parent);
+		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
+
+		break;
+	case scene_type::CREDITS:
+		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
+		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
+
+		parent = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
+		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
+		App->ui->CreateText({ 1024 / 4, 58 }, "Credits", DEFAULT_COLOR, gameText, false, parent);
+		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
+
 		break;
 	case scene_type::LEVEL_1:
 		App->map->Load(maps.At(0)->data.GetString());
@@ -229,9 +306,30 @@ bool j1Scene::PostUpdate()
 	}															// @Carles
 	else if (App->fade->GetStep() == fade_step::FULLY_FADED) {	// When game is fully faded, start game load and disable all entities for the next frame, then enable them.
 		App->entityManager->active = false;						// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
+		App->ui->active = false;
 
 		switch (App->fade->GetType()) {
+		case fade_type::MAIN_MENU:
+			App->tex->UnLoad(backgroundTexPtr);
+			backgroundTexPtr = nullptr;
+			App->ui->CleanUp();
+			ChangeScene(scene_type::MAIN_MENU);
+			break;
+		case fade_type::SETTINGS:
+			App->tex->UnLoad(backgroundTexPtr);
+			backgroundTexPtr = nullptr;
+			App->ui->CleanUp();
+			ChangeScene(scene_type::SETTINGS);
+			break;
+		case fade_type::CREDITS:
+			App->tex->UnLoad(backgroundTexPtr);
+			backgroundTexPtr = nullptr;
+			App->ui->CleanUp();
+			ChangeScene(scene_type::CREDITS);
+			break;
 		case fade_type::START_GAME:
+			App->tex->UnLoad(backgroundTexPtr);
+			backgroundTexPtr = nullptr;
 			App->ui->CleanUp();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
@@ -254,6 +352,10 @@ bool j1Scene::PostUpdate()
 	else if (loading) {
 		App->entityManager->active = true;
 		loading = false;
+	}
+
+	if (App->ui->active == false && App->fade->GetStep() == fade_step::NONE) {	//CHANGE/FIX: Avoids bugs, but could be improved
+		App->ui->active = true;
 	}
 
 	return ret;

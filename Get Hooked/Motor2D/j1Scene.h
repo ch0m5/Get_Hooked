@@ -11,6 +11,7 @@ struct SDL_Texture;
 enum class scene_type {	//@Carles
 	NONE = -1,
 	MAIN_MENU,
+	SETTINGS,
 	CREDITS,
 
 	LEVEL_1,
@@ -86,9 +87,12 @@ private:
 	SDL_Rect* checkButton;
 
 	//Specific UI Data
+	SDL_Texture* backgroundTexPtr;	//CHANGE/FIX: Gotta reach those requirements, but this shouldn't just be lying here
+	p2SString menuBackgroundTex;
 	SDL_Rect* exit;
 	SDL_Rect* shutDown;
 	SDL_Rect* settings;
+	SDL_Rect* back;
 	SDL_Rect healthBar;
 	SDL_Rect healthChunck;
 };

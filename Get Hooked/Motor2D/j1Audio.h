@@ -14,7 +14,8 @@ enum sfx_id_list {	// @Carles: List of sfx as they are put on the sfx p2List
 	SFX_WALK = 1,
 	SFX_JUMP,
 	SFX_SLIDE,
-	SFX_HURT
+	SFX_HURT,
+	SFX_BUTTON
 };
 
 struct sfx_file {	// @Carles
@@ -68,6 +69,8 @@ public:	// @Carles
 	sfx_file slideSfx;
 	sfx_file hurtSfx;
 	
+	sfx_file buttonSfx;
+
 	ushort masterVolume;	// IMPROVE: Make list?
 	ushort musicVolume;
 	ushort sfxVolume;
