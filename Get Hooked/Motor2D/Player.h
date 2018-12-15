@@ -36,6 +36,7 @@ public:
 
 	// Called before the first frame
 	bool Start();
+	bool LoadStart();
 
 	// Called each loop iteration
 	bool PreUpdate();
@@ -70,6 +71,9 @@ public:
 	}
 	void ReturnToSpawn() {
 		position = lastGroundPosition = spawnPosition;
+	}
+	void SetSpawn(fPoint spawn) {
+		spawnPosition = spawn;
 	}
 	void DeadReset() {
 		LifeToStart();

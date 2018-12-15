@@ -78,6 +78,18 @@ bool Player::Start()
 	return ret;
 }
 
+bool Player::LoadStart()
+{
+	bool ret = true;
+
+	graphics = App->tex->Load(textureName.GetString());
+
+	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
+	hitboxOffset = hitbox->rect;
+
+	return ret;
+}
+
 // Called each loop iteration
 bool Player::PreUpdate()
 {
@@ -247,8 +259,6 @@ bool Player::Load(pugi::xml_node& data)
 	position.y = data.child("position").attribute("y").as_float();
 	lastGroundPosition.x = data.child("lastGround").attribute("x").as_float();
 	lastGroundPosition.y = data.child("lastGround").attribute("y").as_float();
-	spawnPosition.x = data.child("respawn").attribute("x").as_float();
-	spawnPosition.y = data.child("respawn").attribute("y").as_float();
 
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
@@ -282,10 +292,6 @@ bool Player::Save(pugi::xml_node& data) const
 	tmpNode = data.append_child("lastGround");
 	tmpNode.append_attribute("x") = lastGroundPosition.x;
 	tmpNode.append_attribute("y") = lastGroundPosition.y;
-
-	tmpNode = data.append_child("respawn");
-	tmpNode.append_attribute("x") = spawnPosition.x;
-	tmpNode.append_attribute("y") = spawnPosition.y;
 
 	tmpNode = data.append_child("speed");
 	tmpNode.append_attribute("x") = speed.x;

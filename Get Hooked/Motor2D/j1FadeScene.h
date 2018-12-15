@@ -15,6 +15,7 @@ enum class fade_type
 	NEXT_LEVEL,
 	RESTART_LEVEL,
 	RESTART_GAME,
+	LOAD_GAME,
 
 	LEVEL_1,
 	LEVEL_2,

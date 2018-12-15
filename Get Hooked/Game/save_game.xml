@@ -13,9 +13,8 @@
 	<userInterface />
 	<entityManager>
 		<player>
-			<position x="608" y="570" />
-			<lastGround x="608" y="570" />
-			<respawn x="608" y="250" />
+			<position x="1707.62427" y="314" />
+			<lastGround x="1707.62427" y="314" />
 			<speed x="0" y="0" />
 			<life value="3" />
 			<acceleration type="700" />
@@ -27,7 +26,7 @@
 			<hurtTimer miliseconds="0" />
 			<deadTimer miliseconds="0" />
 			<reset value="false" />
-			<runSfxTimer miliseconds="0" />
+			<runSfxTimer miliseconds="24261" />
 			<slideSfx played="false" />
 			<hurtSfx played="false" />
 		</player>
@@ -45,6 +44,6 @@
 	</scene>
 	<fade />
 	<renderer>
-		<camera x="-258" y="-172" />
+		<camera x="-2915" y="-271" />
 	</renderer>
 </game_state>

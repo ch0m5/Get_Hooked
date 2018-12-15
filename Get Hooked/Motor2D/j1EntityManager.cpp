@@ -55,6 +55,9 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 		}
 	}
 
+	player = (Player*)CreateEntity(entity_type::PLAYER, config.child("entities"));
+	player->active = false;
+
 	return ret;
 }
 

@@ -22,7 +22,7 @@
 #include "Button.h"
 #include "ActionBox.h"
 
-//Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is quite dirty, but putting them in a header creates wierd problems (Difficulty level: Rick didn't find the issue.
+//Button actions	//CHANGE/FIX: Locate somewhere else, having this laying around is quite dirty, but putting them in a header creates wierd problems (Difficulty level: Rick didn't find the issue, and neither did I).
 void StartGame()
 {
 	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::START_GAME);
@@ -43,7 +43,6 @@ void GoToCredits()
 	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::CREDITS);
 }
 
-
 void CloseGame()
 {
 	App->mustShutDown = true;
@@ -57,6 +56,11 @@ void Save()
 void Load()
 {
 	App->LoadGame();
+}
+
+void ContinueLoad()
+{
+	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LOAD_GAME);
 }
 
 void SwitchValue(bool* value)	//IMPROVE: This should be the function that a CheckBox calls with it's own saved value as the parameter
@@ -181,7 +185,7 @@ bool j1Scene::Start()
 		App->ui->CreateText({ 1024 / 4, 100 }, "Get Hooked", DEFAULT_COLOR, App->font->titleFont, false);
 		parent = App->ui->CreateActionBox(&StartGame, { 1024 / 4, 180 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, gameText, false, parent);
-		parent = App->ui->CreateActionBox(&CloseGame, { 1024 / 4, 225 }, button, NULL, false);
+		parent = App->ui->CreateActionBox(&ContinueLoad, { 1024 / 4, 225 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Continue", DEFAULT_COLOR, gameText, false, parent);
 		continueButton = (ActionBox<void>*)parent;
 		parent = App->ui->CreateActionBox(&GoToSettings, { 1024 / 4, 270 }, button, NULL, false);
@@ -221,9 +225,8 @@ bool j1Scene::Start()
 		App->map->Load(maps.At(0)->data.GetString());
 		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;	//CHANGE/FIX: Get points close to the ground
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
-		if (App->entityManager->player == nullptr) {
-			App->entityManager->player = (Player*)App->entityManager->CreateEntity(entity_type::PLAYER, config.child("entityManager").child("entities"));
-		}
+		App->entityManager->player->SetSpawn(playerStart);
+		App->entityManager->player->active = true;
 		SpawnEntities(scene, config);
 		App->audio->PlayMusic(App->audio->musicMap1.GetString());
 		break;
@@ -231,6 +234,8 @@ bool j1Scene::Start()
 		App->map->Load(maps.At(1)->data.GetString());
 		playerStart = { 720, -400 };	//start = App->map->data.checkpoints.start->data;
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
+		App->entityManager->player->SetSpawn(playerStart);
+		App->entityManager->player->active = true;
 		SpawnEntities(scene, config);
 		App->audio->PlayMusic(App->audio->musicMap2.GetString());
 		break;
@@ -333,6 +338,14 @@ bool j1Scene::PostUpdate()
 			App->ui->CleanUp();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
+		case fade_type::LOAD_GAME:
+			if (backgroundTexPtr != nullptr) {
+				App->tex->UnLoad(backgroundTexPtr);
+				backgroundTexPtr = nullptr;
+			}
+			App->ui->CleanUp();
+			App->LoadGame();
+			break;
 		case fade_type::NEXT_LEVEL:
 			NextLevel();
 			break;
@@ -343,24 +356,38 @@ bool j1Scene::PostUpdate()
 			ChangeScene(scene_type::LEVEL_1);
 			break;
 		case fade_type::LEVEL_1:
-			ChangeScene(scene_type::LEVEL_1);
+			scene = scene_type::LEVEL_1;
+			CleanUp();
+			App->entityManager->player->CleanUp();
+			App->entityManager->CleanEntities();
+			Start();
+			App->entityManager->player->LoadStart();
 			break;
 		case fade_type::LEVEL_2:
-			ChangeScene(scene_type::LEVEL_2);
+			scene = scene_type::LEVEL_2;
+			CleanUp();
+			App->entityManager->player->CleanUp();
+			App->entityManager->CleanEntities();
+			Start();
+			App->entityManager->player->LoadStart();
 			break;
 		default:
 			break;
 		}
 
-		App->fade->ResetType();
 		loading = true;
 	}
 	else if (loading) {
 		App->entityManager->active = true;
 		loading = false;
 	}
+	else if (App->fade->GetStep() == fade_step::UNFADING && App->fade->GetType() == fade_type::LOAD_GAME) {	//CHANGE/FIX: God knows why a wall collision resets the player Y pos. but this workaround fixes it for now.
+		App->fade->ResetType();
+		App->LoadGame();
+	}
 
 	if (App->ui->active == false && App->fade->GetStep() == fade_step::NONE) {	//CHANGE/FIX: Avoids bugs, but could be improved
+		App->fade->ResetType();
 		App->ui->active = true;
 	}
 
@@ -383,19 +410,16 @@ bool j1Scene::Load(pugi::xml_node& config)
 	bool ret = true;
 
 	scene_type current = scene;
-	
+
 	pugi::xml_node tmpNode;
 	scene = (scene_type)config.child("scene").attribute("current").as_int();
 
 	if (scene != current) {
-		switch (scene) {
-		case scene_type::LEVEL_1:
-			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LEVEL_1);
-			break;
-		case scene_type::LEVEL_2:
-			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LEVEL_2);
-			break;
-		}
+		CleanUp();
+		App->entityManager->player->CleanUp();
+		App->entityManager->CleanEntities();
+		Start();
+		App->entityManager->player->LoadStart();
 	}
 
 	return ret;
@@ -439,7 +463,8 @@ void j1Scene::DebugInput()
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Load game
-			App->LoadGame();
+			if (App->fade->GetStep() == fade_step::NONE)
+				App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LOAD_GAME);
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
@@ -565,7 +590,6 @@ void j1Scene::ChangeScene(scene_type scene)
 		CleanUp();
 		Start();
 	}
-	
 }
 
 SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)
