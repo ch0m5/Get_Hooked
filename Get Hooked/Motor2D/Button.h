@@ -61,6 +61,18 @@ public:
 		return ret;
 	}
 
+public:
+	//Enable/Disable
+	virtual void Enable()
+	{
+		status = button_state::IDLE;
+	}
+
+	virtual void Disable()
+	{
+		status = button_state::DISABLED;
+	}
+
 protected:
 	virtual button_state CheckCurrentState()
 	{
@@ -125,17 +137,6 @@ protected:
 	virtual void WhileHover() {}
 
 	virtual void WhilePress() {}
-
-	//Enable/Disable
-	virtual void Enable()
-	{
-		status = button_state::IDLE;
-	}
-
-	virtual void Disable()
-	{
-		status = button_state::DISABLED;
-	}
 
 protected:
 	Ret(*action)(Args...);

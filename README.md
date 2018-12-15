@@ -86,8 +86,7 @@ feature'`
 	* All Debug Functionalities
 	* Framerate Logic and Limitations
 	* Entitiy System
-	* Player Entity and Logic
-	* Enemies Entities and Logic
+	* All entities and Logic
 	* User Interface System
 	* All UI Elements and Logic
 	* Brofiler Implementation
@@ -106,10 +105,11 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 	* [*Caves of Gallet*](https://adamatomic.itch.io/caves-of-gallet) tileset by [*Adam Saltsman*](https://adamatomic.itch.io/) 
 
 * Music: 
-	* Track 1 - [Mystic Force](https://www.youtube.com/watch?v=pfryxqYSHqA&feature=youtu.be)
-	* Track 2 - [Spellbound](https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be)
-
-	* Composed by [Kevin MacLeod](https://www.youtube.com/channel/UCSZXFhRIx6b0dFX3xS8L1yQ)
+	* MainMenu - [New World](https://www.youtube.com/watch?v=uwgqElzccUE)
+		* Composed by [Kevin Penkin](http://www.kpenkmusic.com/)
+	* Level 1 - [Mystic Force](https://www.youtube.com/watch?v=pfryxqYSHqA&feature=youtu.be)
+	* Level 2 - [Spellbound](https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be)
+		* Composed by [Kevin MacLeod](https://www.youtube.com/channel/UCSZXFhRIx6b0dFX3xS8L1yQ)
 
 * SFX: Orignal mix made from: https://www.bfxr.net/
 

@@ -64,6 +64,9 @@ public:
 	void CameraInput(float dt);
 	SDL_Rect LimitCameraPos(fPoint playerPos);
 	
+private:
+	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
+
 public:	// CHANGE/FIX: Check the need for public
 	bool debugMode;		// Flag that marks if debug functionalities are available
 	bool gamePaused = false;
@@ -77,6 +80,17 @@ private:
 	p2List<p2SString> maps;	//CHANGE/FIX: Should be in module map maybe?
 
 	//Default UI data list
+	SDL_Rect panel;
+	SDL_Rect window;
+	SDL_Rect* button;
+	SDL_Rect* checkButton;
+
+	//Specific UI Data
+	SDL_Rect* exit;
+	SDL_Rect* shutDown;
+	SDL_Rect* settings;
+	SDL_Rect healthBar;
+	SDL_Rect healthChunck;
 };
 
 #endif // __j1SCENE_H__

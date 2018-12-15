@@ -38,6 +38,7 @@ public:
 
 	p2List<_TTF_Font*>	fonts;
 	_TTF_Font*			defaultFont;
+	_TTF_Font*			titleFont;
 };
 
 

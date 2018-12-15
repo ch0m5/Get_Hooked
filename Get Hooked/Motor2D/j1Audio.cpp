@@ -218,6 +218,7 @@ bool j1Audio::PlayFx(unsigned int id, int repeat)
 void j1Audio::LoadAllMusic(pugi::xml_node& config) {	// @Carles
 	musicFolder.create(config.child("music").child("folder").child_value());
 
+	musicMainMenu.create("%s%s", musicFolder.GetString(), config.child("music").child("menus").child("mainMenu").child_value());
 	musicMap1.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track1").child_value());
 	musicMap2.create("%s%s", musicFolder.GetString(), config.child("music").child("maps").child("track2").child_value());
 }

@@ -49,11 +49,23 @@ j1Scene::j1Scene() : j1Module()
 {
 	name.create("scene");
 	loading = true;
+
+	button = new SDL_Rect[4];		//CHANGE/FIX: Could be improved, probably with a list of structs that have an id.
+	checkButton = new SDL_Rect[3];
+	exit = new SDL_Rect[4];
+	shutDown = new SDL_Rect[4];
+	settings = new SDL_Rect[4];
 }
 
 // Destructor
 j1Scene::~j1Scene()
-{}
+{
+	RELEASE_ARRAY(button);
+	RELEASE_ARRAY(checkButton);
+	RELEASE_ARRAY(exit);
+	RELEASE_ARRAY(shutDown);
+	RELEASE_ARRAY(settings);
+}
 
 // Called before render is available
 bool j1Scene::Awake(pugi::xml_node& config)
@@ -72,7 +84,39 @@ bool j1Scene::Awake(pugi::xml_node& config)
 		maps.add(item.attribute("file").as_string());
 	}
 
+	//UI Data Awake
+	item = config.child("ui").child("panel");
+	panel = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+	
+	item = config.child("ui").child("window");
+	window = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+	
+	RegisterButtonData(config.child("ui").child("button"), button);
+	
+	item = config.child("ui").child("checkButton");
+	checkButton[0] = { item.attribute("x1").as_int(), item.attribute("y1").as_int(), item.attribute("w1").as_int(), item.attribute("h1").as_int() };
+	checkButton[1] = { item.attribute("x2").as_int(), item.attribute("y2").as_int(), item.attribute("w2").as_int(), item.attribute("h2").as_int() };
+	checkButton[2] = { item.attribute("x3").as_int(), item.attribute("y3").as_int(), item.attribute("w3").as_int(), item.attribute("h3").as_int() };
+
+	RegisterButtonData(config.child("ui").child("exit"), exit);
+	RegisterButtonData(config.child("ui").child("shutDown"), shutDown);
+	RegisterButtonData(config.child("ui").child("settings"), settings);
+
+	item = config.child("ui").child("healthBar");
+	healthBar = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+
+	item = config.child("ui").child("healthChunck");
+	healthChunck = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+
 	return ret;
+}
+
+void j1Scene::RegisterButtonData(pugi::xml_node& node, SDL_Rect* button)
+{
+	button[0] = { node.attribute("x1").as_int(), node.attribute("y1").as_int(), node.attribute("w1").as_int(), node.attribute("h1").as_int() };
+	button[1] = { node.attribute("x2").as_int(), node.attribute("y2").as_int(), node.attribute("w2").as_int(), node.attribute("h2").as_int() };
+	button[2] = { node.attribute("x3").as_int(), node.attribute("y3").as_int(), node.attribute("w3").as_int(), node.attribute("h3").as_int() };
+	button[3] = { node.attribute("x4").as_int(), node.attribute("y4").as_int(), node.attribute("w4").as_int(), node.attribute("h4").as_int() };
 }
 
 // Called before the first frame
@@ -84,21 +128,17 @@ bool j1Scene::Start()	//TODO: Create enemies in their respective positions using
 	App->LoadConfig(doc);
 	pugi::xml_node config = doc.child("config");
 
-	SDL_Rect pop = { 325, 73, 154, 33 };
-	SDL_Rect arr[4] = { { 5, 112, 224, 63 }, { 5, 112, 224, 63 }, { 414, 170, 224, 63 }, { 648, 171, 224, 63 } };
-	UIElement* parentImage;
-	UIElement* parentButton;
+	UIElement* parent;
 
 	switch (scene) {	//CHANGE/FIX: Make function?
-	case scene_type::MAIN_MENU:
-		//App->audio->PlayMusic(App->audio->mainMenuMusic.GetString());
-		parentImage = App->ui->CreateImage({ 100, 50 }, pop, NULL, true);
-		App->ui->CreateText(DEFAULT_POINT, "walop the first", DEFAULT_COLOR, NULL, false, parentImage);
-		parentButton = App->ui->CreateActionBox(&StartGame, { 100, 150 }, arr, NULL, true);
-		App->ui->CreateText(DEFAULT_POINT, "Start Game", DEFAULT_COLOR, NULL, false, parentButton);
-		parentButton = App->ui->CreateActionBox(&CloseGame, { 100, 200 }, arr, NULL, true);
-		App->ui->CreateText(DEFAULT_POINT, "Close Game", DEFAULT_COLOR, NULL, false, parentButton);
-		App->ui->CreateText({ 100, 200 }, "walop the third", DEFAULT_COLOR, NULL, true);
+	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers, but making it based on the screen size gives a lot of problems (TYPE/int)
+		// iPoint screenCenter = { App->win->GetWindowSize().w / (2 * App->win->GetScale()),  App->win->GetWindowSize().h / (2 * App->win->GetScale()) };
+		App->ui->CreateText({ 1024 / 4, 100 }, "Get Hooked", DEFAULT_COLOR, App->font->titleFont, false);
+		parent = App->ui->CreateActionBox(&StartGame, { 1024 / 4, 180 }, button, NULL, true);
+		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, NULL, false, parent);
+		parent = App->ui->CreateActionBox(&CloseGame, { 1024 / 4, 225 }, button, NULL, true);
+		App->ui->CreateText(DEFAULT_POINT, "Exit", DEFAULT_COLOR, NULL, false, parent);
+		App->audio->PlayMusic(App->audio->musicMainMenu.GetString());
 		break;
 	case scene_type::LEVEL_1:
 		App->map->Load(maps.At(0)->data.GetString());

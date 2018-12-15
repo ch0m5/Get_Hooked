@@ -59,6 +59,7 @@ public:	// @Carles
 	}
 
 public:	// @Carles
+	p2SString musicMainMenu;
 	p2SString musicMap1;	// IMPROVE: Make list?
 	p2SString musicMap2;
 

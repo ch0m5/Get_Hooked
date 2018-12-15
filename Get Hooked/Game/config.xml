@@ -46,6 +46,9 @@
   <audio volume="100">
     <music volume="80">
       <folder>audio/music/</folder>
+      <menus>
+        <mainMenu>New_World.ogg</mainMenu>
+      </menus>
       <maps>
         <track1>Mystic_Force.ogg</track1>
         <track2>Spellbound.ogg</track2>
@@ -70,6 +73,19 @@
     <cameraSpeed x="300" y="300"/>
     <debugMode value="true" />
     <scene start="0" />
+    <ui>
+      <!-- Default -->
+      <panel x="294" y="760" w="159" h="38" />
+      <window x="21" y="453" w="226" h="318" />
+      <button x1="317" y1="585" w1="101" h1="40" x2="317" y2="626" w2="101" h2="40" x3="317" y3="667" w3="101" h3="40" x4="317" y4="707" w4="101" h4="40"/>
+      <checkButton x1="273" y1="519" w1="34" h1="34" x2="273" y2="484" w2="34" h2="34" x3="273" y3="449" w3="34" h3="34"/>
+      <!-- Specific -->
+      <exit x1="258" y1="625" w1="32" h1="32" x2="258" y2="625" w2="32" h2="32" x3="258" y3="658" w3="32" h3="32" x4="258" y4="658" w4="32" h4="32"/>
+      <shutDown x1="258" y1="556" w1="32" h1="32" x2="258" y2="556" w2="32" h2="32" x3="258" y3="590" w3="32" h3="32" x4="258" y4="590" w4="32" h4="32"/>
+      <settings x1="258" y1="692" w1="32" h1="32" x2="258" y2="692" w2="32" h2="32" x3="258" y3="725" w3="32" h3="32" x4="258" y4="725" w4="32" h4="32"/>
+      <healthBar x="490" y="585" w="230" h="54" />
+      <healthChunck x="533" y="649" w="48" h="16" />
+    </ui>
     <maps>
       <level_1 file="level1.tmx">
         <spawns>
@@ -102,6 +118,7 @@
 
   <fonts>
     <defaultFont file="fonts/8_bit_limit/8bitlim.ttf" size="14" />
+    <titleFont file="fonts/ferrum/ferrum.otf" size="70" />
   </fonts>
   
   <userInterface>

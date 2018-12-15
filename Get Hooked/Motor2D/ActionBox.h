@@ -36,67 +36,21 @@ public:
 		return (action)(args...);
 	}
 
-	// Called each frame (framerate dependant)
-	virtual bool UpdateTick(float dt)
+public:
+	//Enable/Disable
+	virtual void Enable()
 	{
-		bool ret = true;
+		status = button_state::IDLE;
+		*sprite = stateSprites[(int)button_state::IDLE];
+	}
 
-		if (status != button_state::DISABLED) {
-			CheckCurrentState();
-			ButtonStateEffects();
-		}
-
-		return ret;
+	virtual void Disable()
+	{
+		status = button_state::DISABLED;
+		*sprite = stateSprites[(int)button_state::DISABLED];
 	}
 
 protected:
-	virtual button_state CheckCurrentState()
-	{
-		switch (status) {
-		case button_state::IDLE:
-			if (MouseOnImage() == true) {
-				OnHover();
-				status = button_state::HOVERING;
-			}
-			break;
-		case button_state::HOVERING:
-			if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
-				OnPress();
-				status = button_state::PRESSING;
-			}
-			else if (MouseOnImage() == false) {
-				OnIdle();
-				status = button_state::IDLE;
-			}
-			break;
-		case button_state::PRESSING:
-			if (App->input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP || MouseOnImage() == false) {
-				OnIdle();
-				status = button_state::IDLE;
-			}
-			break;
-		}
-
-		return status;
-	}
-
-	virtual button_state ButtonStateEffects()
-	{
-		switch (status) {
-		case button_state::IDLE:
-			WhileIdle();
-			break;
-		case button_state::HOVERING:
-			WhileHover();
-			break;
-		case button_state::PRESSING:
-			WhilePress();
-			break;
-		}
-
-		return status;
-	}
-
 	virtual void OnIdle()
 	{
 		*sprite = stateSprites[(int)button_state::IDLE];
@@ -118,19 +72,6 @@ protected:
 	virtual void WhileHover() {}
 
 	virtual void WhilePress() {}
-
-	//Enable/Disable
-	virtual void Enable()
-	{
-		status = button_state::IDLE;
-		*sprite = stateSprites[(int)button_state::IDLE];
-	}
-
-	virtual void Disable()
-	{
-		status = button_state::DISABLED;
-		*sprite = stateSprites[(int)button_state::DISABLED];
-	}
 
 private:
 	SDL_Rect* stateSprites = nullptr;	//Disabled, Idle, Hover, Pressed
