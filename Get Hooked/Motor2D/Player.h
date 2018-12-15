@@ -69,7 +69,7 @@ public:
 		return activationRadius;
 	}
 	void ReturnToSpawn() {
-		position = lastGroundPosition = respawnPosition;
+		position = lastGroundPosition = spawnPosition;
 	}
 	void DeadReset() {
 		LifeToStart();
