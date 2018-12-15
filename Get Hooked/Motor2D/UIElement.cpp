@@ -13,7 +13,7 @@ UIElement::UIElement(ui_type type, fPoint position, bool dynamic, UIElement* par
 	}
 
 	if (parent != NULL) {
-		parent->AddChild(this);
+		parent->AttachChild(this);
 	}
 
 	Init();

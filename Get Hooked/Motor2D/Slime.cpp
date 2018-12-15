@@ -37,8 +37,6 @@ bool Slime::Start()
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_ENEMY, this);
 	hitboxOffset = hitbox->rect;
 
-	position = spawnPosition;
-
 	return true;
 }
 
@@ -215,7 +213,12 @@ void Slime::ApplyState()
 
 			if (deadTimer < SDL_GetTicks() - deathDelay) {
 				active = false;
-				mustDestroy = true;
+				turnedOn = false;
+
+				if (hitbox != nullptr) {
+					hitbox->to_delete = true;
+					hitbox = nullptr;
+				}
 			}
 		
 		}

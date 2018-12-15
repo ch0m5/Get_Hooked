@@ -8,12 +8,13 @@
 		<sfx volume="100" />
 	</audio>
 	<map />
-	<scene />
-	<scene2 />
+	<pathfinding />
+	<fonts />
+	<userInterface />
 	<entityManager>
 		<player>
-			<position x="552.080566" y="570" />
-			<lastGround x="552.080566" y="570" />
+			<position x="608" y="570" />
+			<lastGround x="608" y="570" />
 			<respawn x="608" y="250" />
 			<speed x="0" y="0" />
 			<life value="3" />
@@ -23,16 +24,25 @@
 			<looking right="true" />
 			<somersault used="false" />
 			<dead value="false" />
+			<hurtTimer miliseconds="0" />
 			<deadTimer miliseconds="0" />
 			<reset value="false" />
-			<runSfxTimer miliseconds="4019" />
+			<runSfxTimer miliseconds="0" />
 			<slideSfx played="false" />
 			<hurtSfx played="false" />
 		</player>
+		<bat />
+		<bat />
+		<bat />
+		<bat />
+		<slime />
+		<slime />
+		<slime />
 	</entityManager>
 	<collision />
-	<window />
+	<scene />
+	<fade />
 	<renderer>
-		<camera x="-683" y="-740" />
+		<camera x="-258" y="-229" />
 	</renderer>
 </game_state>

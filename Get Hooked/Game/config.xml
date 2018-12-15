@@ -15,7 +15,6 @@
   <collision>
     <mustDebugDraw value="false" />
     <matrix>
-      
       <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
       <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
       <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" none="false" />
@@ -25,7 +24,6 @@
       <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
       <win wall="false" platform="false" falling_platform="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
       <none wall="false" platform="false" falling_platform="false" palyer="false" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false"/>
-   
     </matrix>
   </collision>
   
@@ -70,10 +68,35 @@
 
   <scene>
     <cameraSpeed x="300" y="300"/>
+    <debugMode value="true" />
     <scene start="1" />
     <maps>
-      <level1>level1.tmx</level1>
-      <level2>level2.tmx</level2>
+      <level_1 file="level1.tmx">
+        <spawns>
+          <bat type="3" xSpawn="932" ySpawn="345" />
+          <bat type="3" xSpawn="1082" ySpawn="275" />
+          <bat type="3" xSpawn="2791" ySpawn="258" />
+          <bat type="3" xSpawn="4060" ySpawn="244" />
+          <slime type="4" xSpawn="1371" ySpawn="305" />
+          <slime type="4" xSpawn="1886" ySpawn="278" />
+          <slime type="4" xSpawn="4189" ySpawn="332" />
+          <end/>
+        </spawns>
+      </level_1>
+      <level_2 file="level2.tmx">
+        <spawns>
+          <bat type="3" xSpawn="835" ySpawn="550" />
+          <bat type="3" xSpawn="1902" ySpawn="500" />
+          <bat type="3" xSpawn="2715" ySpawn="615" />
+          <bat type="3" xSpawn="2774" ySpawn="610" />
+          <bat type="3" xSpawn="3709" ySpawn="604" />
+          <bat type="3" xSpawn="3810" ySpawn="556" />
+          <slime type="4" xSpawn="1400" ySpawn="590" />
+          <slime type="4" xSpawn="2855" ySpawn="621" />
+          <slime type="4" xSpawn="4129" ySpawn="575" />
+          <end/>
+        </spawns>
+      </level_2>
     </maps>
   </scene>
 
@@ -158,9 +181,8 @@
           <airborne value="false"/>
           <looking right="true"/>
           <somersault used="false"/>
-          <attackDelay miliseconds="300"/>
+          <hurtDelay miliseconds="1000" />
           <deathDelay miliseconds="1000"/>
-          <debugMode value="true" />
           <godMode value="false"/>
           <freeCamera value="false"/>
           <processingRadius x="500" y="400"/>
@@ -238,26 +260,16 @@
           <hurtSpeed x="500" y="0"/>
           <accelerations x="150" y="0" gravity="560"/>
           <canFly value="false"/>
-          <attack x="40" y="25" />
+          <attack x="70" y="25" />
           <detection x="150" y="150"/>
           <airborne value="false"/>
           <looking right="false"/>
           <attackDelay miliseconds="1000"/>
-          <hurtDelay miliseconds="500"/>
+          <hurtDelay miliseconds="1000"/>
           <deathDelay miliseconds="2000"/>
-          <dash speed="100" />
+          <dash speed="120" />
         </stats>
       </slime>
-      <spawnPoints>
-        <bat type="0" xSpawn="932" ySpawn="345" />
-        <bat type="0" xSpawn="1082" ySpawn="275" />
-        <bat type="0" xSpawn="2791" ySpawn="258" />
-        <bat type="0" xSpawn="4060" ySpawn="244" />
-        <slime type="1" xSpawn="1371" ySpawn="305" />
-        <slime type="1" xSpawn="1886" ySpawn="278" />
-        <slime type="1" xSpawn="4189" ySpawn="332" />
-        <end/>
-      </spawnPoints>
     </entities>
   </entityManager>  
 </config>

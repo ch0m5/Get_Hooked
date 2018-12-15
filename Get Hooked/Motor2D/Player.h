@@ -133,9 +133,6 @@ private:	// @Carles
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
 
-public:
-	bool debugMode;		// Flag that marks if debug functionalities are available
-
 private:
 	uint startLife;
 	player_state status;
@@ -143,10 +140,9 @@ private:
 	SDL_Rect attackOffset;
 	bool wantAttack = false;
 	bool attackColliderCreated = false;
-	bool weaponDrawn;	// CHANGE/FIX: Put to config & save_game when finally used
+	bool weaponDrawn;	// CHANGE/FIX: Put to config & save_game when implemented
 
 	fPoint lastGroundPosition;
-	fPoint respawnPosition;
 
 	float normalAcceleration;
 	float slideAcceleration;
@@ -158,8 +154,10 @@ private:
 	bool airborne;			// Flag to mark if player is on air (not colliding with anything)
 	bool somersaultUsed;	// Flag for somersault usage
 
-	uint attackTimer = 0;
-	ushort attackDelay;
+	uint attackFinalFrame;	// To stop attack state and animation
+	
+	uint hurtTimer = 0;		//IMPROVE: Should be j1Timers instead of raw values
+	uint hurtDelay;
 	uint deadTimer = 0;		// Timer used for player death
 	ushort deathDelay;		// Time delay between death and start FadeToBlack
 

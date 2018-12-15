@@ -43,8 +43,8 @@ void j1Map::Draw()
 		Image = data.imagelayers.At(x)->data;
 
 		App->render->Blit(data.imagelayers[x]->texture,
-			Image->SpeedBack, data.imagelayers[x]->OffsetY,
-			&data.imagelayers[x]->GetImageLayerRect(), SDL_FLIP_NONE, 0U, data.imagelayers[x]->speed);
+			(int)Image->SpeedBack, (int)data.imagelayers[x]->OffsetY,
+			&data.imagelayers[x]->GetImageLayerRect(), SDL_FLIP_NONE, 0U, (uint)data.imagelayers[x]->speed);
 	}
 
 	p2List_item<TileSet*>* item; //Sprites_Layer

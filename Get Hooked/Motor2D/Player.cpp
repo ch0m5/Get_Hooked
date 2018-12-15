@@ -68,7 +68,7 @@ bool Player::Start()
 	hitboxOffset = idleSprite.colliderOffset;
 	status = player_state::IDLE;
 
-	position = lastGroundPosition = respawnPosition = App->scene->playerStart;
+	position = lastGroundPosition = spawnPosition = App->scene->playerStart;
 
 	graphics = App->tex->Load(textureName.GetString());
 	
@@ -85,8 +85,8 @@ bool Player::PreUpdate()
 
 	bool ret = true;
 
-	if (debugMode == true) {
-		DebugInput();	// Check debug input
+	if (App->scene->debugMode == true) {
+		DebugInput();
 	}
 
 	CheckInput();		// Check player input
@@ -105,7 +105,9 @@ bool Player::UpdateTick(float dt)
 	CheckState();	// Check player state
 	ApplyState();	// Add state effects like movement restrictions, animation and sounds
 	Move(dt);		// Move player position and calculate other movement related factors
-	UpdateHitbox();	// Transform player collider depending on new position and state
+
+	if (hitbox != nullptr)
+		UpdateHitbox();	// Transform player collider depending on new position and state
 
 	animRect = animPtr->AdvanceAnimation(dt);
 
@@ -155,20 +157,22 @@ collision_type Player::OnCollision(Collider* c1, Collider* c2)	//IMPROVE: REWORK
 		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_WALL) {
 			ret = WallCollision(c1, c2);
 		}
-		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY) {
+		else if (damageCollision == true) {
+			if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY) {
 
-			if (c2->callback->GetCollisionIgnore() == false && status != player_state::HURT) {
-				Hurt();
-				status = player_state::HURT;
-				ret = collision_type::UNDEFINED;
+				if (c2->callback->CanDamageCollide() == true && status != player_state::HURT) {
+					Hurt();
+					status = player_state::HURT;
+					ret = collision_type::UNDEFINED;
+				}
 			}
-		}
-		else if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY_ATTACK) {
-			
-			if (status != player_state::HURT) {
-				Hurt();
-				status = player_state::HURT;
-				ret = collision_type::UNDEFINED;
+			else if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ENEMY_ATTACK) {
+
+				if (status != player_state::HURT) {
+					Hurt();
+					status = player_state::HURT;
+					ret = collision_type::UNDEFINED;
+				}
 			}
 		}
 	}
@@ -233,12 +237,18 @@ collision_type Player::WallCollision(Collider* c1, Collider* c2)
 // Load Game State	//CHANGE/FIX: Should be able to save and load from and to different scenes!
 bool Player::Load(pugi::xml_node& data)
 {
+	if (attackCollider != nullptr) {	//IMPROVE: Maybe put this somewhere else, less dirty?
+		attackCollider->to_delete = true;
+		attackCollider = nullptr;
+		attackColliderCreated = false;
+	}
+
 	position.x = data.child("position").attribute("x").as_float();
 	position.y = data.child("position").attribute("y").as_float();
 	lastGroundPosition.x = data.child("lastGround").attribute("x").as_float();
 	lastGroundPosition.y = data.child("lastGround").attribute("y").as_float();
-	respawnPosition.x = data.child("respawn").attribute("x").as_float();
-	respawnPosition.y = data.child("respawn").attribute("y").as_float();
+	spawnPosition.x = data.child("respawn").attribute("x").as_float();
+	spawnPosition.y = data.child("respawn").attribute("y").as_float();
 
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
@@ -249,6 +259,7 @@ bool Player::Load(pugi::xml_node& data)
 	lookingRight = data.child("looking").attribute("right").as_bool();
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
 	dead = data.child("dead").attribute("value").as_bool();
+	hurtTimer = data.child("hurtTimer").attribute("miliseconds").as_uint();
 	deadTimer = data.child("deadTimer").attribute("miliseconds").as_uint();
 	mustReset = data.child("reset").attribute("value").as_bool();
 
@@ -273,8 +284,8 @@ bool Player::Save(pugi::xml_node& data) const
 	tmpNode.append_attribute("y") = lastGroundPosition.y;
 
 	tmpNode = data.append_child("respawn");
-	tmpNode.append_attribute("x") = respawnPosition.x;
-	tmpNode.append_attribute("y") = respawnPosition.y;
+	tmpNode.append_attribute("x") = spawnPosition.x;
+	tmpNode.append_attribute("y") = spawnPosition.y;
 
 	tmpNode = data.append_child("speed");
 	tmpNode.append_attribute("x") = speed.x;
@@ -300,6 +311,9 @@ bool Player::Save(pugi::xml_node& data) const
 
 	tmpNode = data.append_child("dead");
 	tmpNode.append_attribute("value") = dead;
+
+	tmpNode = data.append_child("hurtTimer");
+	tmpNode.append_attribute("miliseconds") = hurtTimer;
 
 	tmpNode = data.append_child("deadTimer");
 	tmpNode.append_attribute("miliseconds") = deadTimer;
@@ -337,9 +351,8 @@ void Player::ImportAllStates(pugi::xml_node& config)
 	airborne = config.child("airborne").attribute("value").as_bool();
 	lookingRight = config.child("looking").attribute("right").as_bool();
 	somersaultUsed = config.child("somersault").attribute("used").as_bool();
-	attackDelay = config.child("attackDelay").attribute("miliseconds").as_uint();
+	hurtDelay = config.child("hurtDelay").attribute("miliseconds").as_uint();
 	deathDelay = config.child("deathDelay").attribute("miliseconds").as_uint();
-	debugMode = config.child("debugMode").attribute("value").as_bool();
 	godMode = config.child("godMode").attribute("value").as_bool();
 	freeCamera = config.child("freeCamera").attribute("value").as_bool();
 	activationRadius = { config.child("processingRadius").attribute("x").as_int(), config.child("processingRadius").attribute("y").as_int() };
@@ -444,9 +457,13 @@ void Player::Hurt()
 	
 	airborne = true;
 
+	damageCollision = false;
+	hurtTimer = SDL_GetTicks();
+
 	if (--life < 1) {
 		dead = true;
 		deadTimer = SDL_GetTicks();
+		deadSprite.anim.Reset();
 	}
 	
 	mustReset = true;
@@ -476,6 +493,7 @@ void Player::DeathByPit()
 {
 	life = 0;
 	dead = true;
+	deadSprite.anim.Reset();
 	deadTimer = SDL_GetTicks();
 	mustReset = true;
 	playedHurtSfx = false;
@@ -490,31 +508,10 @@ void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 	else if (App->input->GetKey(SDL_SCANCODE_F4) == KEY_DOWN && freeCamera == true) {
 		freeCamera = false;
 	}
-	if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Save game
-		App->SaveGame();
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Load game
-		App->LoadGame();
-	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F7) == KEY_DOWN && status != player_state::HURT && godMode == false) {	// Hurt player
 		Hurt();
 		status = player_state::HURT;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == false) {	// UI logic drawing
-		App->ui->mustDebugDraw = true;
-	}
-	else if (App->input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN && App->ui->mustDebugDraw == true) {
-		App->ui->mustDebugDraw = false;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == false) {	// Logic drawing
-		App->collision->mustDebugDraw = true;
-	}
-	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN && App->collision->mustDebugDraw == true) {
-		App->collision->mustDebugDraw = false;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && IsDead() == false && godMode == false) {	// GodMode
@@ -525,23 +522,6 @@ void Player::DebugInput()	//IMPROVE: Should the whole "debug" be in scene?
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN && godMode == true) {
 		godMode = false;
-	}
-
-	// Change scale
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
-		App->win->scale = 1;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
-		App->win->scale = 2;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN) {
-		App->win->scale = 3;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_4) == KEY_DOWN) {
-		App->win->scale = 4;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_5) == KEY_DOWN) {
-		App->win->scale = 5;
 	}
 }
 
@@ -606,8 +586,12 @@ void Player::CheckState() {	// For each state, check possible new states based o
 		}
 	}
 	else {
-		if (App->collision->CheckGroundCollision(hitbox) == false)
+		if (App->collision->CheckGroundCollision(hitbox) == false) {
 			airborne = true;
+		}
+		else if (hurtTimer < SDL_GetTicks() - hurtDelay) {	//CHANGE/FIX: Not perfect, it's checked on every update
+			damageCollision = true;
+		}
 
 		switch (status) {
 		case player_state::IDLE:
@@ -656,7 +640,7 @@ player_state Player::IdleMoveCheck()
 		ret = player_state::CROUCHING;
 	}
 	else if (wantAttack == true) {
-		attackTimer = SDL_GetTicks();
+		attackFinalFrame = attack1Sprite.numFrames - 1;
 		ret = player_state::ATTACKING;
 	}
 
@@ -682,7 +666,7 @@ player_state Player::CrouchingMoveCheck()
 		ret = player_state::JUMPING;
 	}
 	else if (wantAttack == true) {
-		attackTimer = SDL_GetTicks();
+		attackFinalFrame = attack1Sprite.numFrames - 1;
 		ret = player_state::ATTACKING;
 	}
 
@@ -709,7 +693,7 @@ player_state Player::RunningMoveCheck()
 		}
 	}
 	else if (wantAttack == true) {
-		attackTimer = SDL_GetTicks();
+		attackFinalFrame = attack1Sprite.numFrames - 1;
 		ret = player_state::ATTACKING;
 	}
 
@@ -836,6 +820,10 @@ player_state Player::HurtMoveCheck()
 		ret = player_state::HURT;
 	}
 
+	if (ret != player_state::HURT && hurtTimer < SDL_GetTicks() - hurtDelay) {
+		damageCollision = true;
+	}
+
 	return ret;
 }
 
@@ -846,7 +834,7 @@ player_state Player::AttackMoveCheck()
 	if (airborne) {
 		ret = player_state::FALLING;
 	}
-	else if (attackTimer < SDL_GetTicks() - attackDelay) {
+	else if (animPtr->GetCurrentFrame() == attackFinalFrame) {
 		if (input.wantMoveUp == true) {
 			Jump();
 			ret = player_state::JUMPING;

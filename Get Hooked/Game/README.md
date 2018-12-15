@@ -16,6 +16,7 @@ No previous installations is required to play the game, just download and execut
 ## Usage
 ### General Controls
 - ESC: Quit the game
+- P: Pause the game
 - Shift + Up/Down: Change master volume
 - Shift + Left/Right: Change music volume
 

@@ -44,6 +44,7 @@ public:
 	virtual void Init()
 	{
 		active = true;
+		turnedOn = true;
 	}
 
 	// Called before render is available
@@ -85,8 +86,12 @@ protected:
 public:
 	p2SString name;
 	p2SString folder;
-	bool active;
+
+	bool active;	//To Update or not
+	bool turnedOn;	//To be unable to be activated again, but not erased, only erased on CleanUp()
 	bool mustDestroy = false;
+
+	fPoint spawnPosition;
 
 protected:
 	fPoint position;

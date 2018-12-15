@@ -34,9 +34,9 @@ Collider* PhysicalElement::GetCollider()
 	return hitbox;
 }
 
-bool PhysicalElement::GetCollisionIgnore() const
+bool PhysicalElement::CanDamageCollide() const
 {
-	return onlyMapCollisions;
+	return damageCollision;
 }
 
 void PhysicalElement::ImportSpriteData(const char* spriteName, sprite_data* sprite, pugi::xml_node& first_sprite)

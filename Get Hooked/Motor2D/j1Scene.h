@@ -2,6 +2,8 @@
 #define __j1SCENE_H__
 
 #include "j1Module.h"
+#include "p2Point.h"
+#include "SDL/include/SDL_rect.h"
 
 class Enemy;
 struct SDL_Texture;
@@ -45,17 +47,24 @@ public:
 	bool CleanUp();
 
 public:
+	//Spawns	CHANGE/FIX: This should probably be on the map module and managed with Tiled data, not congif.xml reading
+	bool SpawnEntities(scene_type level, pugi::xml_node&);
+	bool SpawnEnemies(pugi::xml_node& entities, pugi::xml_node& spawns);
+
 	// Scene changes
 	void NextLevel();
 	void RestartLevel();
 	void ChangeScene(scene_type scene);
 
 	// Inputs
+	void DebugInput();
 	void AudioInput();
 	void CameraInput(float dt);
 	SDL_Rect LimitCameraPos(fPoint playerPos);
 	
 public:	// CHANGE/FIX: Check the need for public
+	bool debugMode;		// Flag that marks if debug functionalities are available
+	bool gamePaused = false;
 	scene_type scene;
 	fPoint playerStart;
 	fPoint playerFinish;

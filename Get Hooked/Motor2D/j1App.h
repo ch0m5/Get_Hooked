@@ -57,10 +57,11 @@ public:
 	void SaveGame() const;
 	void GetSaveGames(p2List<p2SString>& list_to_fill) const;
 
-private:
-
-	// Load config file
+public:
+	// Load config file		// IMPROVE: Needed in some parts to extract config data, but it feels off for it to be a public method
 	pugi::xml_node LoadConfig(pugi::xml_document&) const;
+
+private:
 
 	// Call modules before each loop iteration
 	void PrepareUpdate();

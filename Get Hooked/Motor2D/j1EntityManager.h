@@ -53,22 +53,19 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
-	bool CleanEnemies();
 
 	// Save and Load
 	bool Load(pugi::xml_node&);
 	bool Save(pugi::xml_node&) const;
 
 public:
-	Entity* CreateEntity(entity_type type);
+	Entity* CreateEntity(entity_type type, pugi::xml_node entitiesNode);
 	void DestroyEntity(p2List_item<Entity*>* item);
+	bool CleanEntities();
+	bool RestartEnemies();
 
-private:
-	bool UpdateEntities(float dt, bool mustCheckLogic);
-	
 public:
 	p2List<Entity*> entities;
-	p2List<Enemy*>	enemies;
 	//p2List<Entity*>	items;
 	Player* player;
 
@@ -76,8 +73,6 @@ private:
 	ushort logicPerSecond;	// Number of times logic is checked each second
 	float accumulatedTime;
 	bool mustCheckLogic = false;
-
-	pugi::xml_node entitiesNode;
 };
 
 #endif //__j1ENTITYMANAGER__

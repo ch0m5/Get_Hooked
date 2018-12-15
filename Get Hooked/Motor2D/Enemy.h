@@ -52,21 +52,21 @@ public:
 	collision_type OnCollision(Collider*, Collider*);
 	collision_type WallCollision(Collider* c1, Collider* c2);
 
+public:
+	virtual void Spawn(int posX, int posY);
+	virtual void Respawn();
+
 protected:
 	virtual void Hurt();
 	virtual void ImportAllStates(pugi::xml_node&);		// Import all state data from config.xml
 	virtual void ImportAllSprites(pugi::xml_node&) {};	// Import all sprite data using the above function for each animation
 	virtual void AllocAllAnimations() {};				// Allocate all animations with previously recieved sprite data
 
-	//Entity
 	virtual void CheckInput();
 	virtual bool InsideRadius(fPoint targetPosition, iPoint radius);
 
 	// Add downwards acceleration to Y speed
 	virtual void Fall(float dt);
-
-public:
-	fPoint spawnPosition;	// TODO: Load from map?
 
 protected:
 	bool canFly;

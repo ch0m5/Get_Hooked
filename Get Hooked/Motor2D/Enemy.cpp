@@ -72,7 +72,9 @@ bool Enemy::UpdateTick(float dt)
 	CheckState();	// Check player state
 	ApplyState();	// Add state effects like movement restrictions, animation and sounds
 	Move(dt);		// Move player position and calculate other movement related factors
-	UpdateHitbox();	// Transform player collider depending on new position and state
+	
+	if (hitbox != nullptr)
+		UpdateHitbox();	// Transform player collider depending on new position and state
 
 	animRect = animPtr->AdvanceAnimation(dt);
 
@@ -207,6 +209,19 @@ collision_type Enemy::WallCollision(Collider* c1, Collider* c2)
 	return ret;
 }
 
+void Enemy::Spawn(int posX, int posY)
+{
+	position.x = spawnPosition.x = (float)posX;
+	position.y = spawnPosition.y = (float)posY;
+}
+
+void Enemy::Respawn()
+{
+	position = spawnPosition;
+	LifeToMax();
+	dead = false;
+}
+
 void Enemy::Hurt()
 {
 	if (lookingRight) {
@@ -221,7 +236,7 @@ void Enemy::Hurt()
 	airborne = true;
 
 	if (--life == 0) {
-		onlyMapCollisions = true;
+		damageCollision = false;
 		dead = true;
 		deadTimer = SDL_GetTicks();
 	}

@@ -52,14 +52,12 @@ j1App::j1App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(pathfinding);
 	AddModule(font);
 	AddModule(ui);
-	AddModule(scene);
-	//AddModule(ui);
 	AddModule(entityManager);
 	AddModule(collision);
-	AddModule(fade);
 
-	//CHANGE/GIX: Scene should go last, right before render, making this change breaks the game currently
-	//AddModule(scene);
+	// Scene and fade right before render for management and blitting purposes
+	AddModule(scene);
+	AddModule(fade);
 
 	// Render last to swap buffer
 	AddModule(render);
@@ -262,7 +260,10 @@ bool j1App::DoUpdate()
 	item = modules.start;
 	j1Module* pModule = NULL;
 
-	for (item = modules.start; item != NULL && ret == true; item = item->next)
+	if (App->scene->gamePaused == true)
+		dt = 0.0f;
+
+	for (item = modules.start; item != NULL && ret == true; item = item->next)	//All logic
 	{
 		pModule = item->data;
 
@@ -271,10 +272,17 @@ bool j1App::DoUpdate()
 		}
 
 		ret = item->data->UpdateTick(dt);
+	}
 
-		//IMPROVE: Should be first all logic then all graphics (not like that at the moment because player collider position laggs behind)
-		if (ret)
-			ret = item->data->Update();
+	for (item = modules.start; item != NULL && ret == true; item = item->next)	//All graphic
+	{
+		pModule = item->data;
+
+		if (pModule->active == false) {
+			continue;
+		}
+
+		ret = item->data->Update();
 	}
 
 	return ret;
@@ -458,7 +466,7 @@ void j1App::FramerateLogic() {
 	gameTime = gameTimer.ReadSec();
 	lastFrameMs = frameTimer.Read();
 
-	if (App->entityManager->player->debugMode == true) {
+	if (App->scene->debugMode == true) {
 		App->win->SetTitle(DebugTitle().GetString());
 	}
 	else {

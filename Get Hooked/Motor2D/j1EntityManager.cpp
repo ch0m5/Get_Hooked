@@ -2,6 +2,7 @@
 #include "p2Defs.h"
 #include "p2Log.h"
 #include "j1App.h"
+#include "j1Scene.h"
 
 #include "j1EntityManager.h"
 #include "Entity.h"
@@ -15,21 +16,6 @@
 j1EntityManager::j1EntityManager() : j1Module()
 {
 	name.create("entityManager");
-	player = (Player*)CreateEntity(entity_type::PLAYER);
-
-	//Enemy spawns
-	//pugi::xml_document configFile;
-	//pugi::xml_node spawnPoints = LoadConfig(configFile);
-	//spawnPoints = spawnPoints.child("entityManager").child("entities").child("spawnPoints");
-
-	//Enemy* tmpPtr;
-	//pugi::xml_node lastChild = spawnPoints.last_child();	//CHANGE/FIX: Terrible workaround, but couldn't do it any better in time. Works, but it shouldn't be here loading config out of nowhere.
-
-	//for (spawnPoints = spawnPoints.first_child(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
-	//	tmpPtr = (Enemy*)CreateEntity(entity_type::ENEMY, (enemy_type)spawnPoints.attribute("type").as_int());
-	//	tmpPtr->spawnPosition.x = spawnPoints.attribute("xSpawn").as_int();
-	//	tmpPtr->spawnPosition.y = spawnPoints.attribute("ySpawn").as_int();
-	//}
 }
 
 // Destructor
@@ -55,9 +41,7 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 	active = config.child("start").attribute("active").as_bool();
 	logicPerSecond = config.child("logic").attribute("cooldown").as_uint();
 
-	entitiesNode = config.child("entities");
-
-	if (entitiesNode.empty() == false)
+	if (config.child("entities").empty() == false)
 	{
 		ret = true;
 
@@ -66,7 +50,7 @@ bool j1EntityManager::Awake(pugi::xml_node& config)
 
 		while (item != NULL && ret == true)
 		{
-			ret = item->data->Awake(entitiesNode.child(item->data->name.GetString()));
+			ret = item->data->Awake(config.child("entities").child(item->data->name.GetString()));
 			item = item->next;
 		}
 	}
@@ -100,7 +84,7 @@ bool j1EntityManager::PreUpdate()
 
 	for (item = entities.start; item != NULL && ret == true; item = item->next)
 	{
-		if (item->data != player) {	// Activate entities around player, deactivate the ones that aren't
+		if ( item->data->turnedOn == true && item->data != player) {	// Activate entities around player, deactivate the ones that aren't
 			if (player->InsideRadius(item->data->GetPosition(), player->GetActivationRadius()) == true) {
 				item->data->active = true;
 			}
@@ -119,15 +103,6 @@ bool j1EntityManager::PreUpdate()
 		ret = item->data->PreUpdate();
 	}
 
-	p2List_item<Enemy*>* item2;
-
-	for (item2 = enemies.start; item != NULL && ret == true; item = item->next)
-	{
-		if (item2->data->active == false && item2->data->IsDead() == true) {
-			item2->data->mustDestroy = true;
-		}
-	}
-
 	return ret;
 }
 
@@ -136,45 +111,40 @@ bool j1EntityManager::UpdateTick(float dt)
 {
 	BROFILER_CATEGORY("Module EntityManager UpdateTick", Profiler::Color::Green);
 
-	accumulatedTime += dt * 1000;
-
-	int delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
-
-	/*if (App->FramerateCapped())
-		delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);	//CHANGE/FIX: Work on this and how to implement it
-	else
-		delayTime = (1000 / App->GetCurrentFPS()) * (App->GetCurrentFPS() / logicPerSecond);*/
-
-	if (accumulatedTime >= delayTime)
-		mustCheckLogic = true;
-
-	UpdateEntities(dt, mustCheckLogic);
-
-	if (mustCheckLogic == true) {
-		accumulatedTime = accumulatedTime - delayTime;
-		mustCheckLogic = false;
-	}
-
-	return true;
-}
-
-bool j1EntityManager::UpdateEntities(float dt, bool mustCheckLogic)
-{
 	bool ret = true;
 
-	p2List_item<Entity*>* item;
-	for (item = entities.start; item != nullptr && ret == true; item = item->next)
-	{
-		if (item->data->active == false) {
-			continue;
+	if (App->scene->gamePaused == false) {
+		accumulatedTime += dt * 1000;
+
+		int delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);
+
+		/*if (App->FramerateCapped())
+			delayTime = (1000 / App->GetFrameCap()) * (App->GetFrameCap() / logicPerSecond);	//CHANGE/FIX: Work on this and how to implement it
+		else
+			delayTime = (1000 / App->GetCurrentFPS()) * (App->GetCurrentFPS() / logicPerSecond);*/
+
+		if (accumulatedTime >= delayTime)
+			mustCheckLogic = true;
+
+		p2List_item<Entity*>* item;
+		for (item = entities.start; item != nullptr && ret == true; item = item->next)
+		{
+			if (item->data->active == false) {
+				continue;
+			}
+
+			if (mustCheckLogic) {
+				ret = item->data->UpdateLogic(dt);	//Update logic in intervals
+			}
+
+			if (ret)
+				ret = item->data->UpdateTick(dt);	//Update dependant of framerate
 		}
 
-		if (mustCheckLogic) {
-			ret = item->data->UpdateLogic(dt);	//Update logic in intervals
+		if (mustCheckLogic == true) {
+			accumulatedTime = accumulatedTime - delayTime;
+			mustCheckLogic = false;
 		}
-
-		if (ret)
-			ret = item->data->UpdateTick(dt);	//Update dependant of framerate
 	}
 
 	return ret;
@@ -238,24 +208,42 @@ bool j1EntityManager::CleanUp()
 		RELEASE(item->data);
 	}
 	entities.clear();
-	enemies.clear();
 
 	return ret;
 }
 
-bool j1EntityManager::CleanEnemies()
+bool j1EntityManager::CleanEntities()
 {
 	bool ret = true;
 
-	p2List_item<Enemy*>* item;
+	p2List_item<Entity*>* item;
 
-	for (item = enemies.end; item != NULL && ret == true; item = item->prev)
+	for (item = entities.end; item != NULL && ret == true; item = item->prev)
 	{
-		ret = item->data->CleanUp();
-		RELEASE(item->data);
-		entities.del((p2List_item<Entity*>*)item);	//CHANGE/FIX: Possible room for mistakes
+		if (item->data->GetType() != entity_type::PLAYER)	//IMPROVE: Could be done better
+			DestroyEntity(item);
 	}
-	enemies.clear();
+
+	return ret;
+}
+
+bool j1EntityManager::RestartEnemies()
+{
+	bool ret = true;
+
+	p2List_item<Entity*>* item;
+	Enemy* itemData;
+
+	for (item = entities.start; item != NULL && ret == true; item = item->next)
+	{
+		if (item->data->GetType() == entity_type::BAT || item->data->GetType() == entity_type::SLIME) {	//IMPROVE: Could be done better
+			itemData = (Enemy*)item->data;
+			itemData->CleanUp();
+			itemData->Start();
+			itemData->Respawn();
+			itemData->Init();
+		}
+	}
 
 	return ret;
 }
@@ -287,12 +275,11 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 	return true;
 }
 
-Entity* j1EntityManager::CreateEntity(entity_type type)
+Entity* j1EntityManager::CreateEntity(entity_type type, pugi::xml_node entitiesNode)
 {
 	static_assert((int)entity_type::MAX_TYPES == 9, "Entity enum is not accurate");
 
 	Entity* ret = nullptr;
-	entity_lists list = entity_lists::ENTITIES;
 
 	switch (type) {
 	case entity_type::PLAYER:
@@ -300,26 +287,17 @@ Entity* j1EntityManager::CreateEntity(entity_type type)
 		break;
 	case entity_type::BAT:
 		ret = new Bat();
-		list = entity_lists::ENEMIES;
 		break;
 	case entity_type::SLIME:
 		ret = new Slime();
-		list = entity_lists::ENEMIES;
 		break;
 	}
 
 	if (ret != nullptr) {
 		entities.add(ret);
 		ret->Init();
-
-		switch (list) {
-		case entity_lists::ENEMIES:
-			enemies.add((Enemy*)ret);
-			ret->Awake(entitiesNode.child(ret->name.GetString()));
-			break;
-		default:
-			break;
-		}
+		ret->Awake(entitiesNode.child(ret->name.GetString()));
+		ret->Start();
 	}
 
 	return ret;

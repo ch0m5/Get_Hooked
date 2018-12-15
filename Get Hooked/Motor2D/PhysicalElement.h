@@ -47,7 +47,7 @@ public:
 
 	virtual Collider* GetCollider();
 	virtual collision_type OnCollision(Collider*, Collider*) { return (collision_type)-1; }	//IMPROVE: Should be pure abstract method? (= 0)
-	virtual bool GetCollisionIgnore() const;
+	virtual bool CanDamageCollide() const;
 
 protected:
 	virtual void CheckInput() {};
@@ -79,7 +79,7 @@ protected:
 
 	Collider* hitbox;
 	SDL_Rect hitboxOffset;
-	bool onlyMapCollisions = false;
+	bool damageCollision = true;
 };
 
 #endif //__PHYSICAL_ELEMENT_H__

@@ -4,6 +4,7 @@
 #include "j1App.h"
 #include "j1Window.h"
 #include "j1Render.h"
+#include "j1Scene.h"
 #include "j1FadeScene.h"
 #include "SDL/include/SDL_render.h"
 #include "SDL/include/SDL_timer.h"
@@ -59,6 +60,7 @@ bool j1FadeScene::Update()
 	{
 		total_time += total_time;
 		start_time = SDL_GetTicks();
+		App->scene->gamePaused = false;
 		step = fade_step::UNFADING;
 	} break;
 	case fade_step::UNFADING:
@@ -82,6 +84,7 @@ bool j1FadeScene::FadeToBlack(float time, fade_type type)
 {
 	bool ret = false;
 
+	App->scene->gamePaused = true;
 	this->type = type;
 
 	if (step == fade_step::NONE)

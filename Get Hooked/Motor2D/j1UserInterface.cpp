@@ -7,6 +7,7 @@
 #include "j1Textures.h"
 #include "j1Fonts.h"
 #include "j1Input.h"
+#include "j1Scene.h"
 
 #include "j1UserInterface.h"
 #include "UIElement.h"
@@ -95,18 +96,20 @@ bool j1UserInterface::UpdateTick(float dt)
 	
 	bool ret = true;
 
-	p2List_item<UIElement*>* item;
-	for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
-	{
-		if (item->data->active == false) {
-			continue;
-		}
+	if (App->scene->gamePaused == false) {
+		p2List_item<UIElement*>* item;
+		for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
+		{
+			if (item->data->active == false) {
+				continue;
+			}
 
-		if (ret)
-			ret = item->data->UpdateTick(dt);	//Update dependant of framerate
+			if (ret)
+				ret = item->data->UpdateTick(dt);	//Update dependant of framerate
+		}
 	}
 
-	return true;
+	return ret;
 }
 
 // Called each frame (graphic)
@@ -244,45 +247,3 @@ UIElement* j1UserInterface::CreateActionBox(void(*action)(void), fPoint center, 
 
 	return ret;
 }
-
-//void(*action)(...), fPoint center, SDL_Rect spriteList[4], SDL_Texture* tex, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL
-
-//Window* j1UserInterface::CreateWindowBox(fPoint center, p2List<Image*> children, SDL_Rect* texRect, SDL_Texture* tex, Text* label, Image* parent)
-//{
-//	Window* ret = nullptr;
-//
-//	ret = new Window(center, children, texRect, tex, label, parent);
-//	AddElement((Image*)ret);
-//
-//	return ret;
-//}
-
-//Image* j1UserInterface::CreateActionBox(buttonAction action, fPoint position, Text* label, SDL_Rect* spriteList[4], image_type type, SDL_Texture* tex, Image* parent)
-//{
-//	Image* ret = nullptr;
-//
-//	ret = new ActionBox(position, texRect, tex, parent);
-//	screenElements.add(ret);
-//
-//	return ret;
-//}
-//
-//Image* j1UserInterface::CreateCheckBox()
-//{
-//	Image* ret = nullptr;
-//
-//	ret = new Image(position, texRect, tex, parent);
-//	screenElements.add(ret);
-//
-//	return ret;
-//}
-//
-//Image* j1UserInterface::CreateInputText()
-//{
-//	Image* ret = nullptr;
-//
-//	ret = new Image(position, texRect, tex, parent);
-//	screenElements.add(ret);
-//
-//	return ret;
-//}
