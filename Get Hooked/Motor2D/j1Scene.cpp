@@ -172,7 +172,7 @@ bool j1Scene::Start()
 	pugi::xml_parse_result result;
 	ActionBox<void>* continueButton;
 
-	switch (scene) {	//CHANGE/FIX: Make function?
+	switch (scene) {	//CHANGE/FIX: All of these should be functions
 	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers and hardcoding, but making it based on the screen size gives a lot of problems (TYPE/int)
 		// iPoint screenCenter = { App->win->GetWindowSize().w / (2 * App->win->GetScale()),  App->win->GetWindowSize().h / (2 * App->win->GetScale()) };
 		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
@@ -308,7 +308,7 @@ bool j1Scene::PostUpdate()
 		App->entityManager->active = false;						// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
 		App->ui->active = false;
 
-		switch (App->fade->GetType()) {
+		switch (App->fade->GetType()) {	//CHANGE/FIX: This should be a function
 		case fade_type::MAIN_MENU:
 			App->tex->UnLoad(backgroundTexPtr);
 			backgroundTexPtr = nullptr;
@@ -342,6 +342,12 @@ bool j1Scene::PostUpdate()
 		case fade_type::RESTART_GAME:
 			ChangeScene(scene_type::LEVEL_1);
 			break;
+		case fade_type::LEVEL_1:
+			ChangeScene(scene_type::LEVEL_1);
+			break;
+		case fade_type::LEVEL_2:
+			ChangeScene(scene_type::LEVEL_2);
+			break;
 		default:
 			break;
 		}
@@ -369,6 +375,42 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 	App->collision->CleanUp();
 
 	return true;
+}
+
+// Save and Load
+bool j1Scene::Load(pugi::xml_node& config)
+{
+	bool ret = true;
+
+	scene_type current = scene;
+	
+	pugi::xml_node tmpNode;
+	scene = (scene_type)config.child("scene").attribute("current").as_int();
+
+	if (scene != current) {
+		switch (scene) {
+		case scene_type::LEVEL_1:
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LEVEL_1);
+			break;
+		case scene_type::LEVEL_2:
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LEVEL_2);
+			break;
+		}
+	}
+
+	return ret;
+}
+
+bool j1Scene::Save(pugi::xml_node& config) const
+{
+	bool ret = true;
+
+	pugi::xml_node tmpNode;
+
+	tmpNode = config.append_child("scene");
+	tmpNode.append_attribute("current") = (int)scene;
+
+	return ret;
 }
 
 void j1Scene::DebugInput()

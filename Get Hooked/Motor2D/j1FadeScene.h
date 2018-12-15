@@ -11,9 +11,13 @@ enum class fade_type
 	MAIN_MENU,
 	SETTINGS,
 	CREDITS,
+
 	NEXT_LEVEL,
 	RESTART_LEVEL,
 	RESTART_GAME,
+
+	LEVEL_1,
+	LEVEL_2,
 
 	MAX_TYPES
 };

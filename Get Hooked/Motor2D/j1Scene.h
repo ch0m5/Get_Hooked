@@ -49,6 +49,10 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Save and Load
+	bool Load(pugi::xml_node&);
+	bool Save(pugi::xml_node&) const;
+
 public:
 	//Spawns	CHANGE/FIX: This should probably be on the map module and managed with Tiled data, not congif.xml reading
 	bool SpawnEntities(scene_type level, pugi::xml_node&);
