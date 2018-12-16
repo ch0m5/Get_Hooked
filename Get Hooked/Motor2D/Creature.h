@@ -13,9 +13,6 @@ public:
 	//Constructor
 	Creature(entity_type type) : PhysicalElement(type) {};
 
-	//Destructor
-	virtual ~Creature();
-
 public:
 	virtual uint GetLife() const;
 	virtual uint LifeToMax();

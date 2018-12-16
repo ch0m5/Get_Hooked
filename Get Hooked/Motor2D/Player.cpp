@@ -22,9 +22,6 @@ Player::Player() : Creature(entity_type::PLAYER)
 	name.create("player");
 }
 
-Player::~Player()
-{}
-
 // Called before render is available
 bool Player::Awake(pugi::xml_node& entities)
 {

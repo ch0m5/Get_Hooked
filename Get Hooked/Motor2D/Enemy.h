@@ -17,9 +17,6 @@ class Enemy : public Creature
 public:
 	Enemy(entity_type enemyType) : Creature(enemyType) {};
 
-	//Destructor
-	virtual ~Enemy() {};
-
 	// Called before render is available
 	virtual bool Awake(pugi::xml_node&);
 

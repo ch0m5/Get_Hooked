@@ -5,14 +5,6 @@
 #include "j1Render.h"
 #include "j1Collision.h"
 
-Creature::~Creature()
-{
-	if (hitbox != nullptr) {
-		hitbox->to_delete = true;
-		hitbox = nullptr;
-	}
-}
-
 uint Creature::GetLife() const
 {
 	return life;

@@ -29,8 +29,6 @@ public:
 
 	Player();
 
-	~Player();
-
 	// Called before render is available
 	bool Awake(pugi::xml_node&);
 
