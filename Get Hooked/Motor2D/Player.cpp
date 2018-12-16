@@ -991,7 +991,14 @@ void Player::HurtEffects()
 
 void Player::DeadEffects() {
 	if (App->fade->GetStep() == fade_step::NONE && deadTimer < SDL_GetTicks() - deathDelay) {
-		App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);	//CHANGE/FIX: Hardcoded values
+		if (timesDead < 2) {
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
+			timesDead++;
+		}
+		else {
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
+			timesDead = 0;
+		}
 	}
 	else {
 		input.wantMoveUp = false;

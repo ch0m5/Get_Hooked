@@ -661,18 +661,12 @@ void j1Scene::ChangeScene(scene_type scene)
 {
 	this->scene = scene;
 
-	if (App->entityManager->player != nullptr) {
-		CleanUp();
-		App->entityManager->player->CleanUp();
-		App->entityManager->CleanEntities();
-		Start();
-		App->entityManager->player->LifeToMax();
-		App->entityManager->player->Start();
-	}
-	else {
-		CleanUp();
-		Start();
-	}
+	CleanUp();
+	App->entityManager->player->CleanUp();
+	App->entityManager->CleanEntities();
+	Start();
+	App->entityManager->player->LifeToMax();
+	App->entityManager->player->Start();
 }
 
 SDL_Rect j1Scene::LimitCameraPos(fPoint playerPos)

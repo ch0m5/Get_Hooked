@@ -137,6 +137,9 @@ private:	// @Carles
 	fPoint GodModeMovement(float dt);
 	fPoint NormalMovement(float dt);
 
+public:
+	int timesDead = 0;
+
 private:
 	uint startLife;
 	player_state status;
