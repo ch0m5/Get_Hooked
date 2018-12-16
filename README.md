@@ -6,6 +6,9 @@ No previous installations is required to play the game, just download and execut
 
 Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platformer/releases/tag/0.4)
 
+## Attention Notice
+Because of some minor errors, the game might not initialize on the first execution.
+
 ## How to play
 ### General Controls
 * ESC: Open settings menu
@@ -76,7 +79,7 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 <html>
 <body>
 
-<iframe width="645" height="520" src="https://www.youtube.com/embed/TBzmn2r6HxY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="645" height="520" src="https://www.youtube.com/embed/TCNyWyyBZjc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 </body>
 </html>
