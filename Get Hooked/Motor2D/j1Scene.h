@@ -72,7 +72,9 @@ public:
 	
 	void HealthToUI(int life);
 	void HurtUI();
+
 private:
+	void SetupLevel(pugi::xml_node& config);
 	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
 
 public:	// CHANGE/FIX: Check the need for public
@@ -84,6 +86,8 @@ public:	// CHANGE/FIX: Check the need for public
 
 	UIElement* settingsWindow;
 	UIElement* health[3];
+	UIElement* timer;
+	UIElement* score;
 	int playerLife;
 
 private:

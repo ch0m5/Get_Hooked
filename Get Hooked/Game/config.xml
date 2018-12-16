@@ -213,6 +213,7 @@
         </audio>
         <stats>
           <life value="3"/>
+          <retry value="2" />
           <maxSpeed x="150" y="240"/>
           <hurtSpeed x="110" y="110"/>
           <accelerations x="700" y="220" gravity="560" slide="200"/>

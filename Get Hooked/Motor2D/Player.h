@@ -54,36 +54,27 @@ public:
 	bool Save(pugi::xml_node&) const;
 
 public:
-	bool CameraFree() const {	//IMPROVE: MOVE TO CPP
-		return freeCamera;
-	}
-	bool IsGod() const {
-		return godMode;
-	}
-	uint LifeToStart() {
-		life = startLife;
-		return life;
-	}
-	iPoint GetActivationRadius() const {
-		return activationRadius;
-	}
-	void ReturnToSpawn() {
-		position = lastGroundPosition = spawnPosition;
-	}
-	void SetSpawn(fPoint spawn) {
-		spawnPosition = spawn;
-	}
-	void DeadReset() {
-		LifeToStart();
-		deadSprite.anim.Reset();	//IMPROVE: Check if really needed here
-		playedHurtSfx = false;
-	}
-	void AddScore(int points) {
-		playerScore += points;
-	}
-	void ResetScore() {
-		playerScore = 0;
-	}
+	bool CameraFree() const;
+	bool IsGod() const;
+
+	iPoint GetActivationRadius() const;
+
+	uint LifeToStart();
+	uint LifeToMax();
+	void ReturnToSpawn();
+	void SetSpawn(fPoint spawn);
+
+	void DeadReset();
+
+	int GetScore();
+	void AddScore(int points);
+	void ResetScore();
+	void EraseScore();
+	void ScoreToUI();
+
+	void RemoveRetry();
+	void ResetRetry();
+	void ResetToUI();
 
 private:	// @Carles
 	void ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite);
@@ -142,10 +133,13 @@ private:	// @Carles
 	fPoint NormalMovement(float dt);
 
 public:
-	int timesDead = 0;	//ALERT_CARLES: ADD TO SAVE LOAD
+	int retryLeft;
+	uint startRetry;
 
 private:
 	int playerScore = 0;
+	int startScore = 0;
+
 	uint startLife;
 	player_state status;
 	Collider* attackCollider = nullptr;

@@ -238,6 +238,8 @@ void Enemy::Hurt()
 	if (--life == 0) {
 		damageCollision = false;
 		dead = true;
+		App->entityManager->player->AddScore(1);
+		App->audio->PlayFx(App->audio->pickItemSfx.id, 0);
 		deadTimer = SDL_GetTicks();
 	}
 	else {

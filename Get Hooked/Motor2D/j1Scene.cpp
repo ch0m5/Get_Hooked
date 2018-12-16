@@ -172,6 +172,7 @@ bool j1Scene::Start()
 	UIElement* parent;
 	_TTF_Font* gameText = App->font->textFont;
 
+	//IMPROVE: All the stuff "skipped" by cases, could be cleaner overall
 	pugi::xml_document saveDoc;
 	pugi::xml_parse_result result;
 	ActionBox<void>* continueButton;
@@ -231,22 +232,8 @@ bool j1Scene::Start()
 		App->map->Load(maps.At(0)->data.GetString());
 		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;	//CHANGE/FIX: Get points close to the ground
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
-		App->entityManager->player->SetSpawn(playerStart);
-		App->entityManager->player->active = true;
-		SpawnEntities(scene, config);
-
-		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
-		App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
-
-		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
-		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
-		App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
-		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
-		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
-		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
-		App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
-		App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
-		settingsWindow->Deactivate();
+		
+		SetupLevel(config);
 
 		App->audio->PlayMusic(App->audio->musicMap1.GetString());
 		break;
@@ -254,22 +241,8 @@ bool j1Scene::Start()
 		App->map->Load(maps.At(1)->data.GetString());
 		playerStart = { 720, -400 };	//start = App->map->data.checkpoints.start->data;
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
-		App->entityManager->player->SetSpawn(playerStart);
-		App->entityManager->player->active = true;
-		SpawnEntities(scene, config);
-
-		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
-		App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
-
-		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
-		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
-		App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
-		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
-		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
-		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
-		App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
-		App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
-		settingsWindow->Deactivate();
+		
+		SetupLevel(config);
 
 		App->audio->PlayMusic(App->audio->musicMap2.GetString());
 		break;
@@ -287,6 +260,37 @@ bool j1Scene::Start()
 	App->audio->SetMusicVolume();
 
 	return ret;
+}
+
+void j1Scene::SetupLevel(pugi::xml_node& config)
+{
+	UIElement* parent;
+	std::string scoreStr;
+	p2SString playerScore;
+	_TTF_Font* gameText = App->font->textFont;
+
+	App->entityManager->player->SetSpawn(playerStart);
+	App->entityManager->player->active = true;
+	SpawnEntities(scene, config);
+
+	App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
+	App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
+
+	scoreStr = std::to_string(App->entityManager->player->GetScore());
+	playerScore.create("      %s", scoreStr.c_str());											//CHANGE/FIX: I should add some "reference point" that depends on parent, adding spaces is dirty
+	parent = App->ui->CreateImage({ 150, 30 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "Score       ", DEFAULT_COLOR, gameText, false, parent);	//CHANGE/FIX: I should add some "reference point" that depends on parent, adding spaces is dirty
+	score = App->ui->CreateText(DEFAULT_POINT, playerScore.GetString(), DEFAULT_COLOR, gameText, false, parent);
+
+	settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
+	App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
+	App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
+	App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
+	App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+	settingsWindow->Deactivate();
 }
 
 void j1Scene::HealthToUI(int life)
@@ -413,6 +417,8 @@ bool j1Scene::PostUpdate()
 				App->tex->UnLoad(backgroundTexPtr);
 				backgroundTexPtr = nullptr;
 			}
+			App->entityManager->player->ResetRetry();
+			App->entityManager->player->EraseScore();
 			App->ui->CleanUp();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
@@ -428,9 +434,12 @@ bool j1Scene::PostUpdate()
 			NextLevel();
 			break;
 		case fade_type::RESTART_LEVEL:
+			App->entityManager->player->ResetScore();
 			RestartLevel();
 			break;
 		case fade_type::RESTART_GAME:
+			App->entityManager->player->ResetRetry();
+			App->entityManager->player->EraseScore();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
 		case fade_type::LEVEL_1:
@@ -480,7 +489,17 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 	App->collision->CleanUp();
 
 	health[0] = health[1] = health[2] = nullptr;
-	settingsWindow = nullptr;
+
+	if (settingsWindow != nullptr) {
+		App->ui->DestroyElement(settingsWindow);
+		settingsWindow = nullptr;
+	}
+
+	/*if (score != nullptr) {
+		App->ui->DestroyElement(score);
+		score = nullptr;
+	}*/
+	score = nullptr;
 
 	return true;
 }
@@ -635,8 +654,9 @@ void j1Scene::NextLevel()
 	scene = (scene_type)((int)scene + 1);
 
 	if (scene == scene_type::MAX_SCENES) {	//Restart Game
-		ChangeScene(scene_type::LEVEL_1);
-		App->entityManager->player->LifeToMax();
+		App->entityManager->player->ResetRetry();
+		App->entityManager->player->EraseScore();
+		ChangeScene(scene_type::MAIN_MENU);
 	}
 	else {
 		ChangeScene(scene);
@@ -649,8 +669,7 @@ void j1Scene::RestartLevel()	//IMPROVE: Only reload entities, not the full map
 	App->entityManager->player->CleanUp();
 	App->entityManager->CleanEntities();
 	Start();
-	//App->entityManager->player->LifeToStart();	//CHANGE/FIX: A little bit buggy currently, let's just reset the HP to max for now
-	App->entityManager->player->LifeToMax();
+	App->entityManager->player->LifeToStart();	//CHANGE/FIX: A little bit buggy currently, let's just reset the HP to max for now (also it makes the game easier, which is appreciated)
 	App->entityManager->player->Start();
 
 	//OLD

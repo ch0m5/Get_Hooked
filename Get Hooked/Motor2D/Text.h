@@ -29,6 +29,7 @@ public:
 	SDL_Texture* LoadTex(const char* string, SDL_Color color, _TTF_Font* font);
 	SDL_Rect ChangeText(const char* string, SDL_Color color, _TTF_Font* font);
 	SDL_Rect ChangeText(p2SString string, SDL_Color color, _TTF_Font* font);
+	SDL_Rect ChangeContent(const char* string);
 	SDL_Rect ChangeColor(SDL_Color color);
 	SDL_Rect ChangeFont(_TTF_Font* font);
 

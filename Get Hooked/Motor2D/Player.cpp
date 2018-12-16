@@ -11,7 +11,8 @@
 #include "j1Collision.h"
 #include "j1Window.h"
 #include "j1Scene.h"
-#include "j1UserInterface.h"	//CHANGE/FIX: REMOVE ALL DEBUG INPUT FROM PLAYER, PUT IT ON SCENE
+#include "j1UserInterface.h"
+#include "Text.h"
 
 #include "j1EntityManager.h"
 #include "Player.h"
@@ -59,6 +60,7 @@ bool Player::Start()
 	bool ret = true;
 
 	startLife = life;
+	startScore = playerScore;
 	dead = false;
 	speed = { 0, 0 };
 	acceleration.x = normalAcceleration;
@@ -270,12 +272,19 @@ bool Player::Load(pugi::xml_node& data)
 
 	speed.x = data.child("speed").attribute("x").as_float();
 	speed.y = data.child("speed").attribute("y").as_float();
-	life = (ushort)data.child("life").attribute("value").as_uint();
 	acceleration.x = data.child("acceleration").attribute("type").as_float();
+	
+	life = data.child("life").attribute("value").as_uint();
+	startLife = (uint)data.child("startLife").attribute("value").as_uint();
+	retryLeft = data.child("retryLeft").attribute("value").as_int();
+	playerScore = (uint)data.child("score").attribute("value").as_uint();
+	startScore = (uint)data.child("startScore").attribute("value").as_uint();
+
 	status = (player_state)data.child("state").attribute("current").as_uint();
 	airborne = data.child("airborne").attribute("value").as_bool();
 	lookingRight = data.child("looking").attribute("right").as_bool();
 	somersaultUsed = data.child("somersault").attribute("used").as_bool();
+
 	dead = data.child("dead").attribute("value").as_bool();
 	hurtTimer = data.child("hurtTimer").attribute("miliseconds").as_uint();
 	deadTimer = data.child("deadTimer").attribute("miliseconds").as_uint();
@@ -307,6 +316,18 @@ bool Player::Save(pugi::xml_node& data) const
 
 	tmpNode = data.append_child("life");
 	tmpNode.append_attribute("value") = life;
+
+	tmpNode = data.append_child("startLife");
+	tmpNode.append_attribute("value") = startLife;
+
+	tmpNode = data.append_child("retryLeft");
+	tmpNode.append_attribute("value") = retryLeft;
+
+	tmpNode = data.append_child("score");
+	tmpNode.append_attribute("value") = playerScore;
+
+	tmpNode = data.append_child("startScore");
+	tmpNode.append_attribute("value") = startScore;
 
 	tmpNode = data.append_child("acceleration");
 	tmpNode.append_attribute("type") = acceleration.x;
@@ -349,11 +370,107 @@ bool Player::Save(pugi::xml_node& data) const
 
 //------------------------------------------------
 
+bool Player::CameraFree() const
+{
+	return freeCamera;
+}
+
+bool Player::IsGod() const
+{
+	return godMode;
+}
+
+uint Player::LifeToStart()
+{
+	life = startLife;
+	return life;
+}
+
+uint Player::LifeToMax()
+{
+	life = startLife = maxLife;
+	return life;
+}
+
+iPoint Player::GetActivationRadius() const
+{
+	return activationRadius;
+}
+
+void Player::ReturnToSpawn()
+{
+	position = lastGroundPosition = spawnPosition;
+}
+
+void Player::SetSpawn(fPoint spawn)
+{
+	spawnPosition = spawn;
+}
+
+void Player::DeadReset()
+{
+	LifeToStart();
+	deadSprite.anim.Reset();	//IMPROVE: Check if really needed here
+	playedHurtSfx = false;
+}
+
+int Player::GetScore()
+{
+	return playerScore;
+}
+
+void Player::AddScore(int points)
+{
+	playerScore += points;
+	ScoreToUI();
+}
+
+void Player::ResetScore()
+{
+	playerScore = startScore;
+	ScoreToUI();
+}
+
+void Player::EraseScore()
+{
+	playerScore = startScore = 0;
+	ScoreToUI();
+}
+
+void Player::RemoveRetry()
+{
+	this->retryLeft--;
+	//RetryToUI();
+}
+
+void Player::ResetRetry()
+{
+	retryLeft = startRetry;
+	//RetryToUI();
+}
+
+void Player::ScoreToUI()
+{
+	std::string scoreStr;
+	p2SString string;
+
+	scoreStr = std::to_string(playerScore);
+	string.create("      %s", scoreStr.c_str());
+
+	if (App->scene->score != nullptr) {
+		Text* scoreText = (Text*)App->scene->score;
+		scoreText->ChangeContent(string.GetString());
+	}
+}
+
+//------------------------------------------------------
+
 // Import all state data from config.xml
 void Player::ImportAllStates(pugi::xml_node& config)
 {
 	// Character stats
-	maxLife = (ushort)config.child("life").attribute("value").as_uint();
+	maxLife = config.child("life").attribute("value").as_uint();
+	startRetry = config.child("retry").attribute("value").as_uint();
 	maxSpeed = { config.child("maxSpeed").attribute("x").as_float(), config.child("maxSpeed").attribute("y").as_float() };
 	hurtSpeed = { config.child("hurtSpeed").attribute("x").as_float(), config.child("hurtSpeed").attribute("y").as_float() };
 	normalAcceleration = config.child("accelerations").attribute("x").as_float();
@@ -993,14 +1110,15 @@ void Player::HurtEffects()
 
 void Player::DeadEffects() {
 	if (App->fade->GetStep() == fade_step::NONE && deadTimer < SDL_GetTicks() - deathDelay) {
-		if (timesDead < 2) {
-			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
-			timesDead++;
+		if (retryLeft <= 0) {
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
+			EraseScore();
+			ResetRetry();
 		}
 		else {
-			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::RESTART_LEVEL);
 			ResetScore();
-			timesDead = 0;
+			RemoveRetry();
 		}
 	}
 	else {

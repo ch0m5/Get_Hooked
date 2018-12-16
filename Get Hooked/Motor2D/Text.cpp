@@ -74,6 +74,19 @@ SDL_Rect Text::ChangeText(p2SString string, SDL_Color color, _TTF_Font* font)
 	return *sprite;
 }
 
+SDL_Rect Text::ChangeContent(const char* string)
+{
+	if (graphics != nullptr) {
+		App->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
+	content.create(string);
+	graphics = App->font->Print(string, color, font);
+	App->tex->GetSize(graphics, (uint&)this->sprite->w, (uint&)this->sprite->h);
+	return *sprite;
+}
+
 SDL_Rect Text::ChangeColor(SDL_Color color)
 {
 	if (graphics != nullptr) {
