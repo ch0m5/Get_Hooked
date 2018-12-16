@@ -114,6 +114,7 @@ private:
 	SDL_Rect* shutDown;
 	SDL_Rect* settings;
 	SDL_Rect* back;
+	SDL_Rect* webpage;
 	SDL_Rect healthBar;
 	SDL_Rect healthChunck;
 };

@@ -85,6 +85,11 @@ void CloseSettings()
 		App->scene->settingsWindow->Deactivate();
 }
 
+void OpenWebpage()
+{
+	ShellExecuteA(NULL, "open", "https://scotland-fury.github.io/Hook_Platformer/", NULL , NULL , SW_SHOWNORMAL);
+}
+
 // ------------------------------------------------------------------------------
 
 //Constructor
@@ -99,6 +104,7 @@ j1Scene::j1Scene() : j1Module()
 	shutDown = new SDL_Rect[4];
 	settings = new SDL_Rect[4];
 	back = new SDL_Rect[4];
+	webpage = new SDL_Rect[4];
 }
 
 // Destructor
@@ -110,6 +116,7 @@ j1Scene::~j1Scene()
 	RELEASE_ARRAY(shutDown);
 	RELEASE_ARRAY(settings);
 	RELEASE_ARRAY(back);
+	RELEASE_ARRAY(webpage);
 }
 
 // Called before render is available
@@ -149,6 +156,7 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	RegisterButtonData(config.child("ui").child("shutDown"), shutDown);
 	RegisterButtonData(config.child("ui").child("settings"), settings);
 	RegisterButtonData(config.child("ui").child("back"), back);
+	RegisterButtonData(config.child("ui").child("webpage"), webpage);
 
 	item = config.child("ui").child("healthBar");
 	healthBar = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
@@ -202,6 +210,7 @@ bool j1Scene::Start()
 		parent = App->ui->CreateActionBox(&GoToCredits, { 1024 / 4, 315 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Credits", DEFAULT_COLOR, gameText, false, parent);
 		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
+		App->ui->CreateActionBox(&OpenWebpage, { 55, 20 }, webpage, NULL, false);
 
 		if (result == NULL) {
 			loadButton->Disable();
