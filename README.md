@@ -26,8 +26,8 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 * F2: Start from beginning of current level
 * F3: Advance to next level
 * F4: Free camera movement
-* F5: Save current state
-* F6: Load previously saved state
+* F5: Save current state	(Doesn't work on enemies, coins, nor the timer)
+* F6: Load previously saved state	(Doesn't work on enemies, coins, nor the timer)
 * F7: Recieve instant damage (Unless on godmode)
 * F8: User Interface Debug view
 * F9: Game debug view (Colliders/Logic)
@@ -51,12 +51,13 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 
 ## Subsystems
 * The game features several modules that manage the entire game workflow, like textures, renderization, window setup, fonts, etc.
-* Both entities and GUI elements are managed by a detailed object tree and modules that handle their logic, fabrication and destruction. Object polymorphism has been exploited to maximum possible efficiency.
-* All modules, entities, and GUI elements follow a similar step-by-step workflow. The last two have a second workflow layer, where the conditions like position, movement and inputs are read, a new state is decided, and then all changes are applied.
-* All entities are related to the player by radius. Attack, movement, and their logic workflow are conditioned to the player to skip uneeded processes.
-* User Interface Elements have a parent and children class so they can be linked through each other for different functions.
-* The Button template class is an image with a function pointer which return and parameters can be decided on the creation of the element. This makes the creation of buttons with different functionalities very easy.
-* A delta time is embedded into the game, and allows to change from a cap of 30 fps to unlimited.
+* Both entities and GUI elements are managed by a detailed object tree and modules that handle their logic, fabrication and destruction.
+* Object polymorphism has been exploited to maximum possible efficiency, meaning that there's several layers so that each class has only has the members and methods that it really needs so new types of objects with similar characteristics can be created with ease. For example, a PhysicalEntity has all data related to colliders, while his child Creature has "alive" data.
+* All modules, entities, and GUI elements follow a similar step-by-step workflow. The last two have a second workflow layer, where the conditions like position, movement and inputs are read, a new state is decided, and then all changes are applied. Inputs can come from player or other sources, enemies' "inputs" are based on the player's character.
+* All entities are related to the player by radius. Attack, movement, pathfinding, and their logic workflow are conditioned to the player to skip uneeded processes, like updating if far away from the player.
+* User Interface Elements have a parent and children class so they can be linked through each other for different functions, like cursor dynamic moving or positioning.
+* The Button template class is an image with a function pointer which return and parameters can be decided on the creation of the element. This makes the creation of buttons with different functionalities very easy. A Button is something clickable that calls a function on press, and that's it, while its child ActionBox includes 4 sprites, one per button state.
+* A delta time is embedded into the game, and allows to change from a cap of 30 fps to unlimited, this applies to both logic and animations.
 
 ## Innovation
 * Living entities accelerate and deaccelerate when moving, on ground they deaccelerate automatically.
@@ -71,7 +72,7 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 * Button is a template class with a function pointer that allows easy creation of new and different buttons with different functionalities, as you can decide which return and parameters will their allocated function use.
 * Some Original Debug Functionalities.
 
-## Gameplay
+## Gameplay Showcase
 <html>
 <body>
 
