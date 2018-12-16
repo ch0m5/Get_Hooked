@@ -18,8 +18,6 @@ private:
 	void UpdateHitbox();
 
 protected:
-	bool picked = false;
-
 	sprite_data idleSprite;
 };
 
