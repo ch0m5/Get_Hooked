@@ -19,6 +19,21 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 	* Jump: W
 	* Crouch/Slide: S
 	* Space: Attack
+	
+### Debug Mode
+* Arrow Keys: Manual Camera Movement
+* F1: Start from the first level
+* F2: Start from beginning of current level
+* F3: Advance to next level
+* F4: Free camera movement
+* F5: Save current state
+* F6: Load previously saved state
+* F7: Recieve instant damage (Unless on godmode)
+* F8: User Interface Debug view
+* F9: Game debug view (Colliders/Logic)
+* F10: Godmode (No damage, no collisions, and free movement)
+* F11: Activate/Deactivate FPS cap (30)
+* 1/2/3/4/5: Change game scale to number chosen
 
 ## The Team: [Scotland Fury](https://github.com/Scotland-Fury)
 * Carles Homs 
@@ -43,11 +58,24 @@ Lastest Release: [Get Hooked v0.4](https://github.com/Scotland-Fury/Hook_Platfor
 * The Button template class is an image with a function pointer which return and parameters can be decided on the creation of the element. This makes the creation of buttons with different functionalities very easy.
 * A delta time is embedded into the game, and allows to change from a cap of 30 fps to unlimited.
 
+## Innovation
+* Living entities accelerate and deaccelerate when moving, on ground they deaccelerate automatically.
+* Entities that are outside the player activation radius do not update.
+* Player can attack, a collider is created mid-animation when the attack is visually being made, set by a "start" and "finish" frames.
+* Player collider changes shape and position depending on his current animation.
+* Player can crouch to evade things that could hit his head area.
+* Player slides with a different deacceleration when trying to crouch while moving.
+* Player can jump in the air once making a somersault.
+* Enemies have a detection and attack radius which they use to input movement and other special attacks.
+* Enemies are briefly stunned if still alive, backing off from the player. If they die, they dissapear after a set time.
+* Button is a template class with a function pointer that allows easy creation of new and different buttons with different functionalities, as you can decide which return and parameters will their allocated function use.
+* Some Original Debug Functionalities.
+
 ## Gameplay
 <html>
 <body>
 
-<iframe width="1903" height="775" src="https://www.youtube.com/embed/TBzmn2r6HxY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="645" height="520" src="https://www.youtube.com/embed/TBzmn2r6HxY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 </body>
 </html>
