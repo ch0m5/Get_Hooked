@@ -15,6 +15,7 @@
 #include "j1EntityManager.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Item.h"
 #include "j1Fonts.h"
 #include "j1UserInterface.h"
 #include "Image.h"
@@ -35,6 +36,7 @@ void GoToSettings()
 
 void GoToMenu()
 {
+	App->win->scale = App->win->origScale;
 	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
 }
 
@@ -318,19 +320,21 @@ bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 {
 	BROFILER_CATEGORY("Module Scene PreUpdate", Profiler::Color::DarkOrange);
 
-	if (debugMode == true) {
-		DebugInput();	// Check debug input
-	}
-	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN && scene > scene_type::CREDITS) {
-		if (settingsWindow->active == false) {
-			App->scene->gamePaused = true;
-			App->scene->settingsWindow->Activate();
+	if (App->fade->GetStep() == fade_step::NONE) {
+		if (debugMode == true) {
+			DebugInput();	// Check debug input
 		}
-		else {
-			App->scene->gamePaused = false;
-			App->scene->settingsWindow->Deactivate();
+		if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN && scene > scene_type::CREDITS) {
+			if (settingsWindow->active == false) {
+				App->scene->gamePaused = true;
+				App->scene->settingsWindow->Activate();
+			}
+			else {
+				App->scene->gamePaused = false;
+				App->scene->settingsWindow->Deactivate();
+			}
+
 		}
-		
 	}
 
 	return true;
@@ -707,21 +711,32 @@ bool j1Scene::SpawnEntities(scene_type level, pugi::xml_node& config)
 		return false;
 	}
 
-	SpawnEnemies(entities, spawns);
+	SpawnLevelEntities(entities, spawns);
 
 	return ret;
 }
 
-bool j1Scene::SpawnEnemies(pugi::xml_node& entitiesNode, pugi::xml_node& spawns)
+bool j1Scene::SpawnLevelEntities(pugi::xml_node& entitiesNode, pugi::xml_node& spawns)
 {
 	bool ret = true;
 
-	Enemy* tmpPtr;
-	pugi::xml_node lastChild = spawns.last_child();
+	pugi::xml_node lastChild;
+
+	Enemy* enemyPtr;
+	lastChild = spawns.child("enemiesEnd");
 	for (pugi::xml_node spawnPoints = spawns.first_child(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
-		tmpPtr = (Enemy*)App->entityManager->CreateEntity((entity_type)spawnPoints.attribute("type").as_int(), entitiesNode);
-		tmpPtr->Spawn(spawnPoints.attribute("xSpawn").as_int(), spawnPoints.attribute("ySpawn").as_int());
+		enemyPtr = (Enemy*)App->entityManager->CreateEntity((entity_type)spawnPoints.attribute("type").as_int(), entitiesNode);
+		enemyPtr->Spawn(spawnPoints.attribute("xSpawn").as_int(), spawnPoints.attribute("ySpawn").as_int());
 	}
+
+	Item* itemPtr;
+	lastChild = spawns.child("itemsEnd");
+	for (pugi::xml_node spawnPoints = spawns.child("enemiesEnd").next_sibling(); spawnPoints != lastChild; spawnPoints = spawnPoints.next_sibling()) {
+		itemPtr = (Item*)App->entityManager->CreateEntity((entity_type)spawnPoints.attribute("type").as_int(), entitiesNode);
+		itemPtr->Spawn(spawnPoints.attribute("xSpawn").as_int(), spawnPoints.attribute("ySpawn").as_int());
+		itemPtr->UpdateHitbox();
+	}
+
 
 	return ret;
 }

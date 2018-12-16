@@ -97,6 +97,12 @@
     <ClCompile Include="PhysicalElement.cpp">
       <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Items</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="j1Window.h">
@@ -221,6 +227,12 @@
     </ClInclude>
     <ClInclude Include="PhysicalElement.h">
       <Filter>Desenvolupament  ========\Entities System\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Desenvolupament  ========\Entities System\Entities\Physical\Items</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

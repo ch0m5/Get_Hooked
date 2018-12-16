@@ -2,6 +2,8 @@
 #define __ENTITY_H__
 
 #include "p2Animation.h"
+#include "p2SString.h"
+#include "PugiXml/src/pugixml.hpp"
 
 struct SDL_Texture;
 
@@ -12,9 +14,9 @@ enum class entity_type
 	//Creatures
 	NPC,
 	PLAYER,
-	ENEMY,
 
 	//Enemies
+	ENEMY,
 	BAT,
 	SLIME,
 
@@ -24,6 +26,7 @@ enum class entity_type
 
 	//Items
 	ITEM,
+	COIN,
 
 	//Environment
 	CHECKPOINT,

@@ -123,6 +123,7 @@ void Bat::ApplyState()
 				if (deadTimer < SDL_GetTicks() - deathDelay) {
 					active = false;
 					turnedOn = false;
+					App->entityManager->player->AddScore(1);
 
 					if (hitbox != nullptr) {
 						hitbox->to_delete = true;

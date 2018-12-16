@@ -78,10 +78,12 @@
   <ItemGroup>
     <ClCompile Include="Bat.cpp" />
     <ClCompile Include="CheckBox.cpp" />
+    <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="InputText.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="j1Collision.cpp" />
     <ClCompile Include="j1EntityManager.cpp" />
     <ClCompile Include="j1FadeScene.cpp" />
@@ -113,10 +115,12 @@
     <ClInclude Include="Bat.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CheckBox.h" />
+    <ClInclude Include="Coin.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="InputText.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="j1Collision.h" />
     <ClInclude Include="j1EntityManager.h" />
     <ClInclude Include="j1FadeScene.h" />

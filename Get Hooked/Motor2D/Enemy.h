@@ -46,7 +46,6 @@ public:
 
 	// Save and Load
 	virtual bool Load(pugi::xml_node &entities);
-
 	virtual bool Save(pugi::xml_node &entities) const;
 
 	collision_type OnCollision(Collider*, Collider*);

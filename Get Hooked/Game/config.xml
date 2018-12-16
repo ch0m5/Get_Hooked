@@ -15,15 +15,15 @@
   <collision>
     <mustDebugDraw value="false" />
     <matrix>
-      <wall wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
-      <platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
-      <falling_platform wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="true" enemy_attack="false" none="false" />
-      <player wall="true" platform="true" falling_plaftorm="true" player="false" player_attack="false" enemy="true" enemy_attack="true" win="true" none="false" />
-      <player_attack wall="false" platform="false" falling_plaftorm="false" player="false" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
-      <enemy wall="true" platform="true" falling_plaftorm="true" player="true" player_attack="true" enemy="false" enemy_attack="false" win="false" none="false" />
-      <enemy_attack wall="false" platform="false" falling_plaftorm="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
-      <win wall="false" platform="false" falling_platform="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
-      <none wall="false" platform="false" falling_platform="false" palyer="false" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false"/>
+      <wall wall="false" platform="false" item="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
+      <platform wall="false" platform="false" item="false" player="true" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
+      <item wall="false" platform="false" item="false" player="true" player_attack="false" enemy="true" enemy_attack="false" none="false" />
+      <player wall="true" platform="true" item="true" player="false" player_attack="false" enemy="true" enemy_attack="true" win="true" none="false" />
+      <player_attack wall="false" platform="false" item="false" player="false" player_attack="false" enemy="true" enemy_attack="false" win="false" none="false" />
+      <enemy wall="true" platform="true" item="false" player="true" player_attack="true" enemy="false" enemy_attack="false" win="false" none="false" />
+      <enemy_attack wall="false" platform="false" item="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
+      <win wall="false" platform="false" item="false" player="true" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false" />
+      <none wall="false" platform="false" item="false" palyer="false" player_attack="false" enemy="false" enemy_attack="false" win="false" none="false"/>
     </matrix>
   </collision>
   
@@ -57,14 +57,15 @@
     <sfx volume="100">
       <folder>audio/fx/</folder>
       <ui>
-        <button>button.wav</button>
+        <button>Button.wav</button>
       </ui>
-      <player>
-        <run>run.wav</run>
-        <jump>jump.wav</jump>
-        <slide>slide.wav</slide>
-        <hurt>hurt.wav</hurt>
-      </player>
+      <entities>
+        <run>Run.wav</run>
+        <jump>Jump.wav</jump>
+        <slide>Slide.wav</slide>
+        <hurt>Hurt.wav</hurt>
+        <item>PickItem.wav</item>
+      </entities>
     </sfx>
   </audio>
   
@@ -101,7 +102,15 @@
           <slime type="4" xSpawn="1371" ySpawn="305" />
           <slime type="4" xSpawn="1886" ySpawn="278" />
           <slime type="4" xSpawn="4189" ySpawn="332" />
-          <end/>
+          <enemiesEnd/>
+          <coin type="8" xSpawn="789" ySpawn="570" />
+          <coin type="8" xSpawn="1109" ySpawn="467" />
+          <coin type="8" xSpawn="1609" ySpawn="361" />
+          <coin type="8" xSpawn="2201" ySpawn="307" />
+          <coin type="8" xSpawn="3160" ySpawn="376" />
+          <coin type="8" xSpawn="3407" ySpawn="339" />
+          <coin type="8" xSpawn="3642" ySpawn="375" />
+          <itemsEnd />
         </spawns>
       </level_1>
       <level_2 file="level2.tmx">
@@ -115,7 +124,13 @@
           <slime type="4" xSpawn="1400" ySpawn="590" />
           <slime type="4" xSpawn="2855" ySpawn="621" />
           <slime type="4" xSpawn="4129" ySpawn="575" />
-          <end/>
+          <enemiesEnd/>
+          <coin type="8" xSpawn="1141" ySpawn="616" />
+          <coin type="8" xSpawn="1609" ySpawn="533" />
+          <coin type="8" xSpawn="2319" ySpawn="562" />
+          <coin type="8" xSpawn="3113" ySpawn="484" />
+          <coin type="8" xSpawn="3343" ySpawn="556" />
+          <itemsEnd />
         </spawns>
       </level_2>
     </maps>
@@ -293,6 +308,20 @@
           <dash speed="120" />
         </stats>
       </slime>
+
+      <!-- Items -->
+      <coin>
+        <folder>textures/</folder>
+        <sprites>
+          <spriteSheet>coin_sprite_sheet.png</spriteSheet>
+          <spriteSize x="32" y="38"/>
+          <first_sprite>
+            <idle column="0" row="0" frames="8" animSpeed ="8" loop="true">
+              <offset x="9" y="12" w="14" h="13"/>
+            </idle>
+          </first_sprite>
+        </sprites>
+      </coin>
     </entities>
   </entityManager>  
 </config>

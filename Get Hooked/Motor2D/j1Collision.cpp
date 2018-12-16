@@ -164,7 +164,7 @@ void j1Collision::DebugDraw()
 		case COLLIDER_PLATFORM: // magenta
 			App->render->DrawQuad(tmpCollider->data->rect, 255, 0, 255, alpha);
 			break;
-		case COLLIDER_FALLING_PLATFORM: // brown
+		case COLLIDER_ITEM: // brown
 			App->render->DrawQuad(tmpCollider->data->rect, 160, 128, 96, alpha);
 			break;
 		case COLLIDER_PLAYER: // blue

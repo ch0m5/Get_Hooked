@@ -103,10 +103,12 @@ bool Player::PreUpdate()
 
 	bool ret = true;
 
-	if (App->scene->debugMode == true) {
-		DebugInput();
+	if (App->fade->GetStep() == fade_step::NONE) {
+		if (App->scene->debugMode == true) {
+			DebugInput();
+		}
 	}
-
+	
 	CheckInput();		// Check player input
 	CheckMovement();	// Check player current movement
 
@@ -171,7 +173,10 @@ collision_type Player::OnCollision(Collider* c1, Collider* c2)	//IMPROVE: REWORK
 {
 	collision_type ret = collision_type::NONE;
 
-	if (godMode == false) {
+	if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_ITEM) {
+		App->entityManager->player->AddScore(1);
+	}
+	else if (godMode == false) {
 		if (c1->GetType() == collider_type::COLLIDER_PLAYER && c2->GetType() == collider_type::COLLIDER_WALL) {
 			ret = WallCollision(c1, c2);
 		}
@@ -997,6 +1002,7 @@ void Player::DeadEffects() {
 		}
 		else {
 			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::MAIN_MENU);
+			ResetScore();
 			timesDead = 0;
 		}
 	}

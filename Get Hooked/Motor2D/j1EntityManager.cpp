@@ -12,6 +12,9 @@
 #include "Bat.h"
 #include "Slime.h"
 
+#include "Item.h"
+#include "Coin.h"
+
 // Constructor
 j1EntityManager::j1EntityManager() : j1Module()
 {
@@ -280,7 +283,7 @@ bool j1EntityManager::Save(pugi::xml_node& managerNode) const
 
 Entity* j1EntityManager::CreateEntity(entity_type type, pugi::xml_node entitiesNode)
 {
-	static_assert((int)entity_type::MAX_TYPES == 9, "Entity enum is not accurate");
+	static_assert((int)entity_type::MAX_TYPES == 10, "Entity enum is not accurate");
 
 	Entity* ret = nullptr;
 
@@ -293,6 +296,9 @@ Entity* j1EntityManager::CreateEntity(entity_type type, pugi::xml_node entitiesN
 		break;
 	case entity_type::SLIME:
 		ret = new Slime();
+		break;
+	case entity_type::COIN:
+		ret = new Coin();
 		break;
 	}
 

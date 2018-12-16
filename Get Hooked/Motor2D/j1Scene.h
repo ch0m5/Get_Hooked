@@ -57,7 +57,7 @@ public:
 public:
 	//Spawns	CHANGE/FIX: This should probably be on the map module and managed with Tiled data, not congif.xml reading
 	bool SpawnEntities(scene_type level, pugi::xml_node&);
-	bool SpawnEnemies(pugi::xml_node& entities, pugi::xml_node& spawns);
+	bool SpawnLevelEntities(pugi::xml_node& entities, pugi::xml_node& spawns);
 
 	// Scene changes
 	void NextLevel();

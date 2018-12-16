@@ -226,10 +226,11 @@ void j1Audio::LoadAllMusic(pugi::xml_node& config) {	// @Carles
 void j1Audio::LoadAllSfx(pugi::xml_node& config) {	// @Carles
 	sfxFolder.create(config.child("sfx").child("folder").child_value());
 
-	runSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("run").child_value());
-	jumpSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("jump").child_value());
-	slideSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("slide").child_value());
-	hurtSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("player").child("hurt").child_value());
+	runSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("entities").child("run").child_value());
+	jumpSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("entities").child("jump").child_value());
+	slideSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("entities").child("slide").child_value());
+	hurtSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("entities").child("hurt").child_value());
+	pickItemSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("entities").child("item").child_value());
 	buttonSfx.name.create("%s%s", sfxFolder.GetString(), config.child("sfx").child("ui").child("button").child_value());
 
 	LoadFx(runSfx.name.GetString());
@@ -246,4 +247,7 @@ void j1Audio::LoadAllSfx(pugi::xml_node& config) {	// @Carles
 
 	LoadFx(buttonSfx.name.GetString());
 	buttonSfx.id = SFX_BUTTON;
+
+	LoadFx(pickItemSfx.name.GetString());
+	pickItemSfx.id = SFX_ITEM;
 }

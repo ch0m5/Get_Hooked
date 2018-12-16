@@ -80,6 +80,12 @@ public:
 		deadSprite.anim.Reset();	//IMPROVE: Check if really needed here
 		playedHurtSfx = false;
 	}
+	void AddScore(int points) {
+		playerScore += points;
+	}
+	void ResetScore() {
+		playerScore = 0;
+	}
 
 private:	// @Carles
 	void ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite);
@@ -138,9 +144,10 @@ private:	// @Carles
 	fPoint NormalMovement(float dt);
 
 public:
-	int timesDead = 0;
+	int timesDead = 0;	//ALERT_CARLES: ADD TO SAVE LOAD
 
 private:
+	int playerScore = 0;
 	uint startLife;
 	player_state status;
 	Collider* attackCollider = nullptr;
