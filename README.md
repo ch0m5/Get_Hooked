@@ -8,6 +8,9 @@ Feel free to visit our [Webpage](https://scotland-fury.github.io/Hook_Platformer
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
 
+## Attention Notice
+Because of some minor errors, the game might not initialize on the first execution.
+
 ## Usage
 ### General Controls
 * ESC: Open settings menu
