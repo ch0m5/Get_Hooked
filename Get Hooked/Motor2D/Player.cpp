@@ -757,6 +757,9 @@ void Player::CheckState() {	// For each state, check possible new states based o
 		else if (hurtTimer < SDL_GetTicks() - hurtDelay) {	//CHANGE/FIX: Not perfect, it's checked on every update
 			damageCollision = true;
 		}
+		if (position.x > 4277) {	//CHANGE/FIX: Hardcoded level end
+			App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::NEXT_LEVEL);
+		}
 
 		switch (status) {
 		case player_state::IDLE:
