@@ -66,6 +66,24 @@ fPoint UIElement::MatchCenter(fPoint reference)
 	return center;
 }
 
+void UIElement::Activate()
+{
+	active = true;
+
+	for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
+		item->data->active = true;
+	}
+}
+
+void UIElement::Deactivate()
+{
+	active = false;
+
+	for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
+		item->data->active = false;
+	}
+}
+
 UIElement* UIElement::AttachParent(UIElement* parent)
 {
 	this->parent = parent;

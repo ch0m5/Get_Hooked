@@ -48,19 +48,15 @@ void CloseGame()
 	App->mustShutDown = true;
 }
 
-void Save()
+void SaveGame()
 {
 	App->SaveGame();
 }
 
-void Load()
+void LoadGame()
 {
-	App->LoadGame();
-}
-
-void ContinueLoad()
-{
-	App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LOAD_GAME);
+	if (App->fade->GetStep() == fade_step::NONE)
+		App->fade->FadeToBlack(App->fade->GetDelay(), fade_type::LOAD_GAME);
 }
 
 void SwitchValue(bool* value)	//IMPROVE: This should be the function that a CheckBox calls with it's own saved value as the parameter
@@ -68,14 +64,16 @@ void SwitchValue(bool* value)	//IMPROVE: This should be the function that a Chec
 	*value = !*value;
 }
 
-void Activate(UIElement* element)
+void OpenSettings()
 {
-	element->active = true;
+	App->scene->gamePaused = true;
+	App->scene->settingsWindow->Activate();
 }
 
-void Deactivate(UIElement* element)
+void CloseSettings()
 {
-	element->active = false;
+	App->scene->gamePaused = false;
+	App->scene->settingsWindow->Deactivate();
 }
 
 // ------------------------------------------------------------------------------
@@ -179,13 +177,15 @@ bool j1Scene::Start()
 	switch (scene) {	//CHANGE/FIX: All of these should be functions
 	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers and hardcoding, but making it based on the screen size gives a lot of problems (TYPE/int)
 		// iPoint screenCenter = { App->win->GetWindowSize().w / (2 * App->win->GetScale()),  App->win->GetWindowSize().h / (2 * App->win->GetScale()) };
+		App->entityManager->player->active = false;
+		
 		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
 		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
 
 		App->ui->CreateText({ 1024 / 4, 100 }, "Get Hooked", DEFAULT_COLOR, App->font->titleFont, false);
 		parent = App->ui->CreateActionBox(&StartGame, { 1024 / 4, 180 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, gameText, false, parent);
-		parent = App->ui->CreateActionBox(&ContinueLoad, { 1024 / 4, 225 }, button, NULL, false);
+		parent = App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 225 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Continue", DEFAULT_COLOR, gameText, false, parent);
 		continueButton = (ActionBox<void>*)parent;
 		parent = App->ui->CreateActionBox(&GoToSettings, { 1024 / 4, 270 }, button, NULL, false);
@@ -202,6 +202,8 @@ bool j1Scene::Start()
 		App->audio->PlayMusic(App->audio->musicMainMenu.GetString());
 		break;
 	case scene_type::SETTINGS:
+		App->entityManager->player->active = false;
+
 		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
 		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
 
@@ -212,12 +214,14 @@ bool j1Scene::Start()
 
 		break;
 	case scene_type::CREDITS:
+		App->entityManager->player->active = false;
+
 		backgroundTexPtr = App->tex->Load(menuBackgroundTex.GetString());
 		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
 
 		parent = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
-		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
 		App->ui->CreateText({ 1024 / 4, 58 }, "Credits", DEFAULT_COLOR, gameText, false, parent);
+		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
 		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
 
 		break;
@@ -228,6 +232,20 @@ bool j1Scene::Start()
 		App->entityManager->player->SetSpawn(playerStart);
 		App->entityManager->player->active = true;
 		SpawnEntities(scene, config);
+
+		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
+		App->ui->CreateActionBox(&GoToMenu, { 20, 20 }, back, NULL, false);
+		App->ui->CreateActionBox(&OpenSettings, { 55, 20 }, settings, NULL, false);
+
+		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
+		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
+		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
+		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
+		App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+		settingsWindow->Deactivate();
+
 		App->audio->PlayMusic(App->audio->musicMap1.GetString());
 		break;
 	case scene_type::LEVEL_2:
@@ -237,6 +255,20 @@ bool j1Scene::Start()
 		App->entityManager->player->SetSpawn(playerStart);
 		App->entityManager->player->active = true;
 		SpawnEntities(scene, config);
+
+		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
+		App->ui->CreateActionBox(&GoToMenu, { 20, 20 }, back, NULL, false);
+		App->ui->CreateActionBox(&OpenSettings, { 55, 20 }, settings, NULL, false);
+
+		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
+		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
+		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
+		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
+		App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+		settingsWindow->Deactivate();
+
 		App->audio->PlayMusic(App->audio->musicMap2.GetString());
 		break;
 	/*case scene_type::LEVEL_3:
@@ -254,6 +286,32 @@ bool j1Scene::Start()
 
 	return ret;
 }
+
+void j1Scene::HealthToUI(int life)
+{
+	int i = 0;
+	if (i < life) {	//CHANGE/FIX: A loop iteration is obvious, yet "ilegal int to const TYPE" won't let me, debug and fix
+		health[0] = (App->ui->CreateImage({ 340, 35 }, healthChunck, NULL, false));
+		i++;
+	}
+	if (i < life) {
+		health[1] = (App->ui->CreateImage({ 390, 35 }, healthChunck, NULL, false));
+		i++;
+	}
+	if (i < life) {
+		health[2] = (App->ui->CreateImage({ 440, 35 }, healthChunck, NULL, false));
+		i++;
+	}
+
+	playerLife = i;
+}
+
+void j1Scene::HurtUI()
+{
+	App->ui->DestroyElement(health[playerLife - 1]);	//CHANGE/FIX: Really wierd implementation, but a list created problems
+	health[playerLife - 1] = nullptr;
+	playerLife--;
+};
 
 // Called each loop iteration
 bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
@@ -315,26 +373,34 @@ bool j1Scene::PostUpdate()
 
 		switch (App->fade->GetType()) {	//CHANGE/FIX: This should be a function
 		case fade_type::MAIN_MENU:
-			App->tex->UnLoad(backgroundTexPtr);
-			backgroundTexPtr = nullptr;
+			if (backgroundTexPtr != nullptr) {
+				App->tex->UnLoad(backgroundTexPtr);
+				backgroundTexPtr = nullptr;
+			}
 			App->ui->CleanUp();
 			ChangeScene(scene_type::MAIN_MENU);
 			break;
 		case fade_type::SETTINGS:
-			App->tex->UnLoad(backgroundTexPtr);
-			backgroundTexPtr = nullptr;
+			if (backgroundTexPtr != nullptr) {
+				App->tex->UnLoad(backgroundTexPtr);
+				backgroundTexPtr = nullptr;
+			}
 			App->ui->CleanUp();
 			ChangeScene(scene_type::SETTINGS);
 			break;
 		case fade_type::CREDITS:
-			App->tex->UnLoad(backgroundTexPtr);
-			backgroundTexPtr = nullptr;
+			if (backgroundTexPtr != nullptr) {
+				App->tex->UnLoad(backgroundTexPtr);
+				backgroundTexPtr = nullptr;
+			}
 			App->ui->CleanUp();
 			ChangeScene(scene_type::CREDITS);
 			break;
 		case fade_type::START_GAME:
-			App->tex->UnLoad(backgroundTexPtr);
-			backgroundTexPtr = nullptr;
+			if (backgroundTexPtr != nullptr) {
+				App->tex->UnLoad(backgroundTexPtr);
+				backgroundTexPtr = nullptr;
+			}
 			App->ui->CleanUp();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
@@ -401,6 +467,9 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 	App->map->CleanUp();
 	App->collision->CleanUp();
 
+	health[0] = health[1] = health[2] = nullptr;
+	settingsWindow = nullptr;
+
 	return true;
 }
 
@@ -414,12 +483,16 @@ bool j1Scene::Load(pugi::xml_node& config)
 	pugi::xml_node tmpNode;
 	scene = (scene_type)config.child("scene").attribute("current").as_int();
 
-	if (scene != current) {
+	if (saveFix == false) {
 		CleanUp();
 		App->entityManager->player->CleanUp();
 		App->entityManager->CleanEntities();
 		Start();
 		App->entityManager->player->LoadStart();
+		saveFix = true;
+	}
+	else {
+		saveFix = false;
 	}
 
 	return ret;

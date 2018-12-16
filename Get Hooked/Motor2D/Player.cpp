@@ -75,6 +75,8 @@ bool Player::Start()
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
 	hitboxOffset = hitbox->rect;
 
+	App->scene->HealthToUI(life);
+
 	return ret;
 }
 
@@ -86,6 +88,8 @@ bool Player::LoadStart()
 
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
 	hitboxOffset = hitbox->rect;
+
+	App->scene->HealthToUI(life);
 
 	return ret;
 }
@@ -465,6 +469,8 @@ void Player::Hurt()
 
 	damageCollision = false;
 	hurtTimer = SDL_GetTicks();
+
+	App->scene->HurtUI();
 
 	if (--life < 1) {
 		dead = true;

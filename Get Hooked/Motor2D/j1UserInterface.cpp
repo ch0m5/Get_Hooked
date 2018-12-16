@@ -75,17 +75,15 @@ bool j1UserInterface::UpdateTick(float dt)
 	
 	bool ret = true;
 
-	if (App->scene->gamePaused == false) {
-		p2List_item<UIElement*>* item;
-		for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
-		{
-			if (item->data->active == false) {
-				continue;
-			}
-
-			if (ret)
-				ret = item->data->UpdateTick(dt);	//Update dependant of framerate
+	p2List_item<UIElement*>* item;
+	for (item = screenElements.start; item != nullptr && ret == true; item = item->next)
+	{
+		if (item->data->active == false) {
+			continue;
 		}
+
+		if (ret)
+			ret = item->data->UpdateTick(dt);	//Update dependant of framerate
 	}
 
 	return ret;
@@ -182,6 +180,16 @@ void j1UserInterface::DestroyElement(p2List_item<UIElement*>* element)
 {
 	RELEASE(element->data);
 	screenElements.del(element);
+}
+
+void j1UserInterface::DestroyElement(UIElement* element)
+{
+	int pos = screenElements.find(element);
+
+	if (pos > -1) {
+		RELEASE(element);
+		screenElements.del(screenElements.At(pos));
+	}
 }
 
 UIElement* j1UserInterface::CreateImage(fPoint center, SDL_Rect texRect, SDL_Texture* tex, bool dynamic, UIElement* parent, p2List<UIElement*>* children)

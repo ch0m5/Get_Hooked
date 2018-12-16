@@ -68,6 +68,9 @@ public:
 	virtual fPoint MatchPosition(fPoint reference);
 	virtual fPoint MatchCenter(fPoint reference);
 
+	virtual void Activate();
+	virtual void Deactivate();
+
 	virtual UIElement* AttachParent(UIElement* parent);
 	virtual void DetachParent();
 

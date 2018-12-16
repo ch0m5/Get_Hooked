@@ -6,6 +6,7 @@
 #include "SDL/include/SDL_rect.h"
 
 class Enemy;
+class UIElement;
 struct SDL_Texture;
 
 enum class scene_type {	//@Carles
@@ -69,6 +70,8 @@ public:
 	void CameraInput(float dt);
 	SDL_Rect LimitCameraPos(fPoint playerPos);
 	
+	void HealthToUI(int life);
+	void HurtUI();
 private:
 	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
 
@@ -79,8 +82,13 @@ public:	// CHANGE/FIX: Check the need for public
 	fPoint playerStart;
 	fPoint playerFinish;
 
+	UIElement* settingsWindow;
+	UIElement* health[3];
+	int playerLife;
+
 private:
 	bool loading = false;
+	bool saveFix = false;			//CHANGE/FIX: Temporary fix for a strange Save/Load bug
 	fPoint cameraSpeed;
 	p2List<p2SString> maps;	//CHANGE/FIX: Should be in module map maybe?
 

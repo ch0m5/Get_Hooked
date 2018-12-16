@@ -13,23 +13,25 @@
 	<userInterface />
 	<entityManager>
 		<player>
-			<position x="1707.62427" y="314" />
-			<lastGround x="1707.62427" y="314" />
-			<speed x="0" y="0" />
-			<life value="3" />
+			<position x="701.736755" y="236.426834" />
+			<lastGround x="701.736755" y="298" />
+			<speed x="0" y="-143.839981" />
+			<life value="2" />
 			<acceleration type="700" />
-			<state current="0" />
-			<airborne value="false" />
+			<state current="3" />
+			<airborne value="true" />
 			<looking right="true" />
-			<somersault used="false" />
+			<somersault used="true" />
 			<dead value="false" />
-			<hurtTimer miliseconds="0" />
-			<deadTimer miliseconds="0" />
+			<hurtTimer miliseconds="53673" />
+			<deadTimer miliseconds="35538" />
 			<reset value="false" />
-			<runSfxTimer miliseconds="24261" />
+			<runSfxTimer miliseconds="54047" />
 			<slideSfx played="false" />
-			<hurtSfx played="false" />
+			<hurtSfx played="true" />
 		</player>
+		<bat />
+		<bat />
 		<bat />
 		<bat />
 		<bat />
@@ -40,10 +42,10 @@
 	</entityManager>
 	<collision />
 	<scene>
-		<scene current="3" />
+		<scene current="4" />
 	</scene>
 	<fade />
 	<renderer>
-		<camera x="-2915" y="-271" />
+		<camera x="-999" y="-172" />
 	</renderer>
 </game_state>

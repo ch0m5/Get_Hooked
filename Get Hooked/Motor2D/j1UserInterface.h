@@ -49,6 +49,7 @@ public:
 	SDL_Texture* GetAtlas() const;
 	
 	void AddElement(UIElement* element);
+	void DestroyElement(UIElement* element);
 	void DestroyElement(p2List_item<UIElement*>* element);
 
 	UIElement* CreateImage(fPoint center, SDL_Rect texRect = { 0, 0, 0, 0 }, SDL_Texture* tex = NULL, bool dynamic = false, UIElement* parent = NULL, p2List<UIElement*>* children = NULL);

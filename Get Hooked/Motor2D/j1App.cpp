@@ -260,8 +260,8 @@ bool j1App::DoUpdate()
 	item = modules.start;
 	j1Module* pModule = NULL;
 
-	if (App->scene->gamePaused == true)
-		dt = 0.0f;
+	//if (App->scene->gamePaused == true)
+		//dt = 0.0f;
 
 	for (item = modules.start; item != NULL && ret == true; item = item->next)	//All logic
 	{
