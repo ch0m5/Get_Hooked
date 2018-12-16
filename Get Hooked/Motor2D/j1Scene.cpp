@@ -52,6 +52,9 @@ void CloseGame()
 
 void SaveGame()
 {
+	if (App->scene->loadButton != nullptr) {
+		App->scene->loadButton->Enable();
+	}
 	App->SaveGame();
 }
 
@@ -174,8 +177,7 @@ bool j1Scene::Start()
 
 	//IMPROVE: All the stuff "skipped" by cases, could be cleaner overall
 	pugi::xml_document saveDoc;
-	pugi::xml_parse_result result;
-	ActionBox<void>* continueButton;
+	pugi::xml_parse_result result = saveDoc.load_file("save_game.xml");
 
 	switch (scene) {	//CHANGE/FIX: All of these should be functions
 	case scene_type::MAIN_MENU:	//CHANGE/FIX: Lots of magic numbers and hardcoding, but making it based on the screen size gives a lot of problems (TYPE/int)
@@ -190,16 +192,15 @@ bool j1Scene::Start()
 		App->ui->CreateText(DEFAULT_POINT, "Start", DEFAULT_COLOR, gameText, false, parent);
 		parent = App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 225 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Continue", DEFAULT_COLOR, gameText, false, parent);
-		continueButton = (ActionBox<void>*)parent;
+		loadButton = (ActionBox<void>*)parent;
 		parent = App->ui->CreateActionBox(&GoToSettings, { 1024 / 4, 270 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Settings", DEFAULT_COLOR, gameText, false, parent);
 		parent = App->ui->CreateActionBox(&GoToCredits, { 1024 / 4, 315 }, button, NULL, false);
 		App->ui->CreateText(DEFAULT_POINT, "Credits", DEFAULT_COLOR, gameText, false, parent);
 		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
 
-		result = saveDoc.load_file("save_game.xml");
 		if (result == NULL) {
-			continueButton->Disable();
+			loadButton->Disable();
 		}
 		
 		App->audio->PlayMusic(App->audio->musicMainMenu.GetString());
@@ -233,7 +234,7 @@ bool j1Scene::Start()
 		playerStart = { 608, 250 };		//start = App->map->data.checkpoints.start->data;	//CHANGE/FIX: Get points close to the ground
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
 		
-		SetupLevel(config);
+		SetupLevel(result, config);
 
 		App->audio->PlayMusic(App->audio->musicMap1.GetString());
 		break;
@@ -242,7 +243,7 @@ bool j1Scene::Start()
 		playerStart = { 720, -400 };	//start = App->map->data.checkpoints.start->data;
 		playerFinish = { 500, 500 };	//finish = App->map->data.checkpoints.end->data;
 		
-		SetupLevel(config);
+		SetupLevel(result, config);
 
 		App->audio->PlayMusic(App->audio->musicMap2.GetString());
 		break;
@@ -262,12 +263,13 @@ bool j1Scene::Start()
 	return ret;
 }
 
-void j1Scene::SetupLevel(pugi::xml_node& config)
+void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
 {
 	UIElement* parent;
-	std::string scoreStr;
-	p2SString playerScore;
 	_TTF_Font* gameText = App->font->textFont;
+
+	std::string str;
+	p2SString p2Str;
 
 	App->entityManager->player->SetSpawn(playerStart);
 	App->entityManager->player->active = true;
@@ -276,11 +278,17 @@ void j1Scene::SetupLevel(pugi::xml_node& config)
 	App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
 	App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
 
-	scoreStr = std::to_string(App->entityManager->player->GetScore());
-	playerScore.create("      %s", scoreStr.c_str());											//CHANGE/FIX: I should add some "reference point" that depends on parent, adding spaces is dirty
-	parent = App->ui->CreateImage({ 150, 30 }, panel, NULL, false);
-	App->ui->CreateText(DEFAULT_POINT, "Score       ", DEFAULT_COLOR, gameText, false, parent);	//CHANGE/FIX: I should add some "reference point" that depends on parent, adding spaces is dirty
-	score = App->ui->CreateText(DEFAULT_POINT, playerScore.GetString(), DEFAULT_COLOR, gameText, false, parent);
+	str = std::to_string(App->entityManager->player->GetScore());
+	p2Str.create("      %s", str.c_str());											//CHANGE/FIX: I should add some "reference point" that depends on parent, adding spaces is dirty
+	parent = App->ui->CreateImage({ 150, 25 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "Score       ", DEFAULT_COLOR, gameText, false, parent);
+	score = App->ui->CreateText(DEFAULT_POINT, p2Str.GetString(), DEFAULT_COLOR, gameText, false, parent);
+
+	str = std::to_string(App->entityManager->player->GetRetry());
+	p2Str.create("      %s", str.c_str());
+	parent = App->ui->CreateImage({ 150, 60 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "Lifes x     ", DEFAULT_COLOR, gameText, false, parent);
+	retry = App->ui->CreateText(DEFAULT_POINT, p2Str.GetString(), DEFAULT_COLOR, gameText, false, parent);
 
 	settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
@@ -288,8 +296,13 @@ void j1Scene::SetupLevel(pugi::xml_node& config)
 	App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
 	App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
 	App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
-	App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
+	loadButton = (ActionBox<void>*)App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
 	App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+
+	if (result == NULL) {
+		loadButton->Disable();
+	}
+
 	settingsWindow->Deactivate();
 }
 
@@ -500,6 +513,8 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 		score = nullptr;
 	}*/
 	score = nullptr;
+	retry = nullptr;
+	loadButton = nullptr;
 
 	return true;
 }
@@ -563,6 +578,9 @@ void j1Scene::DebugInput()
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN && App->entityManager->player->IsDead() == false) {	// Save game
+			if (loadButton != nullptr) {
+				loadButton->Enable();
+			}
 			App->SaveGame();
 		}
 

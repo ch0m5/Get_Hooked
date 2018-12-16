@@ -422,45 +422,67 @@ int Player::GetScore()
 void Player::AddScore(int points)
 {
 	playerScore += points;
-	ScoreToUI();
+	p2SString string = ValueToUI(playerScore);
+	if (App->scene->score != nullptr) {
+		Text* scoreText = (Text*)App->scene->score;
+		scoreText->ChangeContent(string.GetString());
+	}
 }
 
 void Player::ResetScore()
 {
 	playerScore = startScore;
-	ScoreToUI();
+	p2SString string = ValueToUI(playerScore);
+	if (App->scene->score != nullptr) {
+		Text* scoreText = (Text*)App->scene->score;
+		scoreText->ChangeContent(string.GetString());
+	}
 }
 
 void Player::EraseScore()
 {
 	playerScore = startScore = 0;
-	ScoreToUI();
+	p2SString string = ValueToUI(playerScore);
+	if (App->scene->score != nullptr) {
+		Text* scoreText = (Text*)App->scene->score;
+		scoreText->ChangeContent(string.GetString());
+	}
+}
+
+int Player::GetRetry()
+{
+	return retryLeft;
 }
 
 void Player::RemoveRetry()
 {
 	this->retryLeft--;
-	//RetryToUI();
+	p2SString string = ValueToUI(retryLeft);
+	if (App->scene->retry != nullptr) {
+		Text* retryText = (Text*)App->scene->retry;
+		retryText->ChangeContent(string.GetString());
+	}
 }
 
 void Player::ResetRetry()
 {
 	retryLeft = startRetry;
-	//RetryToUI();
+	p2SString string = ValueToUI(retryLeft);
+	if (App->scene->retry != nullptr) {
+		Text* retryText = (Text*)App->scene->retry;
+		retryText->ChangeContent(string.GetString());
+	}
 }
 
-void Player::ScoreToUI()
+p2SString Player::ValueToUI(int value)
 {
 	std::string scoreStr;
 	p2SString string;
 
-	scoreStr = std::to_string(playerScore);
+	scoreStr = std::to_string(value);
 	string.create("      %s", scoreStr.c_str());
 
-	if (App->scene->score != nullptr) {
-		Text* scoreText = (Text*)App->scene->score;
-		scoreText->ChangeContent(string.GetString());
-	}
+	return string;
 }
 
 //------------------------------------------------------

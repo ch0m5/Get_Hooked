@@ -70,11 +70,12 @@ public:
 	void AddScore(int points);
 	void ResetScore();
 	void EraseScore();
-	void ScoreToUI();
 
+	int GetRetry();
 	void RemoveRetry();
 	void ResetRetry();
-	void ResetToUI();
+
+	p2SString ValueToUI(int value);
 
 private:	// @Carles
 	void ImportAttackData(const char* spriteName, attack_data* attack, pugi::xml_node& first_sprite);

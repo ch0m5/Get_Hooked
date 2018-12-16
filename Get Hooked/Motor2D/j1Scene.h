@@ -4,6 +4,7 @@
 #include "j1Module.h"
 #include "p2Point.h"
 #include "SDL/include/SDL_rect.h"
+#include "ActionBox.h"				//CHANGE/FIX: Just here to make the pointer, not good to include the whole header
 
 class Enemy;
 class UIElement;
@@ -74,7 +75,7 @@ public:
 	void HurtUI();
 
 private:
-	void SetupLevel(pugi::xml_node& config);
+	void SetupLevel(pugi::xml_parse_result&, pugi::xml_node& config);
 	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
 
 public:	// CHANGE/FIX: Check the need for public
@@ -85,9 +86,11 @@ public:	// CHANGE/FIX: Check the need for public
 	fPoint playerFinish;
 
 	UIElement* settingsWindow;
+	ActionBox<void>* loadButton;
 	UIElement* health[3];
 	UIElement* timer;
 	UIElement* score;
+	UIElement* retry;
 	int playerLife;
 
 private:
