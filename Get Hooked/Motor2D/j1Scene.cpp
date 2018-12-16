@@ -321,6 +321,17 @@ bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 	if (debugMode == true) {
 		DebugInput();	// Check debug input
 	}
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN && scene > scene_type::CREDITS) {
+		if (settingsWindow->active == false) {
+			App->scene->gamePaused = true;
+			App->scene->settingsWindow->Activate();
+		}
+		else {
+			App->scene->gamePaused = false;
+			App->scene->settingsWindow->Deactivate();
+		}
+		
+	}
 
 	return true;
 }
@@ -363,12 +374,9 @@ bool j1Scene::PostUpdate()
 	BROFILER_CATEGORY("Module Scene PostUpdate", Profiler::Color::DarkOrange);
 
 	bool ret = true;
-
-	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) {
-		ret = false;
-	}															// @Carles
-	else if (App->fade->GetStep() == fade_step::FULLY_FADED) {	// When game is fully faded, start game load and disable all entities for the next frame, then enable them.
-		App->entityManager->active = false;						// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
+															// @Carles
+	if (App->fade->GetStep() == fade_step::FULLY_FADED) {	// When game is fully faded, start game load and disable all entities for the next frame, then enable them.
+		App->entityManager->active = false;					// This prevents the entities to use the massive dt value of the after-load frame on their calculations.
 		App->ui->active = false;
 
 		switch (App->fade->GetType()) {	//CHANGE/FIX: This should be a function
@@ -637,7 +645,8 @@ void j1Scene::RestartLevel()	//IMPROVE: Only reload entities, not the full map
 	App->entityManager->player->CleanUp();
 	App->entityManager->CleanEntities();
 	Start();
-	App->entityManager->player->LifeToStart();
+	//App->entityManager->player->LifeToStart();	//CHANGE/FIX: A little bit buggy currently, let's just reset the HP to max for now
+	App->entityManager->player->LifeToMax();
 	App->entityManager->player->Start();
 
 	//OLD
@@ -657,6 +666,7 @@ void j1Scene::ChangeScene(scene_type scene)
 		App->entityManager->player->CleanUp();
 		App->entityManager->CleanEntities();
 		Start();
+		App->entityManager->player->LifeToMax();
 		App->entityManager->player->Start();
 	}
 	else {

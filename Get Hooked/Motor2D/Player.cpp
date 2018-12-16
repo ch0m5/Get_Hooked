@@ -75,7 +75,8 @@ bool Player::Start()
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
 	hitboxOffset = hitbox->rect;
 
-	App->scene->HealthToUI(life);
+	if (App->scene->scene > scene_type::CREDITS)
+		App->scene->HealthToUI(life);
 
 	return ret;
 }
@@ -89,7 +90,8 @@ bool Player::LoadStart()
 	hitbox = App->collision->AddCollider({ (int)position.x + hitboxOffset.x, (int)position.y + hitboxOffset.y, hitboxOffset.w, hitboxOffset.h }, COLLIDER_PLAYER, this);
 	hitboxOffset = hitbox->rect;
 
-	App->scene->HealthToUI(life);
+	if (App->scene->scene > scene_type::CREDITS)
+		App->scene->HealthToUI(life);
 
 	return ret;
 }
