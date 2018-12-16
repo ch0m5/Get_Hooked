@@ -1,5 +1,6 @@
 #include "Brofiler/Brofiler.h"
 #include "j1App.h"
+#include "j1Audio.h"
 #include "j1Textures.h"
 #include "j1Render.h"
 #include "j1Fonts.h"
@@ -47,15 +48,15 @@ bool Image::UpdateTick(float dt)
 
 		fPoint mouseMov = { newGrabOffset.x - grabOffset.x, newGrabOffset.y - grabOffset.y };
 		position.x += mouseMov.x;
-		position.y += mouseMov.y;
+		//position.y += mouseMov.y;	//CHANGE/FIX: Commented for the slide to work properly
 		center.x += mouseMov.x;
-		center.y += mouseMov.y;
+		//center.y += mouseMov.y;
 
 		for (p2List_item<UIElement*>* item = children.start; item != nullptr; item = item->next) {
 			item->data->position.x += mouseMov.x;
-			item->data->position.y += mouseMov.y;
+			//item->data->position.y += mouseMov.y;
 			item->data->center.x += mouseMov.x;
-			item->data->center.y += mouseMov.y;
+			//item->data->center.y += mouseMov.y;
 		}
 	}
 	else {
@@ -101,6 +102,36 @@ bool Image::Draw() const
 	}
 
 	return ret;
+}
+
+int Image::SetSlider(int left, int right, int* value)
+{
+	leftLimit = left;
+	rightLimit = right;
+	sliderValue = value;
+	center.x = (float)(leftLimit + *sliderValue);
+	RelocatePosByCenter();
+	return center.x;
+}
+
+void Image::LimitSlide()
+{
+	if (center.x > rightLimit) {
+		center.x = rightLimit;
+	}
+
+	if (center.x < leftLimit) {
+		center.x = leftLimit;
+	}
+	RelocatePosByCenter();
+}
+
+void Image::SliderToValue()
+{
+	*sliderValue = center.x - leftLimit;
+	
+	App->audio->SetMusicVolume();
+	App->audio->SetSfxVolume();
 }
 
 bool Image::DebugDraw() const

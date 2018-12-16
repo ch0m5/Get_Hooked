@@ -2,7 +2,7 @@
 
 <config>
   <app mustCap="true" fpsCap="30">
-    <name>Get Hooked v0.1</name>
+    <name>Get Hooked v0.4</name>
     <organization>UPC</organization>
     <save>save_game.xml</save>
     <load>save_game.xml</load>
@@ -92,11 +92,12 @@
       <webpage x1="324" y1="305" w1="32" h1="32" x2="324" y2="305" w2="32" h2="32" x3="324" y3="305" w3="32" h3="32" x4="324" y4="305" w4="32" h4="32" />
       <healthBar x="490" y="585" w="230" h="54" />
       <healthChunck x="533" y="649" w="48" h="16" />
+      <sliderBar x="480" y="817" w="167" h="16" />
+      <sliderGrab x="495" y="778" w="27" h="7" />
     </ui>
     <maps>
       <level_1 file="level1.tmx">
         <spawns>
-          <bat type="3" xSpawn="932" ySpawn="345" />
           <bat type="3" xSpawn="1082" ySpawn="275" />
           <bat type="3" xSpawn="2791" ySpawn="258" />
           <bat type="3" xSpawn="4060" ySpawn="244" />

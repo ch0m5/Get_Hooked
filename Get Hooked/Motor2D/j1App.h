@@ -70,6 +70,9 @@ public:
 	bool FramerateCapped() const {
 		return mustCapFPS;
 	}
+	float GetGameTime() const {
+		return gameTime;
+	}
 
 private:
 

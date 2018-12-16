@@ -164,6 +164,12 @@ bool j1Scene::Awake(pugi::xml_node& config)
 	item = config.child("ui").child("healthChunck");
 	healthChunck = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
 
+	item = config.child("ui").child("sliderBar");
+	sliderBar = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+
+	item = config.child("ui").child("sliderGrab");
+	sliderGrab = { item.attribute("x").as_int(), item.attribute("y").as_int(), item.attribute("w").as_int(), item.attribute("h").as_int() };
+
 	return ret;
 }
 
@@ -228,6 +234,10 @@ bool j1Scene::Start()
 		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
 		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, parent);
 		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
+
+		CreateVolumeSliders();
+
+		//App->ui->CreateImage({ 1024 / 4, 300 }, panel, NULL, false);
 
 		break;
 	case scene_type::CREDITS:
@@ -294,14 +304,47 @@ void j1Scene::SetupCredits(UIElement* window)	//CHANGE/FIX: Would be a lot bette
 	App->ui->CreateText({ 1024 / 4, 220 }, "liable for any claim, damages or", DEFAULT_COLOR, NULL, false);
 	//App->ui->CreateText({ 1024 / 4, 232 }, "other liability, whether in an", DEFAULT_COLOR, NULL, false, window);
 	App->ui->CreateText({ 1024 / 4, 244 }, "Made by:", DEFAULT_COLOR, NULL, false);
-	App->ui->CreateText({ 1024 / 4, 256 }, "Carles Homs", DEFAULT_COLOR, NULL, false);
-
-	/*App->ui->CreateText({ 1024 / 4, 256 }, "in connection with the software or", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 268 }, "the use or other dealings in the", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 280 }, "software.", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 292 }, "an action of contract, tort or otherwise, arising from,", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 304 }, "out of or in connection with the software or the use or", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 256 }, "Carles Homs Puchal", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 268 }, "&", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 280 }, "Samuel Kurt Davidson", DEFAULT_COLOR, NULL, false);
+	/*
+	App->ui->CreateText({ 1024 / 4, 292 }, "software.", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 304 }, "an action of contract, tort or otherwise, arising from,", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 316 }, "out of or in connection with the software or the use or", DEFAULT_COLOR, NULL, false, window);
 	App->ui->CreateText({ 1024 / 4, 316 }, "other dealings in the software.", DEFAULT_COLOR, NULL, false, window);*/
+}
+
+void j1Scene::CreateVolumeSliders()
+{
+	_TTF_Font* gameText = App->font->textFont;
+
+	UIElement* parent;
+	Image* barPtr;
+	Image* grabPtr;
+
+	parent = App->ui->CreateImage({ 1024 / 4, 100 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "Master Volume", DEFAULT_COLOR, gameText, false, parent);
+	parent = App->ui->CreateImage({ 1024 / 4, 135 }, sliderBar, NULL, false);
+	masterSlider = App->ui->CreateImage({ 1024 / 4, 135 }, sliderGrab, NULL, true);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)masterSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetMasterVolume());
+
+	parent = App->ui->CreateImage({ 1024 / 4, 170 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "Music Volume", DEFAULT_COLOR, gameText, false, parent);
+	parent = App->ui->CreateImage({ 1024 / 4, 205 }, sliderBar, NULL, false);
+	musicSlider = App->ui->CreateImage({ 1024 / 4, 205 }, sliderGrab, NULL, true);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)musicSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetMusicVolume());
+
+	parent = App->ui->CreateImage({ 1024 / 4, 240 }, panel, NULL, false);
+	App->ui->CreateText(DEFAULT_POINT, "SFX Volume", DEFAULT_COLOR, gameText, false, parent);
+	parent = App->ui->CreateImage({ 1024 / 4, 275 }, sliderBar, NULL, false);
+	sfxSlider = App->ui->CreateImage({ 1024 / 4, 275 }, sliderGrab, NULL, true);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)sfxSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetSfxVolume());
 }
 
 void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
@@ -330,6 +373,9 @@ void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
 	parent = App->ui->CreateImage({ 150, 60 }, panel, NULL, false);
 	App->ui->CreateText(DEFAULT_POINT, "Lifes x     ", DEFAULT_COLOR, gameText, false, parent);
 	retry = App->ui->CreateText(DEFAULT_POINT, p2Str.GetString(), DEFAULT_COLOR, gameText, false, parent);
+	
+	parent = App->ui->CreateImage({ 150, 95 }, panel, NULL, false);
+	timerText = App->ui->CreateText(DEFAULT_POINT, "0", DEFAULT_COLOR, gameText, false, parent);
 
 	settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
@@ -345,6 +391,8 @@ void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
 	}
 
 	settingsWindow->Deactivate();
+
+	levelTimer.Start();
 }
 
 void j1Scene::HealthToUI(int life)
@@ -391,7 +439,38 @@ bool j1Scene::PreUpdate()	//IMPROVE: Full debug input here?
 				App->scene->gamePaused = false;
 				App->scene->settingsWindow->Deactivate();
 			}
+		}
 
+		if (scene > scene_type::CREDITS || scene == scene_type::SETTINGS) {
+			
+			Image* sliderImg;
+			if (masterSlider != nullptr) {
+				sliderImg = (Image*)masterSlider;
+				sliderImg->SliderToValue();
+				sliderImg->LimitSlide();
+			}
+			if (musicSlider != nullptr) {
+				sliderImg = (Image*)musicSlider;
+				sliderImg->SliderToValue();
+				sliderImg->LimitSlide();
+			}
+			if (sfxSlider != nullptr) {
+				sliderImg = (Image*)sfxSlider;
+				sliderImg->SliderToValue();
+				sliderImg->LimitSlide();
+			}
+		}
+	}
+	if (scene > scene_type::CREDITS) {
+		std::string str;
+		p2SString p2Str;
+		
+		str = std::to_string((int)levelTimer.ReadSec());
+		p2Str.create("%s", str.c_str());
+
+		if (timerText != nullptr) {
+			Text* timerPtr = (Text*)timerText;
+			timerPtr->ChangeContent(p2Str.GetString());
 		}
 	}
 
@@ -559,10 +638,14 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 		App->ui->DestroyElement(score);
 		score = nullptr;
 	}*/
-	timer = nullptr;
+	timerText = nullptr;
 	score = nullptr;
 	retry = nullptr;
 	loadButton = nullptr;
+
+	masterSlider = nullptr;
+	musicSlider = nullptr;
+	sfxSlider = nullptr;
 
 	return true;
 }

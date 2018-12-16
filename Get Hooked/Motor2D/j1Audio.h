@@ -59,6 +59,15 @@ public:	// @Carles
 	uint SetSfxVolume() const {
 		return Mix_Volume(-1, masterVolume * (sfxVolume * MIX_MAX_VOLUME / 100) / 100);
 	}
+	int* GetMasterVolume() {
+		return &masterVolume;
+	}
+	int* GetSfxVolume() {
+		return &sfxVolume;
+	}
+	int* GetMusicVolume() {
+		return &musicVolume;
+	}
 
 public:	// @Carles
 	p2SString musicMainMenu;
@@ -73,9 +82,9 @@ public:	// @Carles
 	sfx_file buttonSfx;
 	sfx_file pickItemSfx;
 
-	ushort masterVolume;	// IMPROVE: Make list?
-	ushort musicVolume;
-	ushort sfxVolume;
+	int masterVolume;	// IMPROVE: Make list?
+	int musicVolume;
+	int sfxVolume;
 
 private:
 

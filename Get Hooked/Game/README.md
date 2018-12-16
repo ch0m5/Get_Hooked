@@ -15,7 +15,7 @@ No previous installations is required to play the game, just download and execut
 
 ## Usage
 ### General Controls
-- ESC: Quit the game
+- ESC: Open settings menu
 - P: Pause the game
 - Shift + Up/Down: Change master volume
 - Shift + Left/Right: Change music volume
@@ -56,6 +56,7 @@ No previous installations is required to play the game, just download and execut
 - Player can jump in the air once making a somersault.
 - Enemies have a detection and attack radius which they use to input movement and other special attacks.
 - Enemies are briefly stunned if still alive, backing off from the player. If they die, they dissapear after a set time.
+- Button is a template class with a function pointer that allows easy creation of new and different buttons with different functionalities, as you can decide which return and parameters will their allocated function use.
 - Some Original Debug Functionalities.
 
 ## Contributing

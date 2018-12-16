@@ -77,6 +77,7 @@ public:
 private:
 	void SetupLevel(pugi::xml_parse_result&, pugi::xml_node& config);
 	void SetupCredits(UIElement* window);
+	void CreateVolumeSliders();
 	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
 
 public:	// CHANGE/FIX: Check the need for public
@@ -90,10 +91,16 @@ public:	// CHANGE/FIX: Check the need for public
 	UIElement* settingsWindow;
 	ActionBox<void>* loadButton;
 	UIElement* health[3];
-	UIElement* timer;
+	UIElement* timerText;
 	UIElement* score;
 	UIElement* retry;
 	int playerLife;
+
+	UIElement* masterSlider;
+	UIElement* musicSlider;
+	UIElement* sfxSlider;
+
+	j1Timer levelTimer;
 
 private:
 	bool loading = false;
@@ -104,6 +111,8 @@ private:
 	//Default UI data list
 	SDL_Rect panel;
 	SDL_Rect window;
+	SDL_Rect sliderBar;
+	SDL_Rect sliderGrab;
 	SDL_Rect* button;
 	SDL_Rect* checkButton;
 

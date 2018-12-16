@@ -48,10 +48,18 @@ public:
 	virtual bool Draw() const;
 	virtual bool DebugDraw() const;
 
+	int SetSlider(int left, int right, int* value);	//CHANGE/FIX: Bad slider implementation, improve
+	void LimitSlide();
+	void SliderToValue();
+
 public:
 	p2SString folder;
 
 	bool lookingRight = true;	// IMPROVE: Change to an enum "orientation" for more blitting parameters
+	
+	int rightLimit = 0;	//CHANGE/FIX: Bad slider implementation, improve
+	int leftLimit = 0;
+	int* sliderValue = nullptr;
 
 protected:
 	SDL_Rect* sprite = nullptr;
