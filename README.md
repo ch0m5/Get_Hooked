@@ -32,8 +32,8 @@ No previous installations is required to play the game, just download and execut
 * F2: Start from beginning of current level
 * F3: Advance to next level
 * F4: Free camera movement
-* F5: Save current state
-* F6: Load previously saved state
+* F5: Save current state	(Doesn't work with enemies, coins or the timer)
+* F6: Load previously saved state	(Doesn't work with enemies, coins or the timer)
 * F7: Recieve instant damage (Unless on godmode)
 * F8: User Interface Debug view
 * F9: Game debug view (Colliders/Logic)
