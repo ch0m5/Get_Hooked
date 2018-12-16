@@ -425,7 +425,9 @@ void Player::AddScore(int points)
 	p2SString string = ValueToUI(playerScore);
 	if (App->scene->score != nullptr) {
 		Text* scoreText = (Text*)App->scene->score;
-		scoreText->ChangeContent(string.GetString());
+
+		if (scoreText != nullptr)
+			scoreText->ChangeContent(string.GetString());
 	}
 }
 
@@ -435,7 +437,9 @@ void Player::ResetScore()
 	p2SString string = ValueToUI(playerScore);
 	if (App->scene->score != nullptr) {
 		Text* scoreText = (Text*)App->scene->score;
-		scoreText->ChangeContent(string.GetString());
+
+		if (scoreText != nullptr)
+			scoreText->ChangeContent(string.GetString());
 	}
 }
 
@@ -445,7 +449,9 @@ void Player::EraseScore()
 	p2SString string = ValueToUI(playerScore);
 	if (App->scene->score != nullptr) {
 		Text* scoreText = (Text*)App->scene->score;
-		scoreText->ChangeContent(string.GetString());
+
+		if (scoreText != nullptr)
+			scoreText->ChangeContent(string.GetString());
 	}
 }
 
@@ -460,7 +466,9 @@ void Player::RemoveRetry()
 	p2SString string = ValueToUI(retryLeft);
 	if (App->scene->retry != nullptr) {
 		Text* retryText = (Text*)App->scene->retry;
-		retryText->ChangeContent(string.GetString());
+
+		if (retryText != nullptr)
+			retryText->ChangeContent(string.GetString());
 	}
 }
 
@@ -470,7 +478,9 @@ void Player::ResetRetry()
 	p2SString string = ValueToUI(retryLeft);
 	if (App->scene->retry != nullptr) {
 		Text* retryText = (Text*)App->scene->retry;
-		retryText->ChangeContent(string.GetString());
+
+		if (retryText != nullptr)
+			retryText->ChangeContent(string.GetString());
 	}
 }
 

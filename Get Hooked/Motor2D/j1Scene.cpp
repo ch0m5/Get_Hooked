@@ -72,13 +72,17 @@ void SwitchValue(bool* value)	//IMPROVE: This should be the function that a Chec
 void OpenSettings()
 {
 	App->scene->gamePaused = true;
-	App->scene->settingsWindow->Activate();
+
+	if (App->scene->settingsWindow != nullptr)
+		App->scene->settingsWindow->Activate();
 }
 
 void CloseSettings()
 {
 	App->scene->gamePaused = false;
-	App->scene->settingsWindow->Deactivate();
+
+	if (App->scene->settingsWindow != nullptr)
+		App->scene->settingsWindow->Deactivate();
 }
 
 // ------------------------------------------------------------------------------
@@ -224,10 +228,12 @@ bool j1Scene::Start()
 		App->ui->CreateImage({ 1024 / 4, 768 / 4 }, { 0, 0, 0, 0 }, backgroundTexPtr, false);
 
 		parent = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);
-		App->ui->CreateText({ 1024 / 4, 58 }, "Credits", DEFAULT_COLOR, gameText, false, parent);
+		App->ui->CreateText({ 1024 / 4, 58 }, "Credits", DEFAULT_COLOR, gameText, false, parent);	//CHANGE/FIX: Implement line jumping, this is bad
+
+		SetupCredits(parent);
+
 		App->ui->CreateActionBox(&GoToMenu, { 353, 59 }, back, NULL, false, parent);
 		App->ui->CreateActionBox(&CloseGame, { 20, 20 }, shutDown, NULL, false);
-
 		break;
 	case scene_type::LEVEL_1:
 		App->map->Load(maps.At(0)->data.GetString());
@@ -261,6 +267,32 @@ bool j1Scene::Start()
 	App->audio->SetMusicVolume();
 
 	return ret;
+}
+
+void j1Scene::SetupCredits(UIElement* window)	//CHANGE/FIX: Would be a lot better to have a block of text that cuts on set edges
+{
+	App->ui->CreateText({ 1024 / 4, 88 }, "MIT License", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 100 }, "Copyright(c) 2018 Scotland Fury", DEFAULT_COLOR, NULL, false);
+	//App->ui->CreateText({ 1024 / 4, 112 }, "nothing", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 124 }, "The software is provided as is,", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 136 }, "without warranty of any kind,", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 148 }, "express or implied, including", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 160 }, "but not limited to the warranties", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 172 }, "of merchantability, fitness for a", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 184 }, "particular purpose and", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 196 }, "noninfringement in no event shall", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 208 }, "the authors or copyright holders be", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 220 }, "liable for any claim, damages or", DEFAULT_COLOR, NULL, false);
+	//App->ui->CreateText({ 1024 / 4, 232 }, "other liability, whether in an", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 244 }, "Made by:", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 256 }, "Carles Homs", DEFAULT_COLOR, NULL, false);
+
+	/*App->ui->CreateText({ 1024 / 4, 256 }, "in connection with the software or", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 268 }, "the use or other dealings in the", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 280 }, "software.", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 292 }, "an action of contract, tort or otherwise, arising from,", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 304 }, "out of or in connection with the software or the use or", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 316 }, "other dealings in the software.", DEFAULT_COLOR, NULL, false, window);*/
 }
 
 void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
@@ -430,8 +462,14 @@ bool j1Scene::PostUpdate()
 				App->tex->UnLoad(backgroundTexPtr);
 				backgroundTexPtr = nullptr;
 			}
-			App->entityManager->player->ResetRetry();
-			App->entityManager->player->EraseScore();
+			if (firstStart) {
+				App->entityManager->player->retryLeft = 2;
+				firstStart = false;
+			}
+			else {
+				//App->entityManager->player->ResetRetry();
+				App->entityManager->player->EraseScore();
+			}
 			App->ui->CleanUp();
 			ChangeScene(scene_type::LEVEL_1);
 			break;
@@ -512,6 +550,7 @@ bool j1Scene::CleanUp()	//IMPROVE: When changing scene a lot of new memory is al
 		App->ui->DestroyElement(score);
 		score = nullptr;
 	}*/
+	timer = nullptr;
 	score = nullptr;
 	retry = nullptr;
 	loadButton = nullptr;

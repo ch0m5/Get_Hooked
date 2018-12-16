@@ -137,7 +137,7 @@
   </scene>
 
   <fonts>
-    <defaultFont file="fonts/open_sans/OpenSans-Regular.ttf" size="12" />
+    <defaultFont file="fonts/open_sans/OpenSans-Regular.ttf" size="10" />
     <textFont file="fonts/8_bit_limit/8bitlim.ttf" size="14" />
     <titleFont file="fonts/ferrum/ferrum.otf" size="70" />
   </fonts>

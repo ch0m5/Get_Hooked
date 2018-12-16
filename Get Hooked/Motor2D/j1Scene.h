@@ -76,11 +76,13 @@ public:
 
 private:
 	void SetupLevel(pugi::xml_parse_result&, pugi::xml_node& config);
+	void SetupCredits(UIElement* window);
 	void RegisterButtonData(pugi::xml_node&, SDL_Rect* button);
 
 public:	// CHANGE/FIX: Check the need for public
 	bool debugMode;		// Flag that marks if debug functionalities are available
 	bool gamePaused = false;
+	bool firstStart = true;	//CHANGE/FIX: Fixes weird bug with retryLifes Text
 	scene_type scene;
 	fPoint playerStart;
 	fPoint playerFinish;
