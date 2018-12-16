@@ -381,10 +381,38 @@ void j1Scene::SetupLevel(pugi::xml_parse_result& result, pugi::xml_node& config)
 	App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
 	App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
 	App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
-	App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
-	App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
-	loadButton = (ActionBox<void>*)App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 165 }, button, NULL, false, settingsWindow);
-	App->ui->CreateText({ 1024 / 4, 165 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+	App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 100 }, button, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 100 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
+	loadButton = (ActionBox<void>*)App->ui->CreateActionBox(&LoadGame, { 1024 / 4, 140 }, button, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 140 }, "Load", DEFAULT_COLOR, gameText, false, settingsWindow);
+
+	//Volume widgets
+	Image* barPtr;
+	Image* grabPtr;
+
+	parent = App->ui->CreateImage({ 1024 / 4, 180 }, panel, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 180 }, "Master Volume", DEFAULT_COLOR, gameText, false, settingsWindow);
+	parent = App->ui->CreateImage({ 1024 / 4, 205 }, sliderBar, NULL, false, settingsWindow);
+	masterSlider = App->ui->CreateImage({ 1024 / 4, 205 }, sliderGrab, NULL, true, settingsWindow);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)masterSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetMasterVolume());
+
+	parent = App->ui->CreateImage({ 1024 / 4, 235 }, panel, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 235 }, "Music Volume", DEFAULT_COLOR, gameText, false, settingsWindow);
+	parent = App->ui->CreateImage({ 1024 / 4, 255 }, sliderBar, NULL, false, settingsWindow);
+	musicSlider = App->ui->CreateImage({ 1024 / 4, 255 }, sliderGrab, NULL, true, settingsWindow);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)musicSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetMusicVolume());
+
+	parent = App->ui->CreateImage({ 1024 / 4, 285 }, panel, NULL, false, settingsWindow);
+	App->ui->CreateText({ 1024 / 4, 285 }, "SFX Volume", DEFAULT_COLOR, gameText, false, settingsWindow);
+	parent = App->ui->CreateImage({ 1024 / 4, 305 }, sliderBar, NULL, false, settingsWindow);
+	sfxSlider = App->ui->CreateImage({ 1024 / 4, 305 }, sliderGrab, NULL, true, settingsWindow);
+	barPtr = (Image*)parent;
+	grabPtr = (Image*)sfxSlider;
+	grabPtr->SetSlider(barPtr->GetPosition().x, barPtr->GetPosition().x + barPtr->GetSize().x, App->audio->GetSfxVolume());
 
 	if (result == NULL) {
 		loadButton->Disable();
