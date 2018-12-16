@@ -234,11 +234,11 @@ bool j1Scene::Start()
 		SpawnEntities(scene, config);
 
 		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
-		App->ui->CreateActionBox(&GoToMenu, { 20, 20 }, back, NULL, false);
-		App->ui->CreateActionBox(&OpenSettings, { 55, 20 }, settings, NULL, false);
+		App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
 
 		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
 		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
 		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
 		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
 		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);
@@ -257,11 +257,11 @@ bool j1Scene::Start()
 		SpawnEntities(scene, config);
 
 		App->ui->CreateImage({ 390, 35 }, healthBar, NULL, false);
-		App->ui->CreateActionBox(&GoToMenu, { 20, 20 }, back, NULL, false);
-		App->ui->CreateActionBox(&OpenSettings, { 55, 20 }, settings, NULL, false);
+		App->ui->CreateActionBox(&OpenSettings, { 20, 20 }, settings, NULL, false);
 
 		settingsWindow = App->ui->CreateImage({ 1024 / 4, 200 }, window, NULL, false);	//CHANFE/FIX: Make function
 		App->ui->CreateText({ 1024 / 4, 58 }, "Settings", DEFAULT_COLOR, gameText, false, settingsWindow);
+		App->ui->CreateActionBox(&GoToMenu, { 153, 59 }, back, NULL, false, settingsWindow);
 		App->ui->CreateActionBox(&CloseSettings, { 353, 59 }, exit, NULL, false, settingsWindow);
 		App->ui->CreateActionBox(&SaveGame, { 1024 / 4, 120 }, button, NULL, false, settingsWindow);
 		App->ui->CreateText({ 1024 / 4, 120 }, "Save", DEFAULT_COLOR, gameText, false, settingsWindow);

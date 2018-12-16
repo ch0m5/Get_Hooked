@@ -79,8 +79,10 @@ feature'`
 * Carles Homs
 	* Scene Module and Logic
 	* Audio Module and Logic
+	* Music selection and SFX Original Making
 	* FadeSceneModule and Logic
 	* Collisions Module and Logic
+	* Pathfinding Module and Logic
 	* XML Management (Save/Load/Config)
 	* Input Interpretation
 	* All Debug Functionalities
@@ -89,6 +91,7 @@ feature'`
 	* All entities and Logic
 	* User Interface System
 	* All UI Elements and Logic
+	* OPP Design and UML Document
 	* Brofiler Implementation
 	* Github Webpage and READMEs
 
