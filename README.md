@@ -38,6 +38,7 @@ Because of some minor errors, the game might not initialize on the first executi
 * F11: Activate/Deactivate FPS cap (30)
 * 1/2/3/4/5: Change game scale to number chosen
 
+## Author
 * Carles Homs 
   * Github: [ch0m5](https://github.com/ch0m5)
 
