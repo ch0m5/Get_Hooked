@@ -317,6 +317,7 @@ bool j1App::CleanUp()
 	PERF_START(perfTimer);
 
 	bool ret = true;
+
 	p2List_item<j1Module*>* item;
 	item = modules.end;
 

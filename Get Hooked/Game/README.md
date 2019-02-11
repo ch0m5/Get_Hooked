@@ -1,8 +1,8 @@
 # Get Hooked by Scotland Fury
 
-This is a university project made by [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia)
-students of the TTC (Talent Tech Center) in Barcelona, in which we make our own platformer in C & C++.
-We also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/)
+This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia)
+student of the TTC (Talent Tech Center) in Barcelona, in which I make my own platformer in C & C++.
+I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/)
 and [pugixml](https://pugixml.org/) libraries.
 
 Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool
@@ -98,9 +98,6 @@ feature'`
 	- OPP Design and UML Document
 	- Brofiler Implementation
 	- Github Webpage and READMEs
-
-- Samuel Kurt:
-	- Map Design and Implementation with Tiled
 
 - Repository: https://github.com/Scotland-Fury/Hook_Platformer
 
