@@ -1,4 +1,4 @@
-# Get Hooked by Scotland Fury
+# Get Hooked by ch0m5
 This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) student of the TTC (Talent Tech Center) in Barcelona, in which I made my own 2D platformer in C & C++. I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
 
 ## Installation
@@ -96,6 +96,6 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 
 ## License & Copyright 
 
-© Scotland Fury
+© ch0m5
 
 Licensed under the [MIT License](https://github.com/Scotland-Fury/Hook_Platformer/blob/master/LICENSE)
