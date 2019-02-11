@@ -1,5 +1,5 @@
 # Get Hooked by Scotland Fury
-This is a university project made by [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) students of the TTC (Talent Tech Center) in Barcelona, in which we make our own 2D platformer in C & C++. We also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
+This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) student of the TTC (Talent Tech Center) in Barcelona, in which I made my own 2D platformer in C & C++. I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
 
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
@@ -38,19 +38,12 @@ Because of some minor errors, the game might not initialize on the first executi
 * F11: Activate/Deactivate FPS cap (30)
 * 1/2/3/4/5: Change game scale to number chosen
 
-## The Team: [Scotland Fury](https://github.com/Scotland-Fury)
 * Carles Homs 
-  * Role: Game Design and Full Code Implementation
   * Github: [ch0m5](https://github.com/ch0m5)
 
-* Samuel Kurt
-  * Role: Map Design
-  * Github: [samuelkurtdavidson](https://github.com/samuelkurtdavidson)
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png" width="645"/>
+  <img src="https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/gh-pages/Cara.png"/>
 </p>
-*Samuel and Carles from Scotland Fury*
 
 ## Subsystems
 * The game features several modules that manage the entire game workflow, like textures, renderization, window setup, fonts, etc.
