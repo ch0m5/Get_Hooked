@@ -1,4 +1,4 @@
-# Get Hooked by Scotland Fury
+# Get Hooked by ch0m5
 
 This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia)
 student of the TTC (Talent Tech Center) in Barcelona, in which I make my own platformer in C & C++.
@@ -119,7 +119,7 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 ## License & Copyright 
 MIT License
 
-Copyright (c) 2018 Scotland Fury
+Copyright (c) 2018 ch0m5
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

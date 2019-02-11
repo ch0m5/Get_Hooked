@@ -1,4 +1,4 @@
-# Get Hooked by Scotland Fury
+# Get Hooked by ch0m5
 This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) student of the TTC (Talent Tech Center) in Barcelona, in which I make my own platformer in C & C++. I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
 
 Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
@@ -69,10 +69,9 @@ feature'`
 * Carles Homs 
   * Github: [ch0m5](https://github.com/ch0m5)
 
-* [Repository](https://github.com/Scotland-Fury/Hook_Platformer)
+* [Repository](https://github.com/ch0m5/Get_Hooked)
 
-![Team Photo](https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/master/Wiki%20Material/Team_Photo.png)
-*Samuel & Carles from Scotland Fury*
+![Team Photo](https://raw.githubusercontent.com/ch0m5/Get_Hooked/gh-pages/Cara.png)
 
 ## Tasklist
 * Carles Homs
@@ -114,6 +113,6 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 
 ## License & Copyright 
 
-© Scotland Fury
+© ch0m5
 
 Licensed under the [MIT License](LICENSE)
