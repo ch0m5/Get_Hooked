@@ -1,7 +1,7 @@
 # Get Hooked by ch0m5
 This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) student of the TTC (Talent Tech Center) in Barcelona, in which I make my own platformer in C & C++. I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
 
-Get Hooked is a platformer game showcasing two levels, basic UI, fluid character movement and controls, and Save & Load at any point mid-game.
+Get Hooked is a platformer game showcasing two levels, basic UI, fluid character movement and controls, Save & Load at any point mid-game, and my first attempt at a deep heriarchy-based entity class system.
 
 Feel free to visit our [Webpage](https://scotland-fury.github.io/Hook_Platformer/).
 
