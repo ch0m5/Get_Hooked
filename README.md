@@ -67,7 +67,7 @@ feature'`
 
 * [Repository](https://github.com/ch0m5/Get_Hooked)
 
-![Team Photo](https://raw.githubusercontent.com/ch0m5/Get_Hooked/gh-pages/Cara.png)
+![Team Photo](https://raw.githubusercontent.com/ch0m5/Get_Hooked/gh-pages/Carles_Homs.png)
 
 ## Tasklist
 * Carles Homs
