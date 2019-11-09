@@ -1,9 +1,9 @@
 # Get Hooked by ch0m5
 This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Centre de la Imatge i la Tecnologia Multimedia) student of the TTC (Talent Tech Center) in Barcelona, in which I make my own platformer in C & C++. I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/) and [pugixml](https://pugixml.org/) libraries.
 
-Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
+Get Hooked is a platformer game showcasing two levels, basic UI, fluid character movement and controls, Save & Load at any point mid-game, and my first attempt at a deep heriarchy-based entity class system.
 
-Feel free to visit our [Webpage](https://scotland-fury.github.io/Hook_Platformer/).
+Feel free to visit our [Webpage](https://ch0m5.github.io/Get_Hooked/).
 
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
@@ -24,10 +24,6 @@ Because of some minor errors, the game might not initialize on the first executi
 	* Jump: W
 	* Crouch/Slide: S
 	* Space: Attack
-	
-* XBOX Controller: (Planned!)
-
-### Player 2 (Considering implementation!)
 
 ### Debug Mode
 * Arrow Keys: Manual Camera Movement
@@ -63,7 +59,7 @@ Because of some minor errors, the game might not initialize on the first executi
 3. Commit your changes: `git commit -am 'Add some
 feature'`
 4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request and we might look into it. :D
+5. Submit a pull request and I might look into it. :D
 
 ## Author
 * Carles Homs 
@@ -94,7 +90,7 @@ feature'`
 	* Github Webpage and READMEs
 
 ## Disclosure
-We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
+I do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
 
 * Sprites:
 	* Character [*Pixel Adventurer*](https://rvros.itch.io/animated-pixel-hero) made by [*rvros*](https://rvros.itch.io/)
