@@ -5,10 +5,10 @@ student of the TTC (Talent Tech Center) in Barcelona, in which I make my own pla
 I also used the [Tiled Map Editor](https://www.mapeditor.org/) software, and the [SDL](https://www.libsdl.org/)
 and [pugixml](https://pugixml.org/) libraries.
 
-Get Hooked is a platformer game featuring great freedom of movement achieved specially by the hook tool
-that the player possesses and a great focus on the player's inertia. (Hook planned, not implemented yet!)
+Get Hooked is a platformer game showcasing two levels, basic UI, fluid character movement and controls,
+Save & Load at any point mid-game, and my first attempt at a deep heriarchy-based entity class system.
 
-Feel free to visit our Webpage: https://scotland-fury.github.io/Hook_Platformer/
+Feel free to visit our Webpage: https://ch0m5.github.io/Get_Hooked/
 
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
@@ -30,10 +30,6 @@ Because of some minor errors, the game might not initialize on the first executi
 	- Crouch/Slide: S
 	- Space: Attack
 	
-- XBOX Controller: (Planned!)
-
-### Player 2 (Considering implementation!)
-
 ### Debug Mode
 - Arrow Keys: Manual Camera Movement
 - F1: Start from the first level
@@ -68,7 +64,7 @@ Because of some minor errors, the game might not initialize on the first executi
 3. Commit your changes: `git commit -am 'Add some
 feature'`
 4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request and we might look into it. :D
+5. Submit a pull request and I might look into it. :D
 
 ## Author
 - Carles Homs 
@@ -94,10 +90,10 @@ feature'`
 	- Brofiler Implementation
 	- Github Webpage and READMEs
 
-- Repository: https://github.com/Scotland-Fury/Hook_Platformer
+- Repository: https://github.com/ch0m5/Get_Hooked/
 
 ## Disclosure
-We do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
+I do not own any of the sprites, tilesets or music presented in this game. Authors credited below.
 
 - Sprites: 
 	- Character *Pixel Adventurer* made by *rvros*: https://rvros.itch.io/

@@ -67,9 +67,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Game Files\Entity Manager\Entities\Physical\Creatures</Filter>
     </ClCompile>
-    <ClCompile Include="j1UserInterface.cpp">
-      <Filter>Game Files\User Interface</Filter>
-    </ClCompile>
     <ClCompile Include="UIElement.cpp">
       <Filter>Game Files\User Interface</Filter>
     </ClCompile>
@@ -102,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="Coin.cpp">
       <Filter>Game Files\Entity Manager\Entities\Physical\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="j1UserInterface.cpp">
+      <Filter>Game Files\User Interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,9 +192,6 @@
     <ClInclude Include="Enemy.h">
       <Filter>Game Files\Entity Manager\Entities\Physical\Creatures</Filter>
     </ClInclude>
-    <ClInclude Include="j1UserInterface.h">
-      <Filter>Game Files\User Interface</Filter>
-    </ClInclude>
     <ClInclude Include="UIElement.h">
       <Filter>Game Files\User Interface</Filter>
     </ClInclude>
@@ -233,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="Coin.h">
       <Filter>Game Files\Entity Manager\Entities\Physical\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="j1UserInterface.h">
+      <Filter>Game Files\User Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
