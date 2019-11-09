@@ -3,7 +3,7 @@ This is a university project made by a [CITM](https://www.citm.upc.edu/ing/) (Ce
 
 Get Hooked is a platformer game showcasing two levels, basic UI, fluid character movement and controls, Save & Load at any point mid-game, and my first attempt at a deep heriarchy-based entity class system.
 
-Feel free to visit our [Webpage](https://scotland-fury.github.io/Hook_Platformer/).
+Feel free to visit our [Webpage](https://ch0m5.github.io/Get_Hooked/).
 
 ## Installation
 No previous installations is required to play the game, just download and execute the .exe file *Get Hooked* from releases.
