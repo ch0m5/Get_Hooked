@@ -291,7 +291,7 @@ bool j1Scene::Start()
 void j1Scene::SetupCredits(UIElement* window)	//CHANGE/FIX: Would be a lot better to have a block of text that cuts on set edges
 {
 	App->ui->CreateText({ 1024 / 4, 88 }, "MIT License", DEFAULT_COLOR, NULL, false);
-	App->ui->CreateText({ 1024 / 4, 100 }, "Copyright(c) 2018 Scotland Fury", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 100 }, "Copyright (c) 2018 ch0m5", DEFAULT_COLOR, NULL, false);
 	//App->ui->CreateText({ 1024 / 4, 112 }, "nothing", DEFAULT_COLOR, NULL, false, window);
 	App->ui->CreateText({ 1024 / 4, 124 }, "The software is provided <as is>,", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 136 }, "without warranty of any kind,", DEFAULT_COLOR, NULL, false);
