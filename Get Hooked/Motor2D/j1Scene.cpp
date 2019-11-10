@@ -87,7 +87,7 @@ void CloseSettings()
 
 void OpenWebpage()
 {
-	ShellExecuteA(NULL, "open", "https://scotland-fury.github.io/Hook_Platformer/", NULL , NULL , SW_SHOWNORMAL);
+	ShellExecuteA(NULL, "open", "https://ch0m5.github.io/Get_Hooked/", NULL , NULL , SW_SHOWNORMAL);
 }
 
 // ------------------------------------------------------------------------------
@@ -293,7 +293,7 @@ void j1Scene::SetupCredits(UIElement* window)	//CHANGE/FIX: Would be a lot bette
 	App->ui->CreateText({ 1024 / 4, 88 }, "MIT License", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 100 }, "Copyright(c) 2018 Scotland Fury", DEFAULT_COLOR, NULL, false);
 	//App->ui->CreateText({ 1024 / 4, 112 }, "nothing", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 124 }, "The software is provided as is,", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 124 }, "The software is provided <as is>,", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 136 }, "without warranty of any kind,", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 148 }, "express or implied, including", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 160 }, "but not limited to the warranties", DEFAULT_COLOR, NULL, false);
@@ -302,11 +302,15 @@ void j1Scene::SetupCredits(UIElement* window)	//CHANGE/FIX: Would be a lot bette
 	App->ui->CreateText({ 1024 / 4, 196 }, "noninfringement in no event shall", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 208 }, "the authors or copyright holders be", DEFAULT_COLOR, NULL, false);
 	App->ui->CreateText({ 1024 / 4, 220 }, "liable for any claim, damages or", DEFAULT_COLOR, NULL, false);
-	//App->ui->CreateText({ 1024 / 4, 232 }, "other liability, whether in an", DEFAULT_COLOR, NULL, false, window);
-	App->ui->CreateText({ 1024 / 4, 244 }, "Made by:", DEFAULT_COLOR, NULL, false);
-	App->ui->CreateText({ 1024 / 4, 256 }, "Carles Homs Puchal", DEFAULT_COLOR, NULL, false);
-	App->ui->CreateText({ 1024 / 4, 268 }, "&", DEFAULT_COLOR, NULL, false);
-	App->ui->CreateText({ 1024 / 4, 280 }, "Samuel Kurt Davidson", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 232 }, "other liability, whether in an action", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 244 }, "of contract, tort ot otherwise,", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 256 }, "arising from, out of or in connection", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 268 }, "with the software or the use or", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 280 }, "other dealings in the software.", DEFAULT_COLOR, NULL, false);
+
+	//App->ui->CreateText({ 1024 / 4, 292 }, "nothing", DEFAULT_COLOR, NULL, false, window);
+	App->ui->CreateText({ 1024 / 4, 306 }, "Made by:", DEFAULT_COLOR, NULL, false);
+	App->ui->CreateText({ 1024 / 4, 318 }, "Carles Homs Puchal", DEFAULT_COLOR, NULL, false);
 	/*
 	App->ui->CreateText({ 1024 / 4, 292 }, "software.", DEFAULT_COLOR, NULL, false, window);
 	App->ui->CreateText({ 1024 / 4, 304 }, "an action of contract, tort or otherwise, arising from,", DEFAULT_COLOR, NULL, false, window);
