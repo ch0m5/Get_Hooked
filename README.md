@@ -87,7 +87,9 @@ We do not own any of the sprites, tilesets or music presented in this game. Auth
 * Tilesets:
 	* [*Caves of Gallet*](https://adamatomic.itch.io/caves-of-gallet) tileset by [*Adam Saltsman*](https://adamatomic.itch.io/) 
 
-* Music: 
+* Music:
+	* MainMenu - [New World](https://www.youtube.com/watch?v=uwgqElzccUE)
+		* Composed by [Kevin Penkin](http://www.kpenkmusic.com/)
 	* Track 1 - [Mystic Force](https://www.youtube.com/watch?v=pfryxqYSHqA&feature=youtu.be)
 	* Track 2 - [Spellbound](https://www.youtube.com/watch?v=FXDThZaMO4c&feature=youtu.be)
 	* Composed by [Kevin MacLeod](https://www.youtube.com/channel/UCSZXFhRIx6b0dFX3xS8L1yQ)
