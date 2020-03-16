@@ -43,7 +43,7 @@ Because of some minor errors, the game might not initialize on the first executi
   * Github: [ch0m5](https://github.com/ch0m5)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/gh-pages/Cara.png"/>
+  <img src="https://raw.githubusercontent.com/Scotland-Fury/Hook_Platformer/gh-pages/Carles_Homs.png"/>
 </p>
 
 ## Subsystems
